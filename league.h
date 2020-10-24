@@ -23,6 +23,8 @@ class League {
 
 	std::vector<School*> allSchools;
 
+	int week = 0;
+
 	void assembleSchoolVector() {
 		for (int i = 0; i < (int)conferences.size(); ++i) {
 			for (auto& school : conferences[i]) { school.setDivision((Conference)i); }
@@ -164,8 +166,6 @@ class League {
 
 	void createMatchups() {
 		// protected matchups first
-		std::cout << "Creating season schedule...";
-		std::cout.flush();
 		assignMatchup(12, findSchool(BIGTENEAST, "Michigan"), findSchool(BIGTENEAST, "Ohio State"));
 		assignMatchup(12, findSchool(SECWEST, "Auburn"), findSchool(SECWEST, "Alabama"));
 		assignMatchup(12, findSchool(BIGTENWEST, "Purdue"), findSchool(BIGTENEAST, "Indiana"));
@@ -342,22 +342,19 @@ class League {
 				}
 			}
 		}
-		std::cout << "done." << std::endl;
 	}
 
-	void playSchedule() {
-		std::cout << "Playing schedule... ";
+	void playEntireSchedule() {
+		std::cout << "Playing entire season... ";
 		std::cout.flush();
-		int weekCount = 0;
-		for (auto& week : schedule) {
-			weekCount++;
-			// std::cout << "\nNEXT WEEK\n===================================\n";
-			for (auto& matchup : week) {
+		for (week; week < (int)schedule.size(); week++) {
+			std::vector<School::Matchup*>& weekLineup = schedule[week];
+			for (auto& matchup : weekLineup) {
 				GamePlayer game(matchup->away, matchup->home);
-				GameResult result = game.startRealTimeGameLoop();
+				GameResult result = game.startRealTimeGameLoop(false);
 				matchup->gameResult = result;
 			}
-			std::cout << "week " << weekCount << " done... ";
+			std::cout << "week " << (week + 1) << " done... ";
 			std::cout.flush();
 		}
 		std::cout << "\nAll weeks played - season complete." << std::endl;
@@ -369,6 +366,19 @@ class League {
 			std::cout << school->getName() << ": " << record.first << " - " << record.second
 					  << " .... " << school->getAverageOffense() << " yds/avg\n";
 		}
+	}
+
+	void playOneWeek() {
+		std::cout << "Playing week " << (week + 1) << "... ";
+		std::cout.flush();
+		std::vector<School::Matchup*>& weekLineup = schedule[week];
+		for (auto& matchup : weekLineup) {
+			GamePlayer game(matchup->away, matchup->home);
+			GameResult result = game.startRealTimeGameLoop(false);
+			matchup->gameResult = result;
+		}
+		std::cout << "done." << std::endl;
+		week++;
 	}
 
 	void rankTeams() {
@@ -410,6 +420,10 @@ class League {
 			}
 			School* opp = pickNotMine(school, m->away, m->home, school);
 			std::cout << "vs. " << opp->getName();
+			if (m->gameResult.homeStats == nullptr) {
+				std::cout << " <not played yet>\n";
+				continue;
+			}
 			TeamStats* myStats = m->gameResult.homeStats;
 			TeamStats* theirStats = m->gameResult.awayStats;
 			if (opp == m->home) { std::swap(myStats, theirStats); }
@@ -625,9 +639,14 @@ class League {
 		assembleSchoolVector();
 
 		createMatchups();
+	}
 
-		playSchedule();
-
+	void simSeason() {
+		playEntireSchedule();
 		rankTeams();
 	}
+
+	void simOneWeek() { playOneWeek(); }
+
+	int getCurrentWeek() { return week + 1; }
 };

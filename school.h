@@ -219,7 +219,7 @@ class School {
 	std::pair<int, int> getWinLossRecord(bool confRecord = false) {
 		std::pair<int, int> winsLosses;
 		for (auto& game : schedule) {
-			if (game != nullptr) {
+			if (game != nullptr && game->gameResult.homeStats != nullptr) {
 				if (confRecord && game->away->getDivision() != game->home->getDivision() &&
 					game->away->getDivision() != getOppositeDivision(game->home->getDivision()))
 					continue;

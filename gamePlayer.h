@@ -24,6 +24,8 @@ class GamePlayer {
 	int down;
 	int lineToGain;
 
+	bool printPlayByPlay = false;
+
 	enum PlayType {
 		OUTSIDERUN,
 		INSIDERUN,
@@ -101,7 +103,7 @@ class GamePlayer {
 	}
 
 	void printPlay(std::string msg) {
-		if (true) return;
+		if (!printPlayByPlay) return;
 		std::cout << clockAsStr() << msg << "\n" << std::endl;
 
 		// using namespace std::chrono_literals;  // ns, us, ms, s, h, etc.
@@ -812,7 +814,7 @@ class GamePlayer {
 		defStats = new TeamStats();
 	}
 
-	GameResult startRealTimeGameLoop() {
+	GameResult startRealTimeGameLoop(bool printPlayByPlay) {
 		printPlay("Starting game. Away team to start with the ball at the " + yardLineAsStr());
 		gameLoop();
 		if (homePossession) std::swap(offStats, defStats);
