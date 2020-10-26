@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <random>
+#include <string>
 #include <vector>
 
 class RNG {
@@ -69,4 +70,9 @@ T pickMyPartner(const std::vector<std::pair<T, T>>& pairings, T me) {
 		if (pair.second == me) return pair.first;
 	}
 	return T();
+}
+
+std::string str_upper(std::string in) {
+	for (auto& c : in) c = toupper(c);
+	return in;
 }

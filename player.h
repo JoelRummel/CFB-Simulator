@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <iostream>
 #include <string>
 #include <unordered_map>
 
@@ -239,8 +240,6 @@ Player playerFactory(Position p, int y, int prestige) {
 }
 
 struct PlayerStats {
-	int numFumblesLost;
-	int numInterceptionsThrown;
 	int rushes;
 	int rushingYards;
 	int passingYards;
@@ -252,11 +251,13 @@ struct PlayerStats {
 	int receivingTDs;
 	int catches;
 	int drops;
+	int fumblesLost;
+	int INTsThrown;
 
 	int tackles;
 	int sacks;
 	int TFLs;
-	int INTs;
+	int INTsCaught;
 	int passDefenses;
 };
 
@@ -298,6 +299,9 @@ struct TeamStats {
 	void recordTFL(Player* p) { players[p].TFLs++; }
 	void recordPassDefense(Player* p) { players[p].passDefenses++; }
 	void recordSackAllowed() { sacksAllowed++; }
+	void recordINTThrown(Player* p) { players[p].INTsThrown++; }
+	void recordINTCaught(Player* p) { players[p].INTsCaught++; }
+	void recordFumble(Player* p) { players[p].fumblesLost++; }
 
 	int rushes() {
 		int rush = 0;
@@ -366,6 +370,21 @@ struct TeamStats {
 		for (auto player : players) pds += player.second.passDefenses;
 		return pds;
 	}
+	int INTsThrown() {
+		int i = 0;
+		for (auto player : players) i += player.second.INTsThrown;
+		return i;
+	}
+	int fumblesLost() {
+		int f = 0;
+		for (auto player : players) f += player.second.fumblesLost;
+		return f;
+	}
+	int INTsCaught() {
+		int i = 0;
+		for (auto player : players) i += player.second.INTsCaught;
+		return i;
+	}
 
 	void printBigStuff() {
 		//     |----------------------------------------|
@@ -378,16 +397,22 @@ struct TeamStats {
 		printf("Pass comp / att: %14d/%2d %3.1f%%\n", completions(), passAttempts(),
 			   completionRate());
 		printf("Drops: %33d\n", drops());
-		printf("Passing TDs: %27d\n\n", passingTDs());
+		printf("Passing TDs: %27d\n", passingTDs());
+		printf("Fumbles lost: %26d\n", fumblesLost());
+		printf("INTs thrown: %27d\n\n", INTsThrown());
 		printf("DEFENSE\n----------------------------------------\n");
 		printf("Total yards allowed: %19d\n", yardsAllowed);
 		printf("Tackles for loss: %22d\n", TFLs());
 		printf("Sacks: %33d\n", sacks());
 		printf("Pass defenses: %25d\n", passDefenses());
+		printf("INTs caught: %27d\n", INTsCaught());
 	}
 
 	void printPlayerStats(Player* p) {
 		const PlayerStats& s = players[p];
+		std::cout << positionToStr(p->getPosition()) << " " << p->getName() << " (" << p->getOVR()
+				  << " OVR)\n";
+		std::cout << "----------------------------------------\n";
 		if (s.rushes > 0) {
 			printf("Rushes: %32d\n", s.rushes);
 			printf("Rushing yards: %25d\n", s.rushingYards);
@@ -401,6 +426,7 @@ struct TeamStats {
 			printf("Pass comp / att: %14d/%2d %3.1f%%\n", s.completions,
 				   s.completions + s.incompletions, compRate);
 			printf("Passing TDs: %27d\n", s.passingTDs);
+			printf("Interceptions: %25d\n", s.INTsThrown);
 		}
 		if (s.catches > 0 || s.drops > 0) {
 			printf("Catches: %31d\n", s.catches);
@@ -408,10 +434,12 @@ struct TeamStats {
 			printf("Receiving yards: %23d\n", s.receivingYards);
 			printf("Receiving TDs: %25d\n", s.receivingTDs);
 		}
+		if (s.fumblesLost > 0) { printf("Fumbles lost: %26d\n", s.fumblesLost); }
 		if (s.tackles > 0) { printf("Tackles: %31d\n", s.tackles); }
 		if (s.TFLs > 0) { printf("Tackles for loss: %22d\n", s.TFLs); }
 		if (s.sacks > 0) { printf("Sacks: %33d\n", s.sacks); }
 		if (s.passDefenses > 0) { printf("Pass defenses: %25d\n", s.passDefenses); }
+		if (s.INTsCaught > 0) { printf("Interceptions: %25d\n", s.INTsCaught); }
 	}
 
 	std::vector<Player*> getPlayersRecorded() {

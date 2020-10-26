@@ -350,6 +350,7 @@ class League {
 		for (week; week < (int)schedule.size(); week++) {
 			std::vector<School::Matchup*>& weekLineup = schedule[week];
 			for (auto& matchup : weekLineup) {
+				if (matchup->gameResult.homeStats != nullptr) continue;
 				GamePlayer game(matchup->away, matchup->home);
 				GameResult result = game.startRealTimeGameLoop(false);
 				matchup->gameResult = result;
@@ -373,12 +374,21 @@ class League {
 		std::cout.flush();
 		std::vector<School::Matchup*>& weekLineup = schedule[week];
 		for (auto& matchup : weekLineup) {
+			if (matchup->gameResult.homeStats != nullptr) continue;
 			GamePlayer game(matchup->away, matchup->home);
 			GameResult result = game.startRealTimeGameLoop(false);
 			matchup->gameResult = result;
 		}
 		std::cout << "done." << std::endl;
 		week++;
+		if (week >= 3) rankTeams();
+	}
+
+	void playOneGame(int matchupIndex) {
+		School::Matchup* matchup = schedule[week][matchupIndex];
+		GamePlayer game(matchup->away, matchup->home);
+		GameResult result = game.startRealTimeGameLoop(true);
+		matchup->gameResult = result;
 	}
 
 	void rankTeams() {
@@ -387,6 +397,9 @@ class League {
 			for (auto& school : allSchools) { school->updatePrivateRating(); }
 			for (auto& school : allSchools) { school->publishPrivateRating(); }
 		}
+		SortByPublicRating sbr;
+		std::sort(allSchools.begin(), allSchools.end(), sbr);
+		for (int i = 0; i < (int)allSchools.size(); i++) { allSchools[i]->setRanking(i + 1); }
 	}
 
 	School* findSchoolByName(std::string schoolName) {
@@ -436,23 +449,45 @@ class League {
 		}
 	}
 
-	void printSchoolGameStats(std::string schoolName, int week) {
+	void printWeekMatchups(int printWeek = -1) {
+		if (printWeek == -1) printWeek = week;
+		std::vector<School::Matchup*> weekLineup = schedule[printWeek];
+		int i = 0;
+		for (auto& matchup : weekLineup) {
+			i++;
+			if (matchup->gameResult.homeStats != nullptr) {
+				printf("%2d) %26s vs. %-26s (%d - %d)\n", i, matchup->away->getRankedName().c_str(),
+					   matchup->home->getRankedName().c_str(),
+					   matchup->gameResult.awayStats->points,
+					   matchup->gameResult.homeStats->points);
+			} else {
+				printf("%2d) %26s vs. %-26s\n", i, matchup->away->getRankedName().c_str(),
+					   matchup->home->getRankedName().c_str());
+			}
+		}
+	}
+
+	TeamStats* printSchoolGameStats(std::string schoolName, int week) {
 		School* school = findSchoolByName(schoolName);
-		if (school == nullptr) return;
+		if (school == nullptr) return nullptr;
 		if (school->getGameResults(week) == nullptr) {
 			std::cout << "Bye week - no game was played." << std::endl;
-			return;
+			return nullptr;
 		}
 		school->getMyStats(week)->printBigStuff();
+		return school->getMyStats(week);
+	}
+
+	bool printGamePlayerStats(TeamStats* stats, int player) {
+		if (player >= (int)(stats->getPlayersRecorded().size())) return false;
+		stats->printPlayerStats(stats->getPlayersRecorded()[player]);
+		return true;
 	}
 
 	void printSchoolsByRanking() {
-		std::vector<School*> sortedSchools = allSchools;
-		SortByPublicRating sbr;
-		std::sort(sortedSchools.begin(), sortedSchools.end(), sbr);
-		for (int i = 0; i < (int)sortedSchools.size(); ++i) {
-			std::cout << "#" << (i + 1) << ". " << sortedSchools[i]->getName() << "  ---  "
-					  << sortedSchools[i]->getPublicRating() << "\n";
+		for (int i = 0; i < 25; ++i) {
+			std::cout << "#" << (i + 1) << ". " << allSchools[i]->getName() << "  ---  "
+					  << allSchools[i]->getPublicRating() << "\n";
 		}
 	}
 
@@ -647,6 +682,25 @@ class League {
 	}
 
 	void simOneWeek() { playOneWeek(); }
+
+	void simOneGame(int gameIndex) {
+		if (schedule[week][gameIndex - 1]->gameResult.homeStats != nullptr) {
+			std::cout << "Error: this game has already been played!" << std::endl;
+		} else {
+			playOneGame(gameIndex - 1);
+		}
+	}
+
+	void simOneGame(std::string schoolName) {
+		int i = 0;
+		for (auto& matchup : schedule[week]) {
+			if (matchup->away->getName() == schoolName || matchup->home->getName() == schoolName) {
+				playOneGame(i);
+				return;
+			}
+			i++;
+		}
+	}
 
 	int getCurrentWeek() { return week + 1; }
 };

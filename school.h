@@ -160,6 +160,7 @@ class School {
 	double simpleRating = 0;
 	double publicRealRating = 0;
 	double privateRealRating = 0;
+	int ranking = -1;
 
 	std::pair<TeamStats*, TeamStats*> getOrderedStats(Matchup* m) {
 		if (this == m->away) {
@@ -176,6 +177,10 @@ class School {
 		schedule.resize(13, nullptr);
 	}
 	std::string getName() { return name; }
+	std::string getRankedName() {
+		if (ranking == -1 || ranking > 25) return getName();
+		return "(#" + std::to_string(ranking) + ") " + getName();
+	}
 	Roster* getRoster() { return &roster; }
 	void assignGame(int week, Matchup* s, bool confGame = true, bool crossConfGame = false) {
 		if (s == nullptr) {
@@ -257,22 +262,29 @@ class School {
 		return (double)yards / games;
 	}
 
+	int getRanking() { return ranking; }
+	void setRanking(int r) { ranking = r; }
+
 	double getPublicRating() { return publicRealRating; }
 
 	void setSimpleRating() {
 		int gamesCounted = 0;
 		simpleRating = 0;
 		for (auto& matchup : schedule) {
-			if (matchup != nullptr) {
+			if (matchup != nullptr && matchup->gameResult.homeStats != nullptr) {
 				gamesCounted++;
 				std::pair<TeamStats*, TeamStats*> stats = getOrderedStats(matchup);
 				int margin = stats.first->points - stats.second->points;
-				// if (margin > 24) margin = 24; else
-				if (margin > 0 && margin < 7) margin = 7;
+				/*if (margin > 24) margin = 24;
+				else if (margin > 0 && margin < 7)
+					margin = 7;
 				else if (margin > -7 && margin < 0)
 					margin = -7;
-				// else if (margin < -24)
-				// margin = -24;
+				else if (margin < -24)
+					margin = -24;*/
+				if (margin > 0) margin += 14;
+				else if (margin < 0)
+					margin -= 14;
 				simpleRating += margin;
 			}
 		}
