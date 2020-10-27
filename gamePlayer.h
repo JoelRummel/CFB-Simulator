@@ -90,8 +90,10 @@ class GamePlayer {
 	};
 
 	std::string clockAsStr() {
-		std::string str =
-			std::to_string((int)std::floor(clock / 60)) + ":" + std::to_string(clock % 60) + " ";
+		int minutes = (int)std::floor(clock / 60);
+		int seconds = clock % 60;
+		std::string str = (minutes < 10 ? " " : "") + std::to_string(minutes) + ":" +
+						  std::to_string(seconds) + (seconds < 10 ? "0 " : " ");
 		str += quarter == 1 ? "1st" : quarter == 2 ? "2nd" : quarter == 3 ? "3rd" : "4th";
 		str += " --- ";
 		return str;
@@ -105,7 +107,7 @@ class GamePlayer {
 
 	void printPlay(std::string msg) {
 		if (!printPlayByPlay) return;
-		std::cout << clockAsStr() << msg << "\n" << std::endl;
+		std::cout << clockAsStr() << msg << std::endl;
 
 		// using namespace std::chrono_literals;  // ns, us, ms, s, h, etc.
 		// using std::chrono::system_clock;
@@ -149,13 +151,13 @@ class GamePlayer {
 	}
 
 	bool countdownClock() {
-		clock -= 30;
+		clock -= 25;
 		if (clock <= 0) {
 			clock = 900;
 			quarter++;
 			if (quarter == 5) { return true; }
 			if (quarter == 3) {
-				printPlay("========== Halftime. ==========");
+				printPlay("\n========== Halftime. ==========\n");
 				flipPossession();
 				yardLine = 75;
 				lineToGain = 65;
@@ -348,6 +350,15 @@ class GamePlayer {
 				offensivePlayer->gameState.action == PASSING ||
 				offensivePlayer->gameState.action == KICKING) {
 				ballCarrier = offensivePlayer;
+				if (ballCarrier->gameState.action == RUSHING) {
+					if (ballCarrier->getPosition() == QB) {
+						printPlay("QB " + ballCarrier->getName() +
+								  " runs with the ball himself...");
+					} else {
+						printPlay(positionToStr(ballCarrier->getPosition()) + " " +
+								  ballCarrier->getName() + " takes the handoff...");
+					}
+				}
 				break;
 			}
 		}
@@ -490,9 +501,9 @@ class GamePlayer {
 
 			if (ballCarrier->gameState.action == RUSHING) {
 				ballCarrier->gameState.tick++;
-				if (ballCarrier->getRating(SPEED) > (std::rand() % 150))
+				if (ballCarrier->getRating(SPEED) > (std::rand() % 175))
 					ballCarrier->gameState.tick++;
-				if (ballCarrier->gameState.zone == BACKFIELD && ballCarrier->gameState.tick >= 15) {
+				if (ballCarrier->gameState.zone == BACKFIELD && ballCarrier->gameState.tick >= 17) {
 					ballCarrier->gameState.zone = LINE;
 				}
 			}
@@ -595,9 +606,9 @@ class GamePlayer {
 						double compositeCoverRating = 0;
 						for (int i = 0; i < (int)coveredBy.size(); ++i)
 							compositeCoverRating += coveredBy[i]->getRating(PASSCOVER) / (i + 1);
-						compositeCoverRating *= 0.75;
+						compositeCoverRating *= 0.6;
 						receiver->gameState.coverRating = compositeCoverRating;
-						int clashPosition = (receiver->getRating(GETTINGOPEN) * 0.75) -
+						int clashPosition = std::round(receiver->getRating(GETTINGOPEN) * 0.6) -
 											std::round(compositeCoverRating) + 40;
 						clashPosition += std::rand() % 55;
 						if (clashPosition < 10) clashPosition = 10;
@@ -692,8 +703,8 @@ class GamePlayer {
 								if (target->gameState.zone == MIDDLE) penaltyFactor = 0.9;
 								if (target->gameState.zone == DEEP) penaltyFactor = 0.75;
 								// missed throw?
-								if (std::rand() % 115 > 75 + (ballCarrier->getRating(PASSACCURACY) *
-															  0.25 * penaltyFactor)) {
+								if (std::rand() % 115 > 80 + (ballCarrier->getRating(PASSACCURACY) *
+															  0.2 * penaltyFactor)) {
 									Player* interceptor =
 										*select_randomly(coverers.begin(), coverers.end());
 									if (std::rand() % 300 < interceptor->getRating(CATCH) * 0.5) {
