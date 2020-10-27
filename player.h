@@ -201,7 +201,7 @@ class Player {
 	void advanceTick() {
 		assert(!(position == WR && gameState.zone == BACKFIELD));
 		gameState.tick++;
-		if (std::rand() % 250 < getRating()) gameState.tick++;
+		if (std::rand() % 250 < getRating(SPEED)) gameState.tick++;
 
 		if ((gameState.action == RUNNINGSHORT && gameState.zone == LINE && gameState.tick >= 4)) {
 			gameState.tick = 0;
@@ -225,7 +225,8 @@ class Player {
 Player playerFactory(Position p, int y, int prestige) {
 	std::string name = *select_randomly(FIRST_NAMES.begin(), FIRST_NAMES.end());
 	name += " " + *select_randomly(LAST_NAMES.begin(), LAST_NAMES.end());
-	int rating = 30 + std::round(((std::rand() % 30) + ((y - 1) * 5)) * (prestige * 0.2222));
+	int rating = 30 + std::round(((RNG::randomNumberNormalDist(15, 5)) + ((y - 1) * 5)) *
+								 (prestige * 0.2222));
 	// if (p == LB) rating = 40;
 	double potential = ((std::rand() % 100) + 50) / 100;
 
