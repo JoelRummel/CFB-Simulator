@@ -26,31 +26,9 @@ class GamePlayer {
 
 	bool printPlayByPlay = false;
 
-	enum PlayType {
-		OUTSIDERUN,
-		INSIDERUN,
-		DRAW,
-		PLAYACTION,
-		HAILMARY,
-		PASS,
-		KICK,
-		PUNT,
-		KICKOFF,
-		ONSIDEKICK
-	};
+	enum PlayType { OUTSIDERUN, INSIDERUN, DRAW, PLAYACTION, HAILMARY, PASS, KICK, PUNT, KICKOFF, ONSIDEKICK };
 
-	enum OffensiveFormation {
-		WR3TE1,
-		TE2_SPLIT,
-		TE2_STRONG,
-		GOALLINE,
-		TWINBACKS,
-		WR4,
-		EMPTY_5WR,
-		EMPTY_4WR,
-		PUNTFORM,
-		KICKFG
-	};
+	enum OffensiveFormation { WR3TE1, TE2_SPLIT, TE2_STRONG, GOALLINE, TWINBACKS, WR4, EMPTY_5WR, EMPTY_4WR, PUNTFORM, KICKFG };
 
 	// This MUST MATCH UP with the order of the OffensiveFormation enum!
 	const std::vector<std::vector<Needs>> OffensivePersonnel {
@@ -76,9 +54,7 @@ class GamePlayer {
 		  Needs { OL, 5 }, Needs { K, 1 }, Needs { QB, 1 }, Needs { TE, 2 }, Needs { HB, 2 } }
 	};
 
-	const std::vector<std::vector<Needs>> DefensivePersonnel {
-		{ Needs { DL, 4 }, Needs { LB, 3 }, Needs { CB, 2 }, Needs { S, 2 } }
-	};
+	const std::vector<std::vector<Needs>> DefensivePersonnel { { Needs { DL, 4 }, Needs { LB, 3 }, Needs { CB, 2 }, Needs { S, 2 } } };
 
 	struct PlayResult {
 		Player* carrier;
@@ -92,8 +68,7 @@ class GamePlayer {
 	std::string clockAsStr() {
 		int minutes = (int)std::floor(clock / 60);
 		int seconds = clock % 60;
-		std::string str = (minutes < 10 ? " " : "") + std::to_string(minutes) + ":" +
-						  std::to_string(seconds) + (seconds < 10 ? "0 " : " ");
+		std::string str = (minutes < 10 ? " " : "") + std::to_string(minutes) + ":" + std::to_string(seconds) + (seconds < 10 ? "0 " : " ");
 		str += quarter == 1 ? "1st" : quarter == 2 ? "2nd" : quarter == 3 ? "3rd" : "4th";
 		str += " --- ";
 		return str;
@@ -129,15 +104,13 @@ class GamePlayer {
 		std::string suffix = down == 1 ? "st" : down == 2 ? "nd" : down == 3 ? "rd" : "th";
 		int toGo = yardLine - lineToGain;
 		std::string secondPart = lineToGain > 0 ? std::to_string(toGo) : "Goal";
-		printPlay(std::to_string(down) + suffix + " and " + secondPart + ". Ball at the " +
-				  yardLineAsStr());
+		printPlay(std::to_string(down) + suffix + " and " + secondPart + ". Ball at the " + yardLineAsStr());
 	}
 
 	PlayType decidePlay() {
 		// if (true) return INSIDERUN;
 		// if (down == 4) { return yardLine > 40 ? PUNT : KICK; }
-		if (down == 3 && yardLine - lineToGain > 5)
-			return (std::rand() % 100 < 90 ? PASS : INSIDERUN);
+		if (down == 3 && yardLine - lineToGain > 5) return (std::rand() % 100 < 90 ? PASS : INSIDERUN);
 		if (down == 4) {
 			int fgDistance = yardLine + 17;
 			if (fgDistance > 50) {
@@ -181,13 +154,11 @@ class GamePlayer {
 			return forms[RNG::randomWeightedIndex(std::vector<double> { 10, 10, 13, 7, 5 })];
 		}
 		if (play == INSIDERUN) {
-			const OffensiveFormation forms[7] = { TWINBACKS, TE2_SPLIT, TE2_STRONG, WR3TE1,
-												  WR4,       EMPTY_4WR, EMPTY_5WR };
+			const OffensiveFormation forms[7] = { TWINBACKS, TE2_SPLIT, TE2_STRONG, WR3TE1, WR4, EMPTY_4WR, EMPTY_5WR };
 			return forms[RNG::randomWeightedIndex(std::vector<double> { 8, 12, 10, 8, 5, 3, 2 })];
 		}
 		if (play == PASS) {
-			const OffensiveFormation forms[7] = { TWINBACKS, TE2_SPLIT, TE2_STRONG, WR3TE1,
-												  WR4,       EMPTY_4WR, EMPTY_5WR };
+			const OffensiveFormation forms[7] = { TWINBACKS, TE2_SPLIT, TE2_STRONG, WR3TE1, WR4, EMPTY_4WR, EMPTY_5WR };
 			return forms[RNG::randomWeightedIndex(std::vector<double> { 4, 4, 3, 10, 9, 7, 7 })];
 		}
 		return WR3TE1;
@@ -203,17 +174,15 @@ class GamePlayer {
 			breakRating = (ballCarrier->getRating(SPEED) + ballCarrier->getRating(BREAKTACKLE)) / 2;
 			tackleRating = (tackler->getRating(SPEED) + tackler->getRating(TACKLE)) / 2;
 		} else {
-			breakRating =
-				(ballCarrier->getRating(STRENGTH) + ballCarrier->getRating(BREAKTACKLE)) / 2;
+			breakRating = (ballCarrier->getRating(STRENGTH) + ballCarrier->getRating(BREAKTACKLE)) / 2;
 			tackleRating = (tackler->getRating(STRENGTH) + tackler->getRating(BREAKTACKLE)) / 2;
 		}
 		int factor = std::round(0.2 * (breakRating - tackleRating)) + 35;
 		//(tackleRating * tacklerMod) - (breakRating * (ballCarrier->gameState.energy / 100));
 		bool tackled = (std::rand() % 100) > factor;
 		if (tackled)
-			printPlay(positionToStr(ballCarrier->getPosition()) + " " + ballCarrier->getName() +
-					  " tackled by " + positionToStr(tackler->getPosition()) + " " +
-					  tackler->getName());
+			printPlay(positionToStr(ballCarrier->getPosition()) + " " + ballCarrier->getName() + " tackled by " +
+					  positionToStr(tackler->getPosition()) + " " + tackler->getName());
 		else
 			ballCarrier->gameState.energy -= 15;
 		return tackled;
@@ -237,14 +206,12 @@ class GamePlayer {
 	int getYardsFromCatch(Player* catcher) {
 		if (catcher->gameState.zone == DEEP) return RNG::randomNumberNormalDist(25, 8);
 		if (catcher->gameState.zone == MIDDLE) return RNG::randomNumberNormalDist(10, 2);
-		if (catcher->gameState.zone == SHORTLEFT || catcher->gameState.zone == SHORTRIGHT)
-			return RNG::randomNumberNormalDist(4, 1);
+		if (catcher->gameState.zone == SHORTLEFT || catcher->gameState.zone == SHORTRIGHT) return RNG::randomNumberNormalDist(4, 1);
 		std::cout << "ERR: invalid catcher zone: " << catcher->gameState.zone << std::endl;
 		assert(false);
 	}
 
-	std::pair<std::vector<Player*>, std::vector<Player*>> applyFormation(OffensiveFormation form,
-																		 PlayType play) {
+	std::pair<std::vector<Player*>, std::vector<Player*>> applyFormation(OffensiveFormation form, PlayType play) {
 		std::vector<Player*> offOnField = offense->getElevenMen(OffensivePersonnel[form]);
 		std::vector<Player*> defOnField = defense->getElevenMen(DefensivePersonnel[0]);
 		int wrCounter = 0; // used to spread out the WRs
@@ -255,8 +222,7 @@ class GamePlayer {
 			if (offPos == OL) {
 				offOnField[i]->gameState.target = defOnField[i % 4];
 				offOnField[i]->gameState.zone = LINE;
-				offOnField[i]->gameState.action =
-					(play == INSIDERUN || play == OUTSIDERUN) ? RUNBLOCKING : PASSBLOCKING;
+				offOnField[i]->gameState.action = (play == INSIDERUN || play == OUTSIDERUN) ? RUNBLOCKING : PASSBLOCKING;
 			}
 			if (offPos == QB || offPos == HB || offPos == K || offPos == P) {
 				if (offPos == HB) hbCounter++;
@@ -264,16 +230,13 @@ class GamePlayer {
 				if (play == INSIDERUN || play == OUTSIDERUN) {
 					if (offPos == QB) {
 						offOnField[i]->gameState.action = HANDINGOFF;
-						if (form == EMPTY_4WR || form == EMPTY_5WR)
-							offOnField[i]->gameState.action = RUSHING;
+						if (form == EMPTY_4WR || form == EMPTY_5WR) offOnField[i]->gameState.action = RUSHING;
 					} else if (offPos == HB)
 						offOnField[i]->gameState.action = hbCounter == 1 ? RUSHING : RUNBLOCKING;
 				} else {
-					if (offPos == QB)
-						offOnField[i]->gameState.action = play == PASS ? PASSING : HANDINGOFF;
+					if (offPos == QB) offOnField[i]->gameState.action = play == PASS ? PASSING : HANDINGOFF;
 					else if (offPos == HB) {
-						offOnField[i]->gameState.action =
-							(std::rand() % 100 < 60) ? RUNNINGMIDDLE : PASSBLOCKING;
+						offOnField[i]->gameState.action = (std::rand() % 100 < 60) ? RUNNINGMIDDLE : PASSBLOCKING;
 					} else
 						offOnField[i]->gameState.action = KICKING;
 				}
@@ -281,11 +244,8 @@ class GamePlayer {
 			if (offPos == TE) {
 				if (play == PASS) {
 					const Action a[3] = { PASSBLOCKING, RUNNINGMIDDLE, RUNNINGDEEP };
-					offOnField[i]->gameState.action =
-						a[RNG::randomWeightedIndex(std::vector<double> { 8, 13, 6 })];
-					if (offOnField[i]->gameState.action == PASSBLOCKING) {
-						offOnField[i]->gameState.target = defOnField[std::rand() % 4];
-					}
+					offOnField[i]->gameState.action = a[RNG::randomWeightedIndex(std::vector<double> { 8, 13, 6 })];
+					if (offOnField[i]->gameState.action == PASSBLOCKING) { offOnField[i]->gameState.target = defOnField[std::rand() % 4]; }
 				} else {
 					offOnField[i]->gameState.action = RUNBLOCKING;
 					offOnField[i]->gameState.target = defOnField[i - 2];
@@ -311,8 +271,7 @@ class GamePlayer {
 					offOnField[i]->gameState.zone = SHORTRIGHT;
 				if (play == PASS) {
 					const Action a[3] = { RUNNINGSHORT, RUNNINGMIDDLE, RUNNINGDEEP };
-					offOnField[i]->gameState.action =
-						a[RNG::randomWeightedIndex(std::vector<double> { 6, 7, 13 })];
+					offOnField[i]->gameState.action = a[RNG::randomWeightedIndex(std::vector<double> { 6, 7, 13 })];
 				} else {
 					offOnField[i]->gameState.action = RUNBLOCKING;
 					offOnField[i]->gameState.zone = MIDDLE;
@@ -330,8 +289,7 @@ class GamePlayer {
 				defOnField[i]->gameState.action = COVERING;
 				defOnField[i]->gameState.target = offOnField[i + 2];
 				defOnField[i]->gameState.zone = offOnField[i + 2]->gameState.zone;
-				if (offOnField[i + 2]->gameState.zone == BACKFIELD)
-					defOnField[i]->gameState.zone = MIDDLE;
+				if (offOnField[i + 2]->gameState.zone == BACKFIELD) defOnField[i]->gameState.zone = MIDDLE;
 			} else {
 				defOnField[i]->gameState.action = ZONECOVERING;
 				defOnField[i]->gameState.zone = DEEP;
@@ -346,17 +304,14 @@ class GamePlayer {
 		Player* ballCarrier;
 		Player* passerMemory = nullptr;
 		for (auto offensivePlayer : field.first) {
-			if (offensivePlayer->gameState.action == RUSHING ||
-				offensivePlayer->gameState.action == PASSING ||
+			if (offensivePlayer->gameState.action == RUSHING || offensivePlayer->gameState.action == PASSING ||
 				offensivePlayer->gameState.action == KICKING) {
 				ballCarrier = offensivePlayer;
 				if (ballCarrier->gameState.action == RUSHING) {
 					if (ballCarrier->getPosition() == QB) {
-						printPlay("QB " + ballCarrier->getName() +
-								  " runs with the ball himself...");
+						printPlay("QB " + ballCarrier->getName() + " runs with the ball himself...");
 					} else {
-						printPlay(positionToStr(ballCarrier->getPosition()) + " " +
-								  ballCarrier->getName() + " takes the handoff...");
+						printPlay(positionToStr(ballCarrier->getPosition()) + " " + ballCarrier->getName() + " takes the handoff...");
 					}
 				}
 				break;
@@ -369,10 +324,10 @@ class GamePlayer {
 			odds += 80 + (20 * accFactor);
 			printPlay("K " + ballCarrier->getName() + " goes out for the field goal...");
 			if (std::rand() % 100 < odds) {
-				printPlay("The kick is good!");
 				if (homePossession) homePoints += 3;
 				else
 					awayPoints += 3;
+				printPlay("The kick is good! " + scoreString());
 				flipPossession();
 				yardLine = 75;
 				lineToGain = 65;
@@ -387,8 +342,8 @@ class GamePlayer {
 			yds += RNG::randomNumberNormalDist(0, 3);
 			if (yds > yardLine) yds = yardLine;
 			yardLine -= yds;
-			printPlay("P " + ballCarrier->getName() + " punts the ball " + std::to_string(yds) +
-					  " yards" + (yardLine == 0 ? " for a touchback" : ""));
+			printPlay("P " + ballCarrier->getName() + " punts the ball " + std::to_string(yds) + " yards" +
+					  (yardLine == 0 ? " for a touchback" : ""));
 			if (yardLine == 0) { yardLine = 20; }
 			flipPossession();
 			return { nullptr, nullptr, 0 };
@@ -418,11 +373,9 @@ class GamePlayer {
 					// Blockers should still be ordered by OVR... ideally...
 
 					double compositeBlockerRating = 0;
-					for (int i = 0; i < (int)blockedBy.size(); ++i)
-						compositeBlockerRating += blockedBy[i]->getRating(olr) / (i + 1);
+					for (int i = 0; i < (int)blockedBy.size(); ++i) compositeBlockerRating += blockedBy[i]->getRating(olr) / (i + 1);
 					compositeBlockerRating *= 0.75;
-					int clashPosition =
-						(0.6 * blitzer->getRating(dlr)) - std::round(compositeBlockerRating) + 20;
+					int clashPosition = (0.6 * blitzer->getRating(dlr)) - std::round(compositeBlockerRating) + 20;
 					clashPosition += std::rand() % 55;
 					if (clashPosition < 10) clashPosition = 10;
 					blitzer->gameState.clash = clashPosition;
@@ -453,12 +406,10 @@ class GamePlayer {
 					// Nobody blocking me currently. Find someone
 					for (auto blocker : blockers) {
 						if (blocker->gameState.action == RUNBLOCKING ||
-							blocker->gameState.action == PASSBLOCKING &&
-								blocker->gameState.target == nullptr) {
+							blocker->gameState.action == PASSBLOCKING && blocker->gameState.target == nullptr) {
 							blockedBy = blocker;
 							blocker->gameState.target = blitzer;
-							int clashPosition = (blitzer->getRating(dlr) * 0.6) -
-												std::round(blocker->getRating(olr) * 0.75) + 20;
+							int clashPosition = (blitzer->getRating(dlr) * 0.6) - std::round(blocker->getRating(olr) * 0.75) + 20;
 							clashPosition += std::rand() % 50;
 							if (clashPosition < 10) clashPosition = 10;
 							blitzer->gameState.clash = clashPosition;
@@ -466,24 +417,22 @@ class GamePlayer {
 					}
 					if (blockedBy == nullptr) {
 						// Attempt sack/TFL
-						if (play == PASS &&
-							std::rand() % 200 < ballCarrier->getRating(PASSVISION)) {
-							printPlay("QB " + ballCarrier->getName() +
-									  " gets pressured and throws the ball away.");
+						if (play == PASS && std::rand() % 200 < ballCarrier->getRating(PASSVISION)) {
+							printPlay("QB " + ballCarrier->getName() + " gets pressured and throws the ball away.");
 							return PlayResult { ballCarrier, nullptr, 0, passerMemory };
 						}
 						if (engageTackler(ballCarrier, blitzer)) {
 							if (ballCarrier->gameState.action == PASSING) {
 								printPlay("That's a sack for the defense!");
 								defStats->recordSack(blitzer);
-								return PlayResult { ballCarrier, blitzer,
-													RNG::randomNumberNormalDist(-6, 1) };
+								return PlayResult { ballCarrier, blitzer, RNG::randomNumberNormalDist(-6, 1) };
 							}
-							return PlayResult { ballCarrier, blitzer,
-												RNG::randomNumberNormalDist(-1, 1) };
+							return PlayResult { ballCarrier, blitzer, RNG::randomNumberNormalDist(-1, 1) };
 						} else {
 							blitzer->gameState.zone = OUTOFPLAY;
 							if (play == PASS) {
+								// depending on the quarterback's capabilities, rush or keep tryina pass (TODO)
+								printPlay("QB " + ballCarrier->getName() + " gets flushed out of the pocket and runs with the ball...");
 								ballCarrier->gameState.action = RUSHING;
 								ballCarrier->gameState.zone = LINE;
 							}
@@ -501,11 +450,8 @@ class GamePlayer {
 
 			if (ballCarrier->gameState.action == RUSHING) {
 				ballCarrier->gameState.tick++;
-				if (ballCarrier->getRating(SPEED) > (std::rand() % 175))
-					ballCarrier->gameState.tick++;
-				if (ballCarrier->gameState.zone == BACKFIELD && ballCarrier->gameState.tick >= 17) {
-					ballCarrier->gameState.zone = LINE;
-				}
+				if (ballCarrier->getRating(SPEED) > (std::rand() % 175)) ballCarrier->gameState.tick++;
+				if (ballCarrier->gameState.zone == BACKFIELD && ballCarrier->gameState.tick >= 17) { ballCarrier->gameState.zone = LINE; }
 			}
 
 			if (ballCarrier->gameState.zone == LINE) {
@@ -517,16 +463,14 @@ class GamePlayer {
 					int worstClash = blitzers[0]->gameState.clash;
 					Player* worstBlitzer = blitzers[0];
 					for (auto blitzer : blitzers) {
-						if (blitzer->gameState.clash < worstClash &&
-							blitzer->gameState.action == BLITZING) {
+						if (blitzer->gameState.clash < worstClash && blitzer->gameState.action == BLITZING) {
 							if (ballCarrier->getRating(RUNVISION) < std::rand() % 120) continue;
 							worstClash = blitzer->gameState.clash;
 							worstBlitzer = blitzer;
 						}
 					}
 					if (engageTackler(ballCarrier, worstBlitzer, worstClash / 100.0)) {
-						return PlayResult { ballCarrier, worstBlitzer,
-											RNG::randomNumberNormalDist(4, 1) };
+						return PlayResult { ballCarrier, worstBlitzer, RNG::randomNumberNormalDist(4, 1) };
 					}
 					ballCarrier->gameState.zone = MIDDLE;
 				}
@@ -539,22 +483,16 @@ class GamePlayer {
 				for (auto blitzer : blitzers) {
 					if (blitzer->gameState.target == ballCarrier)
 						if (engageTackler(ballCarrier, blitzer))
-							return PlayResult { ballCarrier, blitzer,
-												RNG::randomNumberNormalDist(7, 2), passerMemory,
-												true };
+							return PlayResult { ballCarrier, blitzer, RNG::randomNumberNormalDist(7, 2), passerMemory, true };
 				}
 				// chance to get tackled by other middle defenders
 				for (auto blitzer : blitzers) {
 					// do a mini-clash
 					int diff = 50;
-					if (blitzer->gameState.target != nullptr)
-						diff = blitzer->getRating(RUNSTOP) -
-							   blitzer->gameState.target->getRating(RUNBLOCK);
+					if (blitzer->gameState.target != nullptr) diff = blitzer->getRating(RUNSTOP) - blitzer->gameState.target->getRating(RUNBLOCK);
 					if (std::rand() % 100 < 50 + diff)
 						if (engageTackler(ballCarrier, blitzer))
-							return PlayResult { ballCarrier, blitzer,
-												RNG::randomNumberNormalDist(7, 2), passerMemory,
-												true };
+							return PlayResult { ballCarrier, blitzer, RNG::randomNumberNormalDist(7, 2), passerMemory, true };
 				}
 				ballCarrier->gameState.zone = DEEP;
 			}
@@ -564,18 +502,13 @@ class GamePlayer {
 				for (auto blitzer : blitzers) {
 					// do a mini-clash
 					int diff = 50;
-					if (blitzer->gameState.target != nullptr)
-						diff = blitzer->getRating(RUNSTOP) -
-							   blitzer->gameState.target->getRating(RUNBLOCK);
+					if (blitzer->gameState.target != nullptr) diff = blitzer->getRating(RUNSTOP) - blitzer->gameState.target->getRating(RUNBLOCK);
 					if (std::rand() % 100 < 50 + diff)
 						if (engageTackler(ballCarrier, blitzer)) {
-							return PlayResult { ballCarrier, blitzer,
-												RNG::randomNumberNormalDist(15, 4), passerMemory,
-												true };
+							return PlayResult { ballCarrier, blitzer, RNG::randomNumberNormalDist(15, 4), passerMemory, true };
 						}
 				}
-				return PlayResult { ballCarrier, nullptr, 100, passerMemory,
-									true }; // touchdown bitches
+				return PlayResult { ballCarrier, nullptr, 100, passerMemory, true }; // touchdown bitches
 			}
 
 			for (Player* receiver : field.first) {
@@ -588,8 +521,7 @@ class GamePlayer {
 					// first, assign a zone defender w/ no target
 					std::vector<Player*> coveredBy;
 					for (auto defender : getPlayersInZone(field.second, receiver->gameState.zone)) {
-						if (defender->gameState.target == nullptr &&
-							defender->gameState.action == ZONECOVERING) {
+						if (defender->gameState.target == nullptr && defender->gameState.action == ZONECOVERING) {
 							defender->gameState.target = receiver;
 							break;
 						}
@@ -604,12 +536,10 @@ class GamePlayer {
 						receiver->gameState.clash = 75;
 					} else {
 						double compositeCoverRating = 0;
-						for (int i = 0; i < (int)coveredBy.size(); ++i)
-							compositeCoverRating += coveredBy[i]->getRating(PASSCOVER) / (i + 1);
+						for (int i = 0; i < (int)coveredBy.size(); ++i) compositeCoverRating += coveredBy[i]->getRating(PASSCOVER) / (i + 1);
 						compositeCoverRating *= 0.6;
 						receiver->gameState.coverRating = compositeCoverRating;
-						int clashPosition = std::round(receiver->getRating(GETTINGOPEN) * 0.6) -
-											std::round(compositeCoverRating) + 40;
+						int clashPosition = std::round(receiver->getRating(GETTINGOPEN) * 0.6) - std::round(compositeCoverRating) + 40;
 						clashPosition += std::rand() % 55;
 						if (clashPosition < 10) clashPosition = 10;
 						receiver->gameState.clash = clashPosition;
@@ -645,10 +575,8 @@ class GamePlayer {
 					RNG::shuffle(receiversDeep);
 					RNG::shuffle(receiversMiddle);
 					RNG::shuffle(receiversShort);
-					receiversDeep.insert(receiversDeep.end(), receiversMiddle.begin(),
-										 receiversMiddle.end());
-					receiversDeep.insert(receiversDeep.end(), receiversShort.begin(),
-										 receiversShort.end());
+					receiversDeep.insert(receiversDeep.end(), receiversMiddle.begin(), receiversMiddle.end());
+					receiversDeep.insert(receiversDeep.end(), receiversShort.begin(), receiversShort.end());
 
 					for (auto target : receiversDeep) {
 						int apparentOpenness = target->gameState.clash;
@@ -662,36 +590,29 @@ class GamePlayer {
 							std::string passDesc = "short";
 							if (target->gameState.zone == MIDDLE) passDesc = "medium";
 							if (target->gameState.zone == DEEP) passDesc = "deep";
-							printPlay("QB " + ballCarrier->getName() + " throws a " + passDesc +
-									  " pass to " + positionToStr(target->getPosition()) + " " +
-									  target->getName() + "...");
+							printPlay("QB " + ballCarrier->getName() + " throws a " + passDesc + " pass to " + positionToStr(target->getPosition()) +
+									  " " + target->getName() + "...");
 							// now see if the QB accurately read the receiver's openness
 							if (target->gameState.clash < 75) {
 								// nope sorry!
 								// slim chance for the receiver to bail out the QB
 								if (((std::rand() % 200) + 30) < target->getRating(CATCH)) {
-									printPlay(
-										"The receiver was covered but he still came down with "
-										"the ball!");
+									printPlay("The receiver was covered but he still came down with "
+											  "the ball!");
 									// get arbitrary defender w/ receiver as target
 									Player* tackler;
 									for (auto player : field.second)
 										if (player->gameState.target == target) tackler = player;
-									return PlayResult { target, tackler, getYardsFromCatch(target),
-														ballCarrier, true };
+									return PlayResult { target, tackler, getYardsFromCatch(target), ballCarrier, true };
 								} else {
 									// moderate chance for an interception...
-									Player* interceptor =
-										*select_randomly(coverers.begin(), coverers.end());
+									Player* interceptor = *select_randomly(coverers.begin(), coverers.end());
 									if (std::rand() % 200 < interceptor->getRating(CATCH) * 0.5) {
-										printPlay(
-											positionToStr(interceptor->getPosition()) + " " +
-											interceptor->getName() +
-											" had the receiver covered and intercepted the ball!");
+										printPlay(positionToStr(interceptor->getPosition()) + " " + interceptor->getName() +
+												  " had the receiver covered and intercepted the ball!");
 										yardLine -= getYardsFromCatch(target);
 										if (yardLine <= 0) yardLine = 20;
-										return PlayResult { interceptor, nullptr, 0,
-															ballCarrier, false,   true };
+										return PlayResult { interceptor, nullptr, 0, ballCarrier, false, true };
 									}
 									printPlay("Incomplete - the receiver was covered up.");
 									return PlayResult { target, nullptr, 0, ballCarrier };
@@ -703,41 +624,31 @@ class GamePlayer {
 								if (target->gameState.zone == MIDDLE) penaltyFactor = 0.9;
 								if (target->gameState.zone == DEEP) penaltyFactor = 0.75;
 								// missed throw?
-								if (std::rand() % 115 > 80 + (ballCarrier->getRating(PASSACCURACY) *
-															  0.2 * penaltyFactor)) {
-									Player* interceptor =
-										*select_randomly(coverers.begin(), coverers.end());
+								if (std::rand() % 115 > 80 + (ballCarrier->getRating(PASSACCURACY) * 0.2 * penaltyFactor)) {
+									Player* interceptor = *select_randomly(coverers.begin(), coverers.end());
 									if (std::rand() % 300 < interceptor->getRating(CATCH) * 0.5) {
-										printPlay("The QB was off-target and " +
-												  positionToStr(interceptor->getPosition()) + " " +
-												  interceptor->getName() +
-												  " intercepted the ball!");
+										printPlay("The QB was off-target and " + positionToStr(interceptor->getPosition()) + " " +
+												  interceptor->getName() + " intercepted the ball!");
 										yardLine -= getYardsFromCatch(target);
 										if (yardLine <= 0) yardLine = 20;
-										return PlayResult { interceptor, nullptr, 0,
-															ballCarrier, false,   true };
+										return PlayResult { interceptor, nullptr, 0, ballCarrier, false, true };
 									}
 									printPlay("Incomplete - the QB threw an inaccurate ball.");
 									return PlayResult { target, nullptr, 0, ballCarrier };
 								}
 								// deflected ball?
 								if (std::rand() % 150 < 0.5 * target->gameState.coverRating) {
-									Player* interceptor =
-										*select_randomly(coverers.begin(), coverers.end());
+									Player* interceptor = *select_randomly(coverers.begin(), coverers.end());
 									if (std::rand() % 300 < interceptor->getRating(CATCH) * 0.5) {
-										printPlay(positionToStr(interceptor->getPosition()) + " " +
-												  interceptor->getName() +
+										printPlay(positionToStr(interceptor->getPosition()) + " " + interceptor->getName() +
 												  " made a play on the ball and intercepted it!");
 										yardLine -= getYardsFromCatch(target);
 										if (yardLine <= 0) yardLine = 20;
-										return PlayResult { interceptor, nullptr, 0,
-															ballCarrier, false,   true };
+										return PlayResult { interceptor, nullptr, 0, ballCarrier, false, true };
 									}
-									printPlay(
-										"Incomplete - the pass was deflected by the defense.");
+									printPlay("Incomplete - the pass was deflected by the defense.");
 									// pick random defender to award the pass defense to
-									defStats->recordPassDefense(
-										*select_randomly(coverers.begin(), coverers.end()));
+									defStats->recordPassDefense(*select_randomly(coverers.begin(), coverers.end()));
 									return PlayResult { target, nullptr, 0, ballCarrier };
 								}
 								if (std::rand() % 100 > 70 + target->getRating(CATCH) * 0.3) {
@@ -755,24 +666,19 @@ class GamePlayer {
 								for (auto defender : field.second) {
 									if (defender->gameState.target == ballCarrier) {
 										if (engageTackler(ballCarrier, defender, 0.8)) {
-											return PlayResult { ballCarrier, defender,
-																getYardsFromCatch(ballCarrier),
-																passerMemory, true };
+											return PlayResult { ballCarrier, defender, getYardsFromCatch(ballCarrier), passerMemory, true };
 										}
 									}
 								}
 								// successfully broke all tackles
 								Zone z = ballCarrier->gameState.zone;
-								if (z == SHORTLEFT || z == SHORTRIGHT)
-									ballCarrier->gameState.zone = MIDDLE;
+								if (z == SHORTLEFT || z == SHORTRIGHT) ballCarrier->gameState.zone = MIDDLE;
 								else if (z == MIDDLE)
 									ballCarrier->gameState.zone = DEEP;
 								else if (z == DEEP)
-									return PlayResult { ballCarrier, nullptr, 100, passerMemory,
-														true };
+									return PlayResult { ballCarrier, nullptr, 100, passerMemory, true };
 								else {
-									std::cout << "ERR: invalid receiver zone: "
-											  << ballCarrier->gameState.zone << std::endl;
+									std::cout << "ERR: invalid receiver zone: " << ballCarrier->gameState.zone << std::endl;
 									assert(false);
 								}
 								break; // lmao weird bugs happen without this
@@ -787,8 +693,7 @@ class GamePlayer {
 	bool gainYards(int yards) {
 		if (yards == 0) printPlay("No gain on the play");
 		else
-			printPlay(std::to_string(std::abs(yards)) + " yard " + (yards < 0 ? "loss" : "gain") +
-					  " on the play");
+			printPlay(std::to_string(std::abs(yards)) + " yard " + (yards < 0 ? "loss" : "gain") + " on the play");
 		yardLine -= yards;
 		if (yardLine <= 0) return true;
 		down++;
@@ -828,22 +733,25 @@ class GamePlayer {
 			}
 
 			if (!result.intercepted && gainYards(gain)) {
-				printPlay("TOUCHDOWN!");
-				if (result.thrower != nullptr)
-					offStats->recordPassingTD(result.thrower, result.carrier);
+				if (result.thrower != nullptr) offStats->recordPassingTD(result.thrower, result.carrier);
 				else
 					offStats->recordRushingTD(result.carrier);
 				if (homePossession) homePoints += 7;
 				else
 					awayPoints += 7;
+				yardLine = 25;
+				lineToGain = 15;
+				printPlay("TOUCHDOWN! " + scoreString());
 				flipPossession();
-				yardLine = 75;
-				lineToGain = 65;
 			}
 		}
 
 		printStatus();
 		gameLoop();
+	}
+
+	std::string scoreString() {
+		return "The score is " + away->getName() + ": " + std::to_string(awayPoints) + ", " + home->getName() + ": " + std::to_string(homePoints);
 	}
 
   public:
@@ -865,16 +773,15 @@ class GamePlayer {
 	GameResult startRealTimeGameLoop(bool playByPlay) {
 		printPlayByPlay = playByPlay;
 		if (playByPlay)
-			std::cout << "========== " << str_upper(away->getRankedName()) << " vs. "
-					  << str_upper(home->getRankedName()) << " ==========\n\n";
+			std::cout << "========== " << str_upper(away->getRankedName()) << " vs. " << str_upper(home->getRankedName()) << " ==========\n\n";
 		printPlay(away->getName() + " to start with the ball at the " + yardLineAsStr());
 		gameLoop();
 		if (homePossession) std::swap(offStats, defStats);
 		offStats->points = awayPoints;
 		defStats->points = homePoints;
 		if (playByPlay)
-			std::cout << "GAME OVER! Final score is " << away->getName() << ": " << awayPoints
-					  << ", " << home->getName() << ": " << homePoints << "\n";
+			std::cout << "GAME OVER! Final score is " << away->getName() << ": " << awayPoints << ", " << home->getName() << ": " << homePoints
+					  << "\n";
 		return GameResult { offStats, defStats };
 	}
 };
