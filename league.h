@@ -18,7 +18,7 @@ struct SortByPublicRating {
 
 class League {
   private:
-	std::vector<std::vector<School>> conferences; // IMPORTANT: everything actually lives here!
+	std::vector<std::vector<School>> conferences;        // IMPORTANT: everything actually lives here!
 	std::vector<std::vector<School::Matchup*>> schedule; // gets resized to 13
 
 	std::vector<School*> allSchools;
@@ -48,9 +48,7 @@ class League {
 		home->assignGame(week, ptr, confGame, crossConfGame);
 	}
 
-	void assignMatchup(School* away, School* home) {
-		assignMatchup(findLatestOpenWeek(away, home), away, home);
-	}
+	void assignMatchup(School* away, School* home) { assignMatchup(findLatestOpenWeek(away, home), away, home); }
 
 	School* findSchool(Conference conf, std::string name) {
 		for (auto& school : conferences[conf]) {
@@ -61,24 +59,19 @@ class League {
 
 	int findLatestOpenWeek(School* s1, School* s2) {
 		for (int week = 12; week >= 0; --week) {
-			if (s1->getScheduledOpponent(week) == nullptr &&
-				s2->getScheduledOpponent(week) == nullptr)
-				return week;
+			if (s1->getScheduledOpponent(week) == nullptr && s2->getScheduledOpponent(week) == nullptr) return week;
 		}
 		return -1;
 	}
 
 	int findEarliestOpenWeek(School* s1, School* s2) {
 		for (int week = 0; week < 13; ++week) {
-			if (s1->getScheduledOpponent(week) == nullptr &&
-				s2->getScheduledOpponent(week) == nullptr)
-				return week;
+			if (s1->getScheduledOpponent(week) == nullptr && s2->getScheduledOpponent(week) == nullptr) return week;
 		}
 		return -1;
 	}
 
-	void scheduleConferenceGame(School* school, int maxConfGames, bool oppDiv = false,
-								School* exemption = nullptr) {
+	void scheduleConferenceGame(School* school, int maxConfGames, bool oppDiv = false, School* exemption = nullptr) {
 		Conference div = school->getDivision();
 		if (oppDiv) div = getOppositeDivision(div);
 		// first, get all schools within conference who haven't been scheduled w/ this school
@@ -89,9 +82,7 @@ class League {
 				bool good = true;
 				if (oppDiv && choice.getCrossConfGamesScheduled() >= maxConfGames) good = false;
 				if (!oppDiv && choice.getConferenceGamesScheduled() >= maxConfGames) good = false;
-				if (oppDiv &&
-					choice.getCrossConfGamesScheduled() > school->getCrossConfGamesScheduled())
-					good = false;
+				if (oppDiv && choice.getCrossConfGamesScheduled() > school->getCrossConfGamesScheduled()) good = false;
 				if (exemption != nullptr && &choice == exemption) good = false;
 				if (good) validChoices.push_back(&choice);
 			}
@@ -99,17 +90,14 @@ class League {
 		while (validChoices.size() == 0) {
 			assert(oppDiv);
 			for (auto& choice : otherSchools) {
-				if (!school->isOnSchedule(&choice) && findLatestOpenWeek(school, &choice) > -1) {
-					validChoices.push_back(&choice);
-				}
+				if (!school->isOnSchedule(&choice) && findLatestOpenWeek(school, &choice) > -1) { validChoices.push_back(&choice); }
 			}
 			School* delinkTarget = *select_randomly(validChoices.begin(), validChoices.end());
 			validChoices = { delinkTarget };
 			std::vector<School*> victimCandidates;
 			for (int week = 0; week < 13; ++week) {
 				School* candidate = delinkTarget->getScheduledOpponent(week);
-				if (candidate != nullptr &&
-					candidate->getDivision() == getOppositeDivision(delinkTarget->getDivision()))
+				if (candidate != nullptr && candidate->getDivision() == getOppositeDivision(delinkTarget->getDivision()))
 					victimCandidates.push_back(candidate);
 			}
 			School* victim = *select_randomly(victimCandidates.begin(), victimCandidates.end());
@@ -195,14 +183,12 @@ class League {
 							// Protected matchup
 							// lmao kill me
 							std::string opponent = "";
-							std::vector<std::pair<std::string, std::string>> pairings {
-								std::make_pair("Maryland", "Minnesota"),
-								std::make_pair("Michigan", "Wisconsin"),
-								std::make_pair("Michigan State", "Northwestern"),
-								std::make_pair("Ohio State", "Nebraska"),
-								std::make_pair("Penn State", "Iowa"),
-								std::make_pair("Rutgers", "Illinois")
-							};
+							std::vector<std::pair<std::string, std::string>> pairings { std::make_pair("Maryland", "Minnesota"),
+																						std::make_pair("Michigan", "Wisconsin"),
+																						std::make_pair("Michigan State", "Northwestern"),
+																						std::make_pair("Ohio State", "Nebraska"),
+																						std::make_pair("Penn State", "Iowa"),
+																						std::make_pair("Rutgers", "Illinois") };
 							opponent = pickMyPartner(pairings, name);
 							assignMatchup(findSchool(oppDiv, opponent), school);
 						} else
@@ -219,15 +205,13 @@ class League {
 						if (crossConfGames == 0) {
 							// Protected matchup
 							std::string opponent = "";
-							std::vector<std::pair<std::string, std::string>> pairings {
-								std::make_pair("Alabama", "Tennessee"),
-								std::make_pair("Arkansas", "Missouri"),
-								std::make_pair("Auburn", "Georgia"),
-								std::make_pair("LSU", "Florida"),
-								std::make_pair("Mississippi State", "Kentucky"),
-								std::make_pair("Ole Miss", "Vanderbilt"),
-								std::make_pair("Texas A&M", "South Carolina")
-							};
+							std::vector<std::pair<std::string, std::string>> pairings { std::make_pair("Alabama", "Tennessee"),
+																						std::make_pair("Arkansas", "Missouri"),
+																						std::make_pair("Auburn", "Georgia"),
+																						std::make_pair("LSU", "Florida"),
+																						std::make_pair("Mississippi State", "Kentucky"),
+																						std::make_pair("Ole Miss", "Vanderbilt"),
+																						std::make_pair("Texas A&M", "South Carolina") };
 							opponent = pickMyPartner(pairings, name);
 							assignMatchup(findSchool(oppDiv, opponent), school);
 						} else
@@ -246,15 +230,13 @@ class League {
 							// Protected matchup
 							// lmao kill me
 							std::string opponent = "";
-							std::vector<std::pair<std::string, std::string>> pairings {
-								std::make_pair("Boston College", "Virginia Tech"),
-								std::make_pair("Clemson", "Georgia Tech"),
-								std::make_pair("Florida State", "Miami (FL)"),
-								std::make_pair("Louisville", "Virginia"),
-								std::make_pair("North Carolina State", "North Carolina"),
-								std::make_pair("Syracuse", "Pitt"),
-								std::make_pair("Wake Forest", "Duke")
-							};
+							std::vector<std::pair<std::string, std::string>> pairings { std::make_pair("Boston College", "Virginia Tech"),
+																						std::make_pair("Clemson", "Georgia Tech"),
+																						std::make_pair("Florida State", "Miami (FL)"),
+																						std::make_pair("Louisville", "Virginia"),
+																						std::make_pair("North Carolina State", "North Carolina"),
+																						std::make_pair("Syracuse", "Pitt"),
+																						std::make_pair("Wake Forest", "Duke") };
 							opponent = pickMyPartner(pairings, name);
 							assignMatchup(findSchool(oppDiv, opponent), school);
 						} else
@@ -280,27 +262,22 @@ class League {
 						// PAC12 is weird and has weird cross-div scheduling rules
 						School* opponent;
 						std::vector<std::string> choices;
-						if (name == "California" || name == "Stanford" || name == "USC" ||
-							name == "UCLA") {
+						if (name == "California" || name == "Stanford" || name == "USC" || name == "UCLA") {
 							if (crossConfGames < 2) {
 								if (div == PAC12NORTH) choices = { "USC", "UCLA" };
 								else
 									choices = { "California", "Stanford" };
 							} else {
-								if (div == PAC12SOUTH)
-									choices = { "Oregon", "Washington", "Washington State",
-												"Oregon State" };
+								if (div == PAC12SOUTH) choices = { "Oregon", "Washington", "Washington State", "Oregon State" };
 								else
 									choices = { "Utah", "Arizona State", "Colorado", "Arizona" };
 							}
 						} else {
 							// non-cali
 							if (crossConfGames < 3) {
-								if (div == PAC12NORTH)
-									choices = { "Utah", "Arizona State", "Colorado", "Arizona" };
+								if (div == PAC12NORTH) choices = { "Utah", "Arizona State", "Colorado", "Arizona" };
 								else
-									choices = { "Oregon", "Washington", "Washington State",
-												"Oregon State" };
+									choices = { "Oregon", "Washington", "Washington State", "Oregon State" };
 							} else {
 								if (div == PAC12NORTH) choices = { "USC", "UCLA" };
 								else
@@ -318,8 +295,7 @@ class League {
 						// Out-of-conference PAC12
 						scheduleNonConGame(school);
 					}
-				} else if (div == MACEAST || div == MACWEST || div == AACEAST || div == AACWEST ||
-						   div == MWCMOUNTAIN || div == MWCWEST) {
+				} else if (div == MACEAST || div == MACWEST || div == AACEAST || div == AACWEST || div == MWCMOUNTAIN || div == MWCWEST) {
 					if (confGames < 5) {
 						scheduleConferenceGame(school, 5);
 					} else if (crossConfGames < 3) {
@@ -364,8 +340,8 @@ class League {
 		std::cout << "\n";
 		for (auto& school : allSchools) {
 			std::pair<int, int> record = school->getWinLossRecord();
-			std::cout << school->getName() << ": " << record.first << " - " << record.second
-					  << " .... " << school->getAverageOffense() << " yds/avg\n";
+			std::cout << school->getName() << ": " << record.first << " - " << record.second << " .... " << school->getAverageOffense()
+					  << " yds/avg\n";
 		}
 	}
 
@@ -424,11 +400,19 @@ class League {
 		std::cout << "Record: " << winLossRecord.first << " - " << winLossRecord.second;
 		winLossRecord = school->getWinLossRecord(true);
 		std::cout << " (" << winLossRecord.first << " - " << winLossRecord.second << ")\n";
-		for (int week = 0; week < 13; ++week) {
-			std::cout << "--Week " << (week + 1) << ": ";
+		for (int week = 0; week < 16; ++week) {
+			if (week < 13) std::cout << "--Week " << (week + 1) << (week < 9 ? ":  " : ": ");
+			else if (week == 13)
+				std::cout << "--CCG week:   ";
+			else if (week == 14)
+				std::cout << "--Bowl week:  ";
+			else
+				std::cout << "--CFBCG week: ";
 			School::Matchup* m = school->getGameResults(week);
 			if (m == nullptr) {
-				std::cout << "<bye>\n";
+				if (week < 13) std::cout << "<bye>\n";
+				else
+					std::cout << "<not scheduled>\n";
 				continue;
 			}
 			School* opp = pickNotMine(school, m->away, m->home, school);
@@ -456,13 +440,10 @@ class League {
 		for (auto& matchup : weekLineup) {
 			i++;
 			if (matchup->gameResult.homeStats != nullptr) {
-				printf("%2d) %26s vs. %-26s (%d - %d)\n", i, matchup->away->getRankedName().c_str(),
-					   matchup->home->getRankedName().c_str(),
-					   matchup->gameResult.awayStats->points,
-					   matchup->gameResult.homeStats->points);
+				printf("%2d) %26s vs. %-26s (%d - %d)\n", i, matchup->away->getRankedName().c_str(), matchup->home->getRankedName().c_str(),
+					   matchup->gameResult.awayStats->points, matchup->gameResult.homeStats->points);
 			} else {
-				printf("%2d) %26s vs. %-26s\n", i, matchup->away->getRankedName().c_str(),
-					   matchup->home->getRankedName().c_str());
+				printf("%2d) %26s vs. %-26s\n", i, matchup->away->getRankedName().c_str(), matchup->home->getRankedName().c_str());
 			}
 		}
 	}
@@ -486,8 +467,7 @@ class League {
 
 	void printSchoolsByRanking() {
 		for (int i = 0; i < 25; ++i) {
-			std::cout << "#" << (i + 1) << ". " << allSchools[i]->getName() << "  ---  "
-					  << allSchools[i]->getPublicRating() << "\n";
+			std::cout << "#" << (i + 1) << ". " << allSchools[i]->getName() << "  ---  " << allSchools[i]->getPublicRating() << "\n";
 		}
 	}
 
@@ -497,8 +477,14 @@ class League {
 		school->getRoster()->printRoster();
 	}
 
+	void printPositionGroup(std::string schoolName, Position pos) {
+		School* school = findSchoolByName(schoolName);
+		if (school == nullptr) return;
+		school->getRoster()->printPositionGroup(pos);
+	}
+
 	League() {
-		schedule.resize(13); // thirteen total regular season weeks, one bye per team
+		schedule.resize(16); // thirteen total regular season weeks, one bye per team + 2 bowl weeks, 1 CCG week
 
 		conferences.resize(20);
 		std::vector<School>& bigTenEast = conferences[BIGTENEAST];

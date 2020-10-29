@@ -9,9 +9,7 @@
 #include <vector>
 
 struct SortByRating {
-	bool operator()(const Player* p1, const Player* p2) {
-		return (p1->getRating() > p2->getRating());
-	}
+	bool operator()(const Player* p1, const Player* p2) { return (p1->getRating() > p2->getRating()); }
 };
 
 struct Needs {
@@ -33,15 +31,11 @@ class Roster {
 		8 WR
 		34 TOTAL
 		*/
-		std::vector<std::pair<Position, int>> orders { std::make_pair(QB, 4), std::make_pair(HB, 5),
-													   std::make_pair(OL, 14),
-													   std::make_pair(TE, 3),
+		std::vector<std::pair<Position, int>> orders { std::make_pair(QB, 4), std::make_pair(HB, 5), std::make_pair(OL, 14), std::make_pair(TE, 3),
 													   std::make_pair(WR, 8) };
 
 		for (auto order : orders) {
-			for (int i = 0; i < order.second; ++i)
-				roster.push_back(
-					playerFactory(order.first, (std::rand() % 4) + 1, startingPrestige));
+			for (int i = 0; i < order.second; ++i) roster.push_back(playerFactory(order.first, (std::rand() % 4) + 1, startingPrestige));
 		}
 	}
 
@@ -53,14 +47,10 @@ class Roster {
 		5 S
 		29 TOTAL
 		*/
-		std::vector<std::pair<Position, int>> orders { std::make_pair(DL, 10),
-													   std::make_pair(LB, 9), std::make_pair(CB, 5),
-													   std::make_pair(S, 5) };
+		std::vector<std::pair<Position, int>> orders { std::make_pair(DL, 10), std::make_pair(LB, 9), std::make_pair(CB, 5), std::make_pair(S, 5) };
 
 		for (auto order : orders) {
-			for (int i = 0; i < order.second; ++i)
-				roster.push_back(
-					playerFactory(order.first, (std::rand() % 4) + 1, startingPrestige));
+			for (int i = 0; i < order.second; ++i) roster.push_back(playerFactory(order.first, (std::rand() % 4) + 1, startingPrestige));
 		}
 	}
 
@@ -68,9 +58,7 @@ class Roster {
 		std::vector<std::pair<Position, int>> orders { std::make_pair(P, 1), std::make_pair(K, 2) };
 
 		for (auto order : orders) {
-			for (int i = 0; i < order.second; ++i)
-				roster.push_back(
-					playerFactory(order.first, (std::rand() % 4) + 1, startingPrestige));
+			for (int i = 0; i < order.second; ++i) roster.push_back(playerFactory(order.first, (std::rand() % 4) + 1, startingPrestige));
 		}
 	}
 
@@ -136,9 +124,24 @@ class Roster {
 			std::string name = player.getName();
 			std::string posStr = positionToStr(player.getPosition());
 			std::string yearStr = player.getYearString();
-			std::printf("%2d. %-18s%-3s%-11s%-3d\n", num, name.c_str(), posStr.c_str(),
-						yearStr.c_str(), player.getOVR());
+			std::printf("%2d. %-18s%-3s%-11s%-3d\n", num, name.c_str(), posStr.c_str(), yearStr.c_str(), player.getOVR());
 			++num;
+		}
+	}
+
+	void printPositionGroup(Position pos) {
+		// We need to decide relevant statistics
+		std::vector<std::pair<Rating, double>> ratings = getRatingFactors(pos);
+		printf("Name              Year       OVR  ");
+		for (int i = 0; i < ratings.size(); i++) { printf("%-5s", ratingToStr(ratings[i].first).c_str()); }
+		printf("\n---------------------------------");
+		for (int i = 0; i < ratings.size(); i++) printf("-----");
+		printf("\n");
+		for (auto& player : roster) {
+			if (player.getPosition() != pos) continue;
+			printf("%-18s%-11s%-5d", player.getName().c_str(), player.getYearString().c_str(), player.getOVR());
+			for (auto& rating : ratings) { printf("%-5d", player.getRating(rating.first)); }
+			printf("\n");
 		}
 	}
 };

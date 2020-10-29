@@ -174,7 +174,7 @@ class School {
 
 	School(std::string n, int p) : name { n }, prestige { p } {
 		roster.generateRoster(p);
-		schedule.resize(13, nullptr);
+		schedule.resize(16, nullptr);
 	}
 	std::string getName() { return name; }
 	std::string getRankedName() {
@@ -228,8 +228,7 @@ class School {
 				if (confRecord && game->away->getDivision() != game->home->getDivision() &&
 					game->away->getDivision() != getOppositeDivision(game->home->getDivision()))
 					continue;
-				bool awayWon =
-					game->gameResult.awayStats->points > game->gameResult.homeStats->points;
+				bool awayWon = game->gameResult.awayStats->points > game->gameResult.homeStats->points;
 				if (this == game->away && awayWon) {
 					winsLosses.first++;
 				} else if (this == game->home && !awayWon) {
