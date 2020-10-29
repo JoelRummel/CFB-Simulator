@@ -220,6 +220,17 @@ class School {
 		if (m->away == this) return m->home;
 		return m->away;
 	}
+	Matchup* getMatchupAgainst(School* s) {
+		for (auto& m : schedule) {
+			if (m != nullptr && (m->away == s || m->home == s)) { return m; }
+		}
+		return nullptr;
+	}
+	bool didIWinAgainst(School* s) {
+		Matchup* m = getMatchupAgainst(s);
+		if (s == m->away) return m->gameResult.homeStats->points > m->gameResult.awayStats->points;
+		return m->gameResult.awayStats->points > m->gameResult.homeStats->points;
+	}
 	Matchup* getGameResults(int week) { return schedule[week]; }
 	std::pair<int, int> getWinLossRecord(bool confRecord = false) {
 		std::pair<int, int> winsLosses;
