@@ -782,6 +782,6 @@ class GamePlayer {
 		if (playByPlay)
 			std::cout << "GAME OVER! Final score is " << away->getName() << ": " << awayPoints << ", " << home->getName() << ": " << homePoints
 					  << "\n";
-		return GameResult { offStats, defStats };
+		return GameResult { offStats, defStats, awayPoints > homePoints, homePoints >= awayPoints };
 	}
 };

@@ -16,6 +16,27 @@ struct SortByPublicRating {
 	bool operator()(School* a, School* b) { return (a->getPublicRating() > b->getPublicRating()); }
 };
 
+struct SortByConferenceRecord {
+	bool operator()(School* a, School* b) {
+		for (bool v : { true, false }) {
+			std::pair<int, int> r1 = a->getWinLossRecord(v);
+			std::pair<int, int> r2 = b->getWinLossRecord(v);
+			if (r1.first > r2.first) return true;
+			if (r1.first < r2.first) return false;
+			if (r1.second < r2.second) return true;
+			if (r1.second > r2.second) return false;
+
+			if (v) {
+				// Check the direct matchup between schools
+				if (a->didIWinAgainst(b)) return true;
+				if (b->didIWinAgainst(a)) return false;
+			}
+		}
+		// shrug
+		return (a->getPublicRating() > b->getPublicRating());
+	}
+};
+
 class League {
   private:
 	std::vector<std::vector<School>> conferences;        // IMPORTANT: everything actually lives here!
@@ -150,6 +171,85 @@ class League {
 			}
 		}
 		std::cout << "ALERT: FCS team needs to be scheduled for " << school->getName() << "\n";
+	}
+
+	void scheduleConferenceChampionshipGames() {
+		// B1G
+		for (std::vector<Conference> set : { std::vector<Conference> { BIGTENEAST, BIGTENWEST }, std::vector<Conference> { SECEAST, SECWEST },
+											 std::vector<Conference> { ACCATLANTIC, ACCCOASTAL } }) {
+			std::vector<School*> representatives;
+			for (Conference conf : set) {
+				int mostWins = 0;
+				for (auto& school : conferences[conf]) {
+					int schoolWins = school.getWinLossRecord(true).first;
+					if (schoolWins > mostWins) mostWins = schoolWins;
+				}
+				std::vector<School*> tiedSchools;
+				for (auto& school : conferences[conf]) {
+					if (school.getWinLossRecord(true).first == mostWins) tiedSchools.push_back(&school);
+				}
+				if (tiedSchools.size() >= 3) {
+					std::vector<int> wins;
+					for (auto& school : tiedSchools) {
+						int ourWins = 0;
+						for (auto& opponent : tiedSchools) {
+							if (opponent != school && school->didIWinAgainst(opponent)) ourWins++;
+						}
+						wins.push_back(ourWins);
+					}
+					mostWins = 0;
+					for (auto& w : wins)
+						if (w > mostWins) mostWins = w;
+					for (int i = (int)tiedSchools.size() - 1; i >= 0; i--) {
+						if (wins[i] < mostWins) tiedSchools.erase(tiedSchools.begin() + i);
+					}
+				}
+				if (tiedSchools.size() == 2) {
+					if (tiedSchools[0]->didIWinAgainst(tiedSchools[1])) tiedSchools.erase(tiedSchools.begin() + 1);
+					else
+						tiedSchools.erase(tiedSchools.begin());
+				}
+				School* representative = tiedSchools[0];
+				if (tiedSchools.size() > 1) {
+					std::cout << "WARNING - tiebreakers failed for B1G CCG, using random draw\n";
+					representative = *select_randomly(tiedSchools.begin(), tiedSchools.end());
+				}
+				representatives.push_back(representative);
+			}
+			assignMatchup(13, representatives[0], representatives[1]);
+		}
+	}
+
+	void schedulePlayoffs() {
+		std::vector<School*> fourTeams;
+		int i = 0;
+		while (fourTeams.size() < 4) {
+			bool playedATeam = false;
+			for (int j = 0; j < (int)fourTeams.size(); j++) {
+				if (allSchools[i]->getMatchupAgainst(fourTeams[j]) != nullptr) {
+					playedATeam = true;
+					break;
+				}
+			}
+			if (!playedATeam) fourTeams.push_back(allSchools[i]);
+			i++;
+		}
+		assignMatchup(14, fourTeams[3], fourTeams[0]);
+		assignMatchup(14, fourTeams[2], fourTeams[1]);
+	}
+
+	void scheduleFinals() {
+		// Find the two semifinals from week 14 (week 15 if 1-indexed)
+		School* winner1;
+		School* winner2;
+		if (schedule[14][0]->gameResult.awayWon) winner1 = schedule[14][0]->away;
+		else
+			winner1 = schedule[14][0]->home;
+		if (schedule[14][1]->gameResult.awayWon) winner2 = schedule[14][1]->away;
+		else
+			winner2 = schedule[14][1]->home;
+
+		assignMatchup(15, winner2, winner1); // DUN DUN DUN
 	}
 
 	void createMatchups() {
@@ -333,6 +433,12 @@ class League {
 			}
 			std::cout << "week " << (week + 1) << " done... ";
 			std::cout.flush();
+			if (week == 11) scheduleConferenceChampionshipGames();
+			if (week == 12) {
+				rankTeams();
+				schedulePlayoffs();
+			}
+			if (week == 13) scheduleFinals();
 		}
 		std::cout << "\nAll weeks played - season complete." << std::endl;
 
@@ -357,7 +463,10 @@ class League {
 		}
 		std::cout << "done." << std::endl;
 		week++;
-		if (week >= 3) rankTeams();
+		if (week >= 3 && (week <= 14 || week == 16)) rankTeams();
+		if (week == 13) scheduleConferenceChampionshipGames();
+		if (week == 14) schedulePlayoffs();
+		if (week == 15) scheduleFinals();
 	}
 
 	void playOneGame(int matchupIndex) {
@@ -390,6 +499,12 @@ class League {
 			std::cout << "Error - couldn't find a school with that name\n";
 			return nullptr;
 		}
+	}
+
+	void initializeSeason() {
+		createMatchups();
+		// Tell all schools to fix up depth charts
+		for (auto& school : allSchools) { school->getRoster()->organizeDepthChart(); }
 	}
 
   public:
@@ -468,6 +583,24 @@ class League {
 	void printSchoolsByRanking() {
 		for (int i = 0; i < 25; ++i) {
 			std::cout << "#" << (i + 1) << ". " << allSchools[i]->getName() << "  ---  " << allSchools[i]->getPublicRating() << "\n";
+		}
+	}
+
+	void printConferenceStandings(std::pair<Conference, Conference> divisions) {
+		for (Conference division : { divisions.first, divisions.second }) {
+			std::cout << "\n" << divisionName(division) << "\n";
+			std::cout << "===========================================\n";
+			std::vector<School*> schools;
+			for (School& s : conferences[division]) { schools.push_back(&s); }
+			SortByConferenceRecord sbcr;
+			std::sort(schools.begin(), schools.end(), sbcr);
+			for (int i = 0; i < (int)schools.size(); i++) {
+				std::pair<int, int> rec = schools[i]->getWinLossRecord(false);
+				std::pair<int, int> cRec = schools[i]->getWinLossRecord(true);
+				std::string wlstr = std::to_string(rec.first) + " - " + std::to_string(rec.second);
+				printf("%2d) %-25s%-7s(%d - %d)\n", i + 1, schools[i]->getRankedName().c_str(), wlstr.c_str(), cRec.first, cRec.second);
+			}
+			if (divisions.first == divisions.second) return;
 		}
 	}
 
@@ -659,7 +792,7 @@ class League {
 
 		assembleSchoolVector();
 
-		createMatchups();
+		initializeSeason();
 	}
 
 	void simSeason() {

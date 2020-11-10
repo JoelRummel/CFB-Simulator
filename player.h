@@ -1,5 +1,6 @@
 #pragma once
 
+#include "loadData.h"
 #include "util.h"
 
 #include <cassert>
@@ -7,18 +8,6 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
-
-const std::vector<std::string> FIRST_NAMES { "Mike",  "George", "Mark",      "Davonte", "Matt",    "Isaiah",   "Chase",   "Darius", "Aaron",
-											 "Devon", "John",   "Demetrius", "Jameis",  "Zach",    "Derek",    "Alex",    "Melvin", "Tyler",
-											 "Josh",  "Elijah", "Jalen",     "Jordan",  "Anthony", "Demarcus", "Brandon", "Joseph", "Jeremy",
-											 "DJ",    "Justin", "Chris",     "Cameron", "Malik",   "Antoine",  "Tucker",  "Travis", "Charles",
-											 "Amani", "Craig",  "Khalil",    "Drew",    "Andrew",  "Michael" };
-
-const std::vector<std::string> LAST_NAMES { "Turner",   "Williams", "Smith",    "Simmons",  "Adams",    "Rodgers",  "Harrison",  "Lee",     "Frazier",
-											"Miles",    "Wilson",   "Woodruff", "Suggs",    "Long",     "White",    "Patterson", "Jackson", "Graham",
-											"Johnson",  "Jones",    "Brown",    "Anderson", "Kelly",    "Harris",   "Miller",    "Thomas",  "Taylor",
-											"Evans",    "Hill",     "Bush",     "Young",    "Morris",   "Fletcher", "Chandler",  "Bell",    "Cook",
-											"Phillips", "Howard",   "Ross",     "Cooper",   "Robinson", "Sanders" };
 
 enum Position { QB, HB, WR, TE, OL, DL, LB, CB, S, K, P };
 
@@ -206,7 +195,7 @@ class Player {
 	int getRating() const { return positionRating; }
 	std::string getYearString() const { return year == 1 ? "Freshman" : year == 2 ? "Sophomore" : year == 3 ? "Junior" : "Senior"; }
 	int getPotential() const { return getRating() + std::round(3 * trainingMultiplier * (4 - year)); }
-	int getOVR() {
+	int getOVR() const {
 		std::vector<std::pair<Rating, double>> factors = getRatingFactors(position);
 		double sum = 0;
 		for (auto& factor : factors) { sum += (120 * getRating(factor.first) - 3600) / (factor.second * 14); }
@@ -236,8 +225,7 @@ class Player {
 };
 
 Player playerFactory(Position p, int y, int prestige) {
-	std::string name = *select_randomly(FIRST_NAMES.begin(), FIRST_NAMES.end());
-	name += " " + *select_randomly(LAST_NAMES.begin(), LAST_NAMES.end());
+	std::string name = GlobalData::getRandomName();
 	int rating = 30 + std::round(((RNG::randomNumberNormalDist(15, 5)) + ((y - 1) * 5)) * (prestige * 0.2222));
 	if (rating > 100) rating = 100;
 	// if (p == LB) rating = 40;
@@ -463,4 +451,6 @@ struct TeamStats {
 struct GameResult {
 	TeamStats* awayStats = nullptr;
 	TeamStats* homeStats = nullptr;
+	bool awayWon;
+	bool homeWon;
 };

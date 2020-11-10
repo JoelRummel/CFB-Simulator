@@ -1,4 +1,5 @@
 #include "league.h"
+#include "loadData.h"
 
 #include <iostream>
 
@@ -35,6 +36,7 @@ struct Driver {
 		int choice = getInt();
 		if (choice == 1) {
 			// TODO
+			conferenceStandingsMenu();
 		} else if (choice == 2) {
 			if (league->getCurrentWeek() <= 3) std::cout << "League rankings will be available starting week 4\n";
 			else
@@ -100,7 +102,7 @@ struct Driver {
 	}
 
 	void simMenu() {
-		if (league->getCurrentWeek() == 14) {
+		if (league->getCurrentWeek() == 17) {
 			std::cout << "The entire season has been played. Later, consecutive seasons will be implemented.\n";
 			return;
 		}
@@ -123,10 +125,37 @@ struct Driver {
 		} else if (choice == 3)
 			league->simSeason();
 	}
+
+	void conferenceStandingsMenu() {
+		while (true) {
+			std::cout
+				<< "\nConferences:\n  1) Big Ten\n  2) PAC-12\n  3) Big 12\n  4) ACC\n  5) SEC\n  6) MAC\n  7) C-USA\n  8) AAC\n  9) Sun Belt\n  10) "
+				   "MWC\n  11) Independent\n  12) Go back\n";
+			std::cout << "Enter a choice: ";
+			int choice = getInt();
+			std::pair<Conference, Conference> divs;
+			switch (choice) {
+			case 1: divs = std::make_pair(BIGTENEAST, BIGTENWEST); break;
+			case 2: divs = std::make_pair(PAC12NORTH, PAC12SOUTH); break;
+			case 3: divs = std::make_pair(BIG12, BIG12); break;
+			case 4: divs = std::make_pair(ACCATLANTIC, ACCCOASTAL); break;
+			case 5: divs = std::make_pair(SECEAST, SECWEST); break;
+			case 6: divs = std::make_pair(MACEAST, MACWEST); break;
+			case 7: divs = std::make_pair(CUSAEAST, CUSAWEST); break;
+			case 8: divs = std::make_pair(AACEAST, AACWEST); break;
+			case 9: divs = std::make_pair(SUNBELTEAST, SUNBELTWEST); break;
+			case 10: divs = std::make_pair(MWCMOUNTAIN, MWCWEST); break;
+			case 11: divs = std::make_pair(INDEPENDENT, INDEPENDENT); break;
+			default: return;
+			}
+			league->printConferenceStandings(divs);
+		}
+	}
 };
 
 int main() {
 	srand(time(NULL));
+	GlobalData::loadEverything();
 
 	Driver d;
 

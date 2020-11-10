@@ -9,7 +9,7 @@
 #include <vector>
 
 struct SortByRating {
-	bool operator()(const Player* p1, const Player* p2) { return (p1->getRating() > p2->getRating()); }
+	bool operator()(const Player* p1, const Player* p2) { return (p1->getOVR() > p2->getOVR()); }
 };
 
 struct Needs {
@@ -20,18 +20,19 @@ struct Needs {
 class Roster {
   private:
 	std::vector<Player> roster; // This is where all players actually live!
+	std::vector<std::vector<Player*>> depthChart;
 	int startingPrestige;
 
 	void generateOffRoster() {
 		/*
 		4 QB
 		5 RB
-		14 OL
+		12 OL
 		3 TE
 		8 WR
-		34 TOTAL
+		32 TOTAL
 		*/
-		std::vector<std::pair<Position, int>> orders { std::make_pair(QB, 4), std::make_pair(HB, 5), std::make_pair(OL, 14), std::make_pair(TE, 3),
+		std::vector<std::pair<Position, int>> orders { std::make_pair(QB, 4), std::make_pair(HB, 5), std::make_pair(OL, 12), std::make_pair(TE, 3),
 													   std::make_pair(WR, 8) };
 
 		for (auto order : orders) {
@@ -62,13 +63,6 @@ class Roster {
 		}
 	}
 
-	double getGroupAvg(Position p, int depth) {
-		std::vector<Player*> oline = getAllPlayersAt(OL);
-		double total = 0;
-		for (int i = 0; i < depth; ++i) { total += oline[i]->getRating(); }
-		return total / depth;
-	}
-
   public:
 	Roster() {}
 
@@ -77,18 +71,6 @@ class Roster {
 		generateOffRoster();
 		generateDefRoster();
 		generateSpecialTeams();
-	}
-
-	Player* getStarterAt(Position p) {
-		int highestRating = 0;
-		int highestIndex = 0;
-		for (int i = 0; i < (int)roster.size(); ++i) {
-			if (roster[i].getPosition() == p && highestRating < roster[i].getRating()) {
-				highestRating = roster[i].getRating();
-				highestIndex = i;
-			}
-		}
-		return &roster[highestIndex];
 	}
 
 	std::vector<Player*> getAllPlayersAt(Position p) {
@@ -101,30 +83,30 @@ class Roster {
 		return vec;
 	}
 
-	double getOLineRating() { return getGroupAvg(OL, 5); }
-
-	double getDLineRating() { return getGroupAvg(DL, 4); }
-
 	std::vector<Player*> getElevenMen(const std::vector<Needs>& orders) {
 		std::vector<Player*> eleven;
 		for (Needs order : orders) {
-			std::vector<Player*> playersAt = getAllPlayersAt(order.pos);
-			for (int i = 0; i < order.num; ++i) eleven.push_back(playersAt[i]);
+			for (int i = 0; i < order.num; ++i) eleven.push_back(depthChart[order.pos][i]);
 		}
 		assert(eleven.size() == 11);
 		return eleven;
 	}
 
+	void organizeDepthChart() {
+		depthChart.clear();
+		for (Position p : { QB, HB, WR, TE, OL, DL, LB, CB, S, K, P }) { depthChart.push_back(getAllPlayersAt(p)); }
+	}
+
 	void printRoster() {
-		std::cout << "    Name              Pos Year       OVR \n";
-		std::cout << "----------------------------------------\n";
-		//            46. Jalen Edwards     QB  Sophomore  97
+		std::cout << "    Name                 Pos Year       OVR \n";
+		std::cout << "-------------------------------------------\n";
+		//            46. Jalen Edwards        QB  Sophomore  97
 		int num = 1;
 		for (auto& player : roster) {
 			std::string name = player.getName();
 			std::string posStr = positionToStr(player.getPosition());
 			std::string yearStr = player.getYearString();
-			std::printf("%2d. %-18s%-3s%-11s%-3d\n", num, name.c_str(), posStr.c_str(), yearStr.c_str(), player.getOVR());
+			std::printf("%2d. %-21s%-3s%-11s%-3d\n", num, name.c_str(), posStr.c_str(), yearStr.c_str(), player.getOVR());
 			++num;
 		}
 	}
@@ -132,14 +114,14 @@ class Roster {
 	void printPositionGroup(Position pos) {
 		// We need to decide relevant statistics
 		std::vector<std::pair<Rating, double>> ratings = getRatingFactors(pos);
-		printf("Name              Year       OVR  ");
+		printf("Name                 Year       OVR  ");
 		for (int i = 0; i < ratings.size(); i++) { printf("%-5s", ratingToStr(ratings[i].first).c_str()); }
-		printf("\n---------------------------------");
+		printf("\n------------------------------------");
 		for (int i = 0; i < ratings.size(); i++) printf("-----");
 		printf("\n");
 		for (auto& player : roster) {
 			if (player.getPosition() != pos) continue;
-			printf("%-18s%-11s%-5d", player.getName().c_str(), player.getYearString().c_str(), player.getOVR());
+			printf("%-21s%-11s%-5d", player.getName().c_str(), player.getYearString().c_str(), player.getOVR());
 			for (auto& rating : ratings) { printf("%-5d", player.getRating(rating.first)); }
 			printf("\n");
 		}

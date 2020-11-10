@@ -45,6 +45,32 @@ bool isP5(Conference conf) {
 	}
 }
 
+std::string divisionName(Conference conf) {
+	switch (conf) {
+	case BIGTENEAST: return "Big Ten East";
+	case BIGTENWEST: return "Big Ten West";
+	case BIG12: return "Big 12";
+	case ACCATLANTIC: return "ACC Atlantic";
+	case ACCCOASTAL: return "ACC Coastal";
+	case PAC12NORTH: return "PAC-12 North";
+	case PAC12SOUTH: return "PAC-12 South";
+	case SECEAST: return "SEC East";
+	case SECWEST: return "SEC West";
+	case MACEAST: return "MAC East";
+	case MACWEST: return "MAC West";
+	case AACEAST: return "AAC East";
+	case AACWEST: return "AAC West";
+	case SUNBELTEAST: return "Sun Belt East";
+	case SUNBELTWEST: return "Sun Belt West";
+	case MWCMOUNTAIN: return "MWC Mountain";
+	case MWCWEST: return "MWC West";
+	case CUSAEAST: return "C-USA East";
+	case CUSAWEST: return "C-USA West";
+	case INDEPENDENT: return "Independent";
+	default: return "";
+	}
+}
+
 int numNonConGames(Conference conf) {
 	switch (conf) {
 	case BIGTENWEST:
@@ -228,6 +254,8 @@ class School {
 	}
 	bool didIWinAgainst(School* s) {
 		Matchup* m = getMatchupAgainst(s);
+		if (m == nullptr) return false;
+		if (m->gameResult.homeStats == nullptr) return false;
 		if (s == m->away) return m->gameResult.homeStats->points > m->gameResult.awayStats->points;
 		return m->gameResult.awayStats->points > m->gameResult.homeStats->points;
 	}
