@@ -425,6 +425,7 @@ class GamePlayer {
 							if (ballCarrier->gameState.action == PASSING) {
 								printPlay("That's a sack for the defense!");
 								defStats->recordSack(blitzer);
+								offStats->recordSackAllowed();
 								return PlayResult { ballCarrier, blitzer, RNG::randomNumberNormalDist(-6, 1) };
 							}
 							return PlayResult { ballCarrier, blitzer, RNG::randomNumberNormalDist(-1, 1) };
