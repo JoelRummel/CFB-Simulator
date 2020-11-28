@@ -1,109 +1,11 @@
 #pragma once
 
+#include "coach.h"
 #include "roster.h"
 
 #include <iostream>
 #include <string>
 // todo: delete above include
-
-enum Conference {
-	BIGTENEAST,
-	BIGTENWEST,
-	PAC12NORTH,
-	PAC12SOUTH,
-	BIG12,
-	ACCATLANTIC,
-	ACCCOASTAL,
-	SECEAST,
-	SECWEST,
-	INDEPENDENT,
-
-	MACEAST,
-	MACWEST,
-	CUSAEAST,
-	CUSAWEST,
-	AACEAST,
-	AACWEST,
-	SUNBELTEAST,
-	SUNBELTWEST,
-	MWCMOUNTAIN,
-	MWCWEST
-};
-
-bool isP5(Conference conf) {
-	switch (conf) {
-	case BIGTENWEST:
-	case BIGTENEAST:
-	case BIG12:
-	case ACCATLANTIC:
-	case ACCCOASTAL:
-	case PAC12NORTH:
-	case PAC12SOUTH:
-	case SECEAST:
-	case SECWEST: return true;
-	default: return false;
-	}
-}
-
-std::string divisionName(Conference conf) {
-	switch (conf) {
-	case BIGTENEAST: return "Big Ten East";
-	case BIGTENWEST: return "Big Ten West";
-	case BIG12: return "Big 12";
-	case ACCATLANTIC: return "ACC Atlantic";
-	case ACCCOASTAL: return "ACC Coastal";
-	case PAC12NORTH: return "PAC-12 North";
-	case PAC12SOUTH: return "PAC-12 South";
-	case SECEAST: return "SEC East";
-	case SECWEST: return "SEC West";
-	case MACEAST: return "MAC East";
-	case MACWEST: return "MAC West";
-	case AACEAST: return "AAC East";
-	case AACWEST: return "AAC West";
-	case SUNBELTEAST: return "Sun Belt East";
-	case SUNBELTWEST: return "Sun Belt West";
-	case MWCMOUNTAIN: return "MWC Mountain";
-	case MWCWEST: return "MWC West";
-	case CUSAEAST: return "C-USA East";
-	case CUSAWEST: return "C-USA West";
-	case INDEPENDENT: return "Independent";
-	default: return "";
-	}
-}
-
-int numNonConGames(Conference conf) {
-	switch (conf) {
-	case BIGTENWEST:
-	case BIGTENEAST:
-	case BIG12:
-	case PAC12NORTH:
-	case PAC12SOUTH: return 3;
-	default: return 4;
-	}
-}
-
-Conference getOppositeDivision(Conference conf) {
-	if (conf == BIG12 || conf == INDEPENDENT) return conf;
-	if (conf == BIGTENEAST) return BIGTENWEST;
-	if (conf == BIGTENWEST) return BIGTENEAST;
-	if (conf == SECEAST) return SECWEST;
-	if (conf == SECWEST) return SECEAST;
-	if (conf == PAC12NORTH) return PAC12SOUTH;
-	if (conf == PAC12SOUTH) return PAC12NORTH;
-	if (conf == ACCATLANTIC) return ACCCOASTAL;
-	if (conf == ACCCOASTAL) return ACCATLANTIC;
-	if (conf == MACEAST) return MACWEST;
-	if (conf == MACWEST) return MACEAST;
-	if (conf == CUSAEAST) return CUSAWEST;
-	if (conf == CUSAWEST) return CUSAEAST;
-	if (conf == AACEAST) return AACWEST;
-	if (conf == AACWEST) return AACEAST;
-	if (conf == SUNBELTEAST) return SUNBELTWEST;
-	if (conf == SUNBELTWEST) return SUNBELTEAST;
-	if (conf == MWCMOUNTAIN) return MWCWEST;
-	if (conf == MWCWEST) return MWCMOUNTAIN;
-	assert(false);
-}
 
 class School {
   public:
@@ -176,6 +78,13 @@ class School {
 
   private:
 	std::string name;
+	std::string mascot;
+	std::string city;
+	std::string state;
+	int nflRating;
+	int academicRating;
+	int stadiumCapacity;
+	int budget;
 	Roster roster;
 	int prestige;
 	std::vector<Matchup*> schedule;
@@ -202,7 +111,21 @@ class School {
 		roster.generateRoster(p);
 		schedule.resize(16, nullptr);
 	}
+	School(std::string na, std::string ma, std::string st, std::string ci, int pr, int ss, int bu, int nfl, int ac) :
+			name { na }, mascot { ma }, state { st }, city { ci }, prestige { pr }, stadiumCapacity { ss }, budget { bu }, nflRating { nfl },
+			academicRating { ac } {
+		roster.generateRoster(pr);
+		schedule.resize(16, nullptr);
+	}
+
 	std::string getName() { return name; }
+	std::string getMascot() { return mascot; }
+	std::string getCityName() { return city; }
+	std::string getStateName() { return state; }
+	int getStadiumCapacity() { return stadiumCapacity; }
+	int getBudget() { return budget; }
+	int getNFLRating() { return nflRating; }
+	int getAcademicRating() { return academicRating; }
 	std::string getRankedName() {
 		if (ranking == -1 || ranking > 25) return getName();
 		return "(#" + std::to_string(ranking) + ") " + getName();
