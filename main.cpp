@@ -76,14 +76,17 @@ struct Driver {
 						std::cout << "No games have been played yet this season.\n";
 						continue;
 					}
-					std::cout << "Enter week number: ";
+					std::cout << "Enter week number, or use 0 for an aggregation of season-wide stats: ";
 					choice = getInt();
-					while (choice < 1 || choice > league->getCurrentWeek() - 1) {
+					while (choice > league->getCurrentWeek() - 1) {
 						std::cout << "Week must be between 1 and " << league->getCurrentWeek() - 1 << ", try again: ";
 						choice = getInt();
 					}
 					--choice;
-					TeamStats* stats = league->printSchoolGameStats(schoolName, choice);
+					TeamStats* stats;
+					if (choice < 0) stats = league->getSchoolAggregatedStats(schoolName);
+					else
+						stats = league->printSchoolGameStats(schoolName, choice);
 					if (stats == nullptr) continue;
 					std::cout << "Press enter repeatedly to iterate over individual player stats. Type "
 								 "anything and then hit enter to exit.\n";
@@ -95,6 +98,7 @@ struct Driver {
 						if (!league->printGamePlayerStats(stats, player)) break;
 						++player;
 					}
+					if (choice < 0) delete stats;
 				} else
 					break;
 			}

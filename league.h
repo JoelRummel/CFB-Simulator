@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gamePlayer.h"
-#include "school.h"
+#include "loadData.h"
 
 bool areSameConference(Conference div1, Conference div2) {
 	if (div1 == div2) return true;
@@ -574,6 +574,24 @@ class League {
 		return school->getMyStats(week);
 	}
 
+	TeamStats* getSchoolAggregatedStats(std::string schoolName) {
+		School* school = findSchoolByName(schoolName);
+		if (school == nullptr) return nullptr;
+		TeamStats* aggregate = new TeamStats; // IT IS THE DRIVER'S RESPONSIBILITY TO DELETE THIS
+		aggregate->games = 0;
+		for (int i = 0; i < 16; i++) {
+			School::Matchup* m = school->getGameResults(i);
+			if (m != nullptr && m->gameResult.homeStats != nullptr) {
+				// alsdfk
+				if (school == m->home) *aggregate += *(m->gameResult.homeStats);
+				else
+					*aggregate += *(m->gameResult.awayStats);
+			}
+		}
+		aggregate->printBigStuff();
+		return aggregate;
+	}
+
 	bool printGamePlayerStats(TeamStats* stats, int player) {
 		if (player >= (int)(stats->getPlayersRecorded().size())) return false;
 		stats->printPlayerStats(stats->getPlayersRecorded()[player]);
@@ -582,7 +600,7 @@ class League {
 
 	void printSchoolsByRanking() {
 		for (int i = 0; i < 25; ++i) {
-			std::cout << "#" << (i + 1) << ". " << allSchools[i]->getName() << "  ---  " << allSchools[i]->getPublicRating() << "\n";
+			std::cout << "#" << (i + 1) << ". " << allSchools[i]->getName() << "\n"; //"  ---  " << allSchools[i]->getPublicRating() << "\n";
 		}
 	}
 
@@ -620,175 +638,11 @@ class League {
 		schedule.resize(16); // thirteen total regular season weeks, one bye per team + 2 bowl weeks, 1 CCG week
 
 		conferences.resize(20);
-		std::vector<School>& bigTenEast = conferences[BIGTENEAST];
-		bigTenEast.emplace_back("Michigan", 8);
-		bigTenEast.emplace_back("Ohio State", 10);
-		bigTenEast.emplace_back("Michigan State", 6);
-		bigTenEast.emplace_back("Penn State", 9);
-		bigTenEast.emplace_back("Maryland", 4);
-		bigTenEast.emplace_back("Indiana", 5);
-		bigTenEast.emplace_back("Rutgers", 2);
 
-		std::vector<School>& bigTenWest = conferences[BIGTENWEST];
-		bigTenWest.emplace_back("Wisconsin", 8);
-		bigTenWest.emplace_back("Minnesota", 7);
-		bigTenWest.emplace_back("Purdue", 4);
-		bigTenWest.emplace_back("Nebraska", 5);
-		bigTenWest.emplace_back("Illinois", 5);
-		bigTenWest.emplace_back("Iowa", 7);
-		bigTenWest.emplace_back("Northwestern", 3);
-
-		std::vector<School>& secEast = conferences[SECEAST];
-		secEast.emplace_back("Florida", 8);
-		secEast.emplace_back("Georgia", 9);
-		secEast.emplace_back("Kentucky", 6);
-		secEast.emplace_back("Tennessee", 5);
-		secEast.emplace_back("Missouri", 4);
-		secEast.emplace_back("South Carolina", 4);
-		secEast.emplace_back("Vanderbilt", 3);
-
-		std::vector<School>& secWest = conferences[SECWEST];
-		secWest.emplace_back("Alabama", 10);
-		secWest.emplace_back("LSU", 9);
-		secWest.emplace_back("Auburn", 8);
-		secWest.emplace_back("Texas A&M", 6);
-		secWest.emplace_back("Mississippi State", 5);
-		secWest.emplace_back("Ole Miss", 4);
-		secWest.emplace_back("Arkansas", 3);
-
-		std::vector<School>& big12 = conferences[BIG12];
-		big12.emplace_back("Oklahoma", 9);
-		big12.emplace_back("Texas", 7);
-		big12.emplace_back("Baylor", 7);
-		big12.emplace_back("Oklahoma State", 6);
-		big12.emplace_back("Kansas State", 6);
-		big12.emplace_back("Iowa State", 5);
-		big12.emplace_back("Texas Christian", 5);
-		big12.emplace_back("West Virginia", 3);
-		big12.emplace_back("Texas Tech", 4);
-		big12.emplace_back("Kansas", 2);
-
-		std::vector<School>& accA = conferences[ACCATLANTIC];
-		accA.emplace_back("Clemson", 10);
-		accA.emplace_back("Louisville", 5);
-		accA.emplace_back("Wake Forest", 5);
-		accA.emplace_back("Florida State", 4);
-		accA.emplace_back("Boston College", 4);
-		accA.emplace_back("Syracuse", 4);
-		accA.emplace_back("North Carolina State", 3);
-
-		std::vector<School>& accC = conferences[ACCCOASTAL];
-		accC.emplace_back("Virginia", 6);
-		accC.emplace_back("North Carolina", 6);
-		accC.emplace_back("Virginia Tech", 5);
-		accC.emplace_back("Miami (FL)", 4);
-		accC.emplace_back("Pitt", 4);
-		accC.emplace_back("Duke", 3);
-		accC.emplace_back("Georgia Tech", 2);
-
-		std::vector<School>& pacN = conferences[PAC12NORTH];
-		pacN.emplace_back("Oregon", 9);
-		pacN.emplace_back("Washington", 7);
-		pacN.emplace_back("California", 6);
-		pacN.emplace_back("Washington State", 6);
-		pacN.emplace_back("Oregon State", 4);
-		pacN.emplace_back("Stanford", 4);
-
-		std::vector<School>& pacS = conferences[PAC12SOUTH];
-		pacS.emplace_back("Utah", 8);
-		pacS.emplace_back("USC", 6);
-		pacS.emplace_back("Arizona State", 6);
-		pacS.emplace_back("UCLA", 4);
-		pacS.emplace_back("Colorado", 4);
-		pacS.emplace_back("Arizona", 3);
-
-		std::vector<School>& ind = conferences[INDEPENDENT];
-		ind.emplace_back("Notre Dame", 8);
-		ind.emplace_back("Liberty", 3);
-		ind.emplace_back("BYU", 4);
-		ind.emplace_back("Army", 4);
-		ind.emplace_back("New Mexico State", 1);
-		ind.emplace_back("Massachusetts", 0);
-
-		std::vector<School>& macE = conferences[MACEAST];
-		macE.emplace_back("Miami (OH)", 5);
-		macE.emplace_back("Ohio", 4);
-		macE.emplace_back("Akron", 0);
-		macE.emplace_back("Kent State", 3);
-		macE.emplace_back("Buffalo", 5);
-		macE.emplace_back("Bowling Green State", 1);
-
-		std::vector<School>& macW = conferences[MACWEST];
-		macW.emplace_back("Central Michigan", 4);
-		macW.emplace_back("Eastern Michigan", 2);
-		macW.emplace_back("Western Michigan", 4);
-		macW.emplace_back("Ball State", 3);
-		macW.emplace_back("Northern Illinois", 2);
-		macW.emplace_back("Toledo", 3);
-
-		std::vector<School>& cusaE = conferences[CUSAEAST];
-		cusaE.emplace_back("Florida Atlantic", 5);
-		cusaE.emplace_back("Marshall", 4);
-		cusaE.emplace_back("Western Kentucky", 4);
-		cusaE.emplace_back("Charlotte", 3);
-		cusaE.emplace_back("Florida International", 2);
-		cusaE.emplace_back("Middle Tennessee State", 2);
-		cusaE.emplace_back("Old Dominion", 0);
-
-		std::vector<School>& cusaW = conferences[CUSAWEST];
-		cusaW.emplace_back("Louisiana Tech", 5);
-		cusaW.emplace_back("UAB", 4);
-		cusaW.emplace_back("Southern Mississippi", 3);
-		cusaW.emplace_back("North Texas", 2);
-		cusaW.emplace_back("UTSA", 1);
-		cusaW.emplace_back("Rice", 2);
-		cusaW.emplace_back("UTEP", 0);
-
-		std::vector<School>& aacE = conferences[AACEAST];
-		aacE.emplace_back("Cincinnati", 6);
-		aacE.emplace_back("UCF", 6);
-		aacE.emplace_back("Temple", 5);
-		aacE.emplace_back("South Florida", 3);
-		aacE.emplace_back("East Carolina", 2);
-		aacE.emplace_back("Connecticut", 1);
-
-		std::vector<School>& aacW = conferences[AACWEST];
-		aacW.emplace_back("Memphis", 6);
-		aacW.emplace_back("Navy", 6);
-		aacW.emplace_back("SMU", 5);
-		aacW.emplace_back("Tulane", 4);
-		aacW.emplace_back("Houston", 2);
-		aacW.emplace_back("Tulsa", 2);
-
-		std::vector<School>& sunE = conferences[SUNBELTEAST];
-		sunE.emplace_back("Appalachian State", 6);
-		sunE.emplace_back("Georgia Southern", 4);
-		sunE.emplace_back("Georgia State", 3);
-		sunE.emplace_back("Troy", 3);
-		sunE.emplace_back("Coastal Carolina", 2);
-
-		std::vector<School>& sunW = conferences[SUNBELTWEST];
-		sunW.emplace_back("Louisiana", 5);
-		sunW.emplace_back("Arkansas State", 4);
-		sunW.emplace_back("Louisiana-Monroe", 3);
-		sunW.emplace_back("Texas State", 1);
-		sunW.emplace_back("South Alabama", 1);
-
-		std::vector<School>& mwcM = conferences[MWCMOUNTAIN];
-		mwcM.emplace_back("Boise State", 6);
-		mwcM.emplace_back("Air Force", 6);
-		mwcM.emplace_back("Utah State", 4);
-		mwcM.emplace_back("Wyoming", 3);
-		mwcM.emplace_back("Colorado State", 2);
-		mwcM.emplace_back("New Mexico", 1);
-
-		std::vector<School>& mwcW = conferences[MWCWEST];
-		mwcW.emplace_back("San Diego State", 5);
-		mwcW.emplace_back("Hawaii", 4);
-		mwcW.emplace_back("Nevada", 3);
-		mwcW.emplace_back("San Jose State", 2);
-		mwcW.emplace_back("Fresno State", 2);
-		mwcW.emplace_back("Nevada-Las Vegas", 1);
+		for (auto sd : GlobalData::getSchoolsData()) {
+			conferences[sd.division].emplace_back(sd.name, sd.mascot, sd.state, sd.city, sd.prestige, sd.stadiumCapacity, sd.budget, sd.nflRating,
+												  sd.academicRating);
+		}
 
 		assembleSchoolVector();
 
