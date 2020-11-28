@@ -1,5 +1,6 @@
 #pragma once
 
+#include "news.h"
 #include "school.h"
 
 #include <chrono>
@@ -328,11 +329,13 @@ class GamePlayer {
 				else
 					awayPoints += 3;
 				printPlay("The kick is good! " + scoreString());
+				offStats->recordFGAttempt(ballCarrier, true, yardLine + 17);
 				flipPossession();
 				yardLine = 75;
 				lineToGain = 65;
 			} else {
 				printPlay("The kick is no good!");
+				offStats->recordFGAttempt(ballCarrier, false, yardLine + 17);
 				flipPossession();
 			}
 			return { nullptr, nullptr, 0 };
@@ -345,6 +348,7 @@ class GamePlayer {
 			printPlay("P " + ballCarrier->getName() + " punts the ball " + std::to_string(yds) + " yards" +
 					  (yardLine == 0 ? " for a touchback" : ""));
 			if (yardLine == 0) { yardLine = 20; }
+			offStats->recordPunt(ballCarrier, yds);
 			flipPossession();
 			return { nullptr, nullptr, 0 };
 		}
