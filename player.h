@@ -261,15 +261,52 @@ struct PlayerStats {
 	int TFLs;
 	int INTsCaught;
 	int passDefenses;
+
+	int FGsMade;
+	int FGsMissed;
+	int punts;
+	int puntYards;
+	int longestFG;
+	int longestPunt;
+
+	PlayerStats& operator+=(const PlayerStats& rhs) {
+		this->rushes += rhs.rushes;
+		this->rushingYards += rhs.rushingYards;
+		this->passingYards += rhs.passingYards;
+		this->receivingYards += rhs.receivingYards;
+		this->completions += rhs.completions;
+		this->incompletions += rhs.incompletions;
+		this->rushingTDs += rhs.rushingTDs;
+		this->passingTDs += rhs.passingTDs;
+		this->receivingTDs += rhs.receivingTDs;
+		this->catches += rhs.catches;
+		this->drops += rhs.drops;
+		this->fumblesLost += rhs.fumblesLost;
+		this->INTsThrown += rhs.INTsThrown;
+		this->tackles += rhs.tackles;
+		this->sacks += rhs.sacks;
+		this->TFLs += rhs.TFLs;
+		this->INTsCaught += rhs.INTsCaught;
+		this->passDefenses += rhs.passDefenses;
+		this->FGsMade += rhs.FGsMade;
+		this->FGsMissed += rhs.FGsMissed;
+		this->punts += rhs.punts;
+		this->puntYards += rhs.puntYards;
+		this->longestFG = std::max(this->longestFG, rhs.longestFG);
+		this->longestPunt = std::max(this->longestPunt, rhs.longestPunt);
+		return *this;
+	}
 };
 
 struct TeamStats {
-	int points;
-	int numPossessions;
-	int timeOfPossession;
-	int sacksAllowed;
+	int games = 1;
 
-	int yardsAllowed;
+	int points = 0;
+	int numPossessions = 0;
+	int timeOfPossession = 0;
+	int sacksAllowed = 0;
+
+	int yardsAllowed = 0;
 
 	std::unordered_map<Player*, PlayerStats> players;
 
@@ -304,6 +341,18 @@ struct TeamStats {
 	void recordINTThrown(Player* p) { players[p].INTsThrown++; }
 	void recordINTCaught(Player* p) { players[p].INTsCaught++; }
 	void recordFumble(Player* p) { players[p].fumblesLost++; }
+	void recordFGAttempt(Player* p, bool made, int distance) {
+		if (made) {
+			players[p].FGsMade++;
+			if (players[p].longestFG < distance) players[p].longestFG = distance;
+		} else
+			players[p].FGsMissed++;
+	}
+	void recordPunt(Player* p, int distance) {
+		players[p].punts++;
+		players[p].puntYards += distance;
+		if (players[p].longestPunt < distance) players[p].longestPunt = distance;
+	}
 
 	int rushes() {
 		int rush = 0;
@@ -388,63 +437,163 @@ struct TeamStats {
 		return i;
 	}
 
+	int FGsMade() {
+		int i = 0;
+		for (auto player : players) i += player.second.FGsMade;
+		return i;
+	}
+	int FGsMissed() {
+		int i = 0;
+		for (auto player : players) i += player.second.FGsMissed;
+		return i;
+	}
+	double FGSuccessRate() {
+		int completed = FGsMade();
+		return ((double)completed / (completed + FGsMissed())) * 100;
+	}
+	int punts() {
+		int i = 0;
+		for (auto player : players) i += player.second.punts;
+		return i;
+	}
+	int puntYards() {
+		int i = 0;
+		for (auto player : players) i += player.second.puntYards;
+		return i;
+	}
+	double avgPuntYards() {
+		if (punts() == 0) return 0;
+		return puntYards() / (double)punts();
+	}
+	int longestFG() {
+		int l = 0;
+		for (auto player : players) l = std::max(l, player.second.longestFG);
+		return l;
+	}
+	int longestPunt() {
+		int l = 0;
+		for (auto player : players) l = std::max(l, player.second.longestPunt);
+		return l;
+	}
+
 	void printBigStuff() {
 		//     |----------------------------------------|
+		bool agg = (games > 1);
+		double dGames = (double)games;
 		printf("OFFENSE\n----------------------------------------\n");
 		printf("Total yards: %27d\n", offensiveYards());
+		if (agg) printf("   Average: %28.1f\n", offensiveYards() / dGames);
 		printf("Rushing yards: %25d\n", rushingYards());
 		printf("Rushing average: %23.1f\n", rushingAvg());
 		printf("Rushing TDs: %27d\n", rushingTDs());
+		if (agg) printf("   Average: %28.1f\n", rushingTDs() / dGames);
 		printf("Passing yards: %25d\n", passingYards());
+		if (agg) printf("   Average: %28.1f\n", passingYards() / dGames);
 		printf("Pass comp / att: %14d/%2d %3.1f%%\n", completions(), passAttempts(), completionRate());
 		printf("Drops: %33d\n", drops());
+		if (agg) printf("   Average: %28.1f\n", drops() / dGames);
 		printf("Passing TDs: %27d\n", passingTDs());
+		if (agg) printf("   Average: %28.1f\n", passingTDs() / dGames);
 		printf("Fumbles lost: %26d\n", fumblesLost());
-		printf("INTs thrown: %27d\n\n", INTsThrown());
-		printf("DEFENSE\n----------------------------------------\n");
+		if (agg) printf("   Average: %28.1f\n", fumblesLost() / dGames);
+		printf("INTs thrown: %27d\n", INTsThrown());
+		if (agg) printf("   Average: %28.1f\n", INTsThrown() / dGames);
+		printf("Sacks allowed: %25d\n", sacksAllowed);
+		if (agg) printf("   Average: %28.1f\n", sacksAllowed / dGames);
+		printf("Field goals: %18d/%2d %3.1f%%\n", FGsMade(), FGsMade() + FGsMissed(), FGSuccessRate());
+		printf("Longest FG: %28d\n", longestFG());
+		printf("\nDEFENSE\n----------------------------------------\n");
 		printf("Total yards allowed: %19d\n", yardsAllowed);
+		if (agg) printf("   Average: %28.1f\n", yardsAllowed / dGames);
 		printf("Tackles for loss: %22d\n", TFLs());
+		if (agg) printf("   Average: %28.1f\n", TFLs() / dGames);
 		printf("Sacks: %33d\n", sacks());
+		if (agg) printf("   Average: %28.1f\n", sacks() / dGames);
 		printf("Pass defenses: %25d\n", passDefenses());
+		if (agg) printf("   Average: %28.1f\n", passDefenses() / dGames);
 		printf("INTs caught: %27d\n", INTsCaught());
+		if (agg) printf("   Average: %28.1f\n", INTsCaught() / dGames);
+		printf("Average punting yards: %17.1f\n", avgPuntYards());
+		printf("Longest punt: %26d\n", longestPunt());
 	}
 
 	void printPlayerStats(Player* p) {
 		const PlayerStats& s = players[p];
+		bool agg = (games > 1);
+		double dGames = (double)games;
 		std::cout << positionToStr(p->getPosition()) << " " << p->getName() << " (" << p->getOVR() << " OVR)\n";
 		std::cout << "----------------------------------------\n";
 		if (s.rushes > 0) {
 			printf("Rushes: %32d\n", s.rushes);
+			if (agg) printf("   Average: %28.1f\n", s.rushes / dGames);
 			printf("Rushing yards: %25d\n", s.rushingYards);
 			double rushAvg = (double)s.rushingYards / s.rushes;
 			printf("Rushing average: %23.1f\n", rushAvg);
 			printf("Rushing TDs: %27d\n", s.rushingTDs);
+			if (agg) printf("   Average: %28.1f\n", s.rushingTDs / dGames);
 		}
 		if (s.completions > 0 || s.incompletions > 0) {
 			printf("Passing yards: %25d\n", s.passingYards);
+			if (agg) printf("   Average: %28.1f\n", s.passingYards / dGames);
 			double compRate = ((double)s.completions / (s.completions + s.incompletions)) * 100;
 			printf("Pass comp / att: %14d/%2d %3.1f%%\n", s.completions, s.completions + s.incompletions, compRate);
 			printf("Passing TDs: %27d\n", s.passingTDs);
 			printf("Interceptions: %25d\n", s.INTsThrown);
+			printf("TD-INT Ratio: %26.1f\n", (double)s.passingTDs / (double)s.INTsThrown);
 		}
 		if (s.catches > 0 || s.drops > 0) {
 			printf("Catches: %31d\n", s.catches);
+			if (agg) printf("   Average: %28.1f\n", s.catches / dGames);
 			printf("Drops: %33d\n", s.drops);
+			if (agg) printf("   Average: %28.1f\n", s.drops / dGames);
 			printf("Receiving yards: %23d\n", s.receivingYards);
+			if (agg) printf("   Average: %28.1f\n", s.receivingYards / dGames);
 			printf("Receiving TDs: %25d\n", s.receivingTDs);
+			if (agg) printf("   Average: %28.1f\n", s.receivingTDs / dGames);
 		}
 		if (s.fumblesLost > 0) { printf("Fumbles lost: %26d\n", s.fumblesLost); }
-		if (s.tackles > 0) { printf("Tackles: %31d\n", s.tackles); }
-		if (s.TFLs > 0) { printf("Tackles for loss: %22d\n", s.TFLs); }
-		if (s.sacks > 0) { printf("Sacks: %33d\n", s.sacks); }
-		if (s.passDefenses > 0) { printf("Pass defenses: %25d\n", s.passDefenses); }
+		if (s.tackles > 0) {
+			printf("Tackles: %31d\n", s.tackles);
+			if (agg) printf("   Average: %28.1f\n", s.tackles / dGames);
+		}
+		if (s.TFLs > 0) {
+			printf("Tackles for loss: %22d\n", s.TFLs);
+			if (agg) printf("   Average: %28.1f\n", s.TFLs / dGames);
+		}
+		if (s.sacks > 0) {
+			printf("Sacks: %33d\n", s.sacks);
+			if (agg) printf("   Average: %28.1f\n", s.sacks / dGames);
+		}
+		if (s.passDefenses > 0) {
+			printf("Pass defenses: %25d\n", s.passDefenses);
+			if (agg) printf("   Average: %28.1f\n", s.passDefenses / dGames);
+		}
 		if (s.INTsCaught > 0) { printf("Interceptions: %25d\n", s.INTsCaught); }
+		if (s.FGsMade > 0 || s.FGsMissed > 0) {
+			double compRate = ((double)s.FGsMade / (s.FGsMade + s.FGsMissed)) * 100;
+			printf("Field goals: %18d/%2d %3.1f%%\n", s.FGsMade, s.FGsMade + s.FGsMissed, compRate);
+			if (s.FGsMade > 0) printf("Longest FG: %28d\n", s.longestFG);
+		}
+		if (s.punts > 0) {
+			printf("Average punting yards: %17.1f\n", (double)s.puntYards / s.punts);
+			printf("Longest punt: %26d\n", s.longestPunt);
+		}
 	}
 
-	std::vector<Player*> getPlayersRecorded() {
+	std::vector<Player*> getPlayersRecorded() const {
 		std::vector<Player*> recorded;
 		for (auto p : players) recorded.push_back(p.first);
 		return recorded;
+	}
+
+	TeamStats& operator+=(TeamStats& rhs) {
+		for (Player* player : rhs.getPlayersRecorded()) { this->players[player] += rhs.players[player]; }
+		this->sacksAllowed += rhs.sacksAllowed;
+		this->numPossessions += rhs.numPossessions;
+		this->yardsAllowed += rhs.yardsAllowed;
+		this->games += rhs.games;
+
+		return *this;
 	}
 };
 
