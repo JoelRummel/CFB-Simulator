@@ -1,5 +1,6 @@
 #pragma once
 
+#include "coachesOrg.h"
 #include "gamePlayer.h"
 #include "loadData.h"
 
@@ -44,6 +45,9 @@ class League {
 
 	std::vector<School*> allSchools;
 
+	CoachesOrganization coachesOrg;
+
+	int year = 2020;
 	int week = 0;
 
 	void assembleSchoolVector() {
@@ -634,7 +638,15 @@ class League {
 		school->getRoster()->printPositionGroup(pos);
 	}
 
+	void printSchoolDetails(std::string schoolName) {
+		School* school = findSchoolByName(schoolName);
+		if (school == nullptr) return;
+		school->printDetails();
+	}
+
 	League() {
+		coachesOrg.initializeAllCoaches();
+
 		schedule.resize(16); // thirteen total regular season weeks, one bye per team + 2 bowl weeks, 1 CCG week
 
 		conferences.resize(20);
@@ -645,6 +657,8 @@ class League {
 		}
 
 		assembleSchoolVector();
+
+		coachesOrg.fillAllVacancies(allSchools);
 
 		initializeSeason();
 	}

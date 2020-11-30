@@ -97,6 +97,8 @@ class School {
 	double privateRealRating = 0;
 	int ranking = -1;
 
+	Coach* coaches[11];
+
 	std::pair<TeamStats*, TeamStats*> getOrderedStats(Matchup* m) {
 		if (this == m->away) {
 			return std::make_pair(m->gameResult.awayStats, m->gameResult.homeStats);
@@ -107,15 +109,12 @@ class School {
   public:
 	NonConStrategy strategy;
 
-	School(std::string n, int p) : name { n }, prestige { p } {
-		roster.generateRoster(p);
-		schedule.resize(16, nullptr);
-	}
 	School(std::string na, std::string ma, std::string st, std::string ci, int pr, int ss, int bu, int nfl, int ac) :
 			name { na }, mascot { ma }, state { st }, city { ci }, prestige { pr }, stadiumCapacity { ss }, budget { bu }, nflRating { nfl },
 			academicRating { ac } {
 		roster.generateRoster(pr);
 		schedule.resize(16, nullptr);
+		for (int i = 0; i < 11; i++) coaches[i] = nullptr;
 	}
 
 	std::string getName() { return name; }
@@ -201,6 +200,10 @@ class School {
 		}
 		return winsLosses;
 	}
+	std::string getWinLossString(bool confRecord = false) {
+		std::pair<int, int> record = getWinLossRecord(confRecord);
+		return std::to_string(record.first) + " - " + std::to_string(record.second);
+	}
 
 	TeamStats* getMyStats(int week) {
 		if (schedule[week] == nullptr) return nullptr;
@@ -269,4 +272,23 @@ class School {
 	}
 
 	void publishPrivateRating() { publicRealRating = privateRealRating; }
+
+	void signCoach(Coach* newCoach, CoachType type) {
+		assert(isVacant(type));
+		coaches[(int)type] = newCoach;
+		if (type == CoachType::HC || type == CoachType::OC || type == CoachType::DC || type == CoachType::LB) {
+			std::cout << getName() << " has hired " << newCoach->getName() << " (" << newCoach->getPublicOvr() << " public ovr) as "
+					  << coachTypeToString(type) << std::endl;
+		}
+	}
+
+	bool isVacant(CoachType position) { return coaches[(int)position] == nullptr; }
+
+	void printDetails() {
+		std::cout << "\n===== " << str_upper(getRankedName()) << " " << str_upper(getMascot()) << " =====\n";
+		std::cout << "      Record:       " << getWinLossString() << "\n";
+		std::cout << "      Conf. record: " << getWinLossString(true) << "\n";
+		std::cout << "      Head Coach: " << coaches[(int)CoachType::HC]->getName() << " (" << coaches[(int)CoachType::HC]->getPublicOvr()
+				  << " public OVR)\n";
+	}
 };

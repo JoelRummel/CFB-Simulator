@@ -1,6 +1,5 @@
 #pragma once
 
-#include "school.h"
 #include "util.h"
 
 #include <fstream>
@@ -54,13 +53,11 @@ class GlobalData {
 				while (true) {
 					char c;
 					in >> c;
-					if (c == ',') {
-						in >> c;
-						break;
-					}
+					if (c == ',') break;
 					lastName += c;
 				}
 				std::getline(in, firstName);
+				firstName.erase(firstName.begin());
 				names.push_back(std::make_pair(firstName, lastName));
 			}
 		}
@@ -154,6 +151,6 @@ class GlobalData {
 	}
 
 	static std::string getRandomName() { return firstNames.getRandomName() + " " + lastNames.getRandomName(); }
-	static std::string getRandomCoachName() { return coachNames.getRandomName() + " " + coachNames.getRandomName(); }
+	static std::string getRandomCoachName() { return coachNames.getRandomName() + " " + coachNames.getRandomName(true); }
 	static std::vector<SchoolsData::SchoolData> getSchoolsData() { return schoolsData.schoolData; }
 };
