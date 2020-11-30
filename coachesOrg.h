@@ -70,6 +70,10 @@ class CoachesOrganization {
 		}
 	}
 
+	void advanceYear() {
+		for (Coach* coach : coaches) coach->incrementYear();
+	}
+
 	~CoachesOrganization() {
 		for (auto c : coaches) delete c;
 	}

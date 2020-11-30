@@ -107,7 +107,15 @@ struct Driver {
 
 	void simMenu() {
 		if (league->getCurrentWeek() == 17) {
-			std::cout << "The entire season has been played. Later, consecutive seasons will be implemented.\n";
+			std::cout << "The entire season has been played. Advance to next season? (y/n): ";
+			char c;
+			std::cin >> c;
+			if (c == 'y') {
+				std::cout << "Advancing to next season...";
+				std::cout.flush();
+				league->prepareNextSeason();
+				std::cout << " done.\n\n";
+			}
 			return;
 		}
 

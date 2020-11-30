@@ -57,6 +57,9 @@ class League {
 		for (auto& conference : conferences) {
 			for (auto& school : conference) { allSchools.push_back(&school); }
 		}
+	}
+
+	void sortSchoolVectorByPrestige() {
 		SortByPrestige sbp;
 		std::sort(allSchools.begin(), allSchools.end(), sbp);
 	}
@@ -657,6 +660,7 @@ class League {
 		}
 
 		assembleSchoolVector();
+		sortSchoolVectorByPrestige();
 
 		coachesOrg.fillAllVacancies(allSchools);
 
@@ -687,6 +691,17 @@ class League {
 			}
 			i++;
 		}
+	}
+
+	void prepareNextSeason() {
+		coachesOrg.advanceYear();
+		for (School* school : allSchools) school->prepareNextSeason();
+		year++;
+		week = 0;
+		schedule.clear();
+		schedule.resize(16);
+		sortSchoolVectorByPrestige();
+		initializeSeason();
 	}
 
 	int getCurrentWeek() { return week + 1; }

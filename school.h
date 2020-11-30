@@ -291,4 +291,15 @@ class School {
 		std::cout << "      Head Coach: " << coaches[(int)CoachType::HC]->getName() << " (" << coaches[(int)CoachType::HC]->getPublicOvr()
 				  << " public OVR)\n";
 	}
+	void prepareNextSeason() {
+		ranking = -1;
+		simpleRating = 0;
+		publicRealRating = 0;
+		privateRealRating = 0;
+		numGamesScheduled = 0;
+		conferenceGamesScheduled = 0;
+		crossConfGamesScheduled = 0;
+		schedule.clear(); // this prolly causes a memory leak
+		schedule.resize(16, nullptr);
+	}
 };
