@@ -56,7 +56,7 @@ struct Driver {
 			std::string schoolName;
 			std::getline(std::cin, schoolName);
 			if (schoolName == "") return;
-
+			league->printSchoolDetails(schoolName);
 			while (true) {
 				std::cout << "\nOptions: \n  1) View " + schoolName + "'s roster\n  2) View " + schoolName + "'s schedule/results\n  3) View " +
 								 schoolName + "'s season stats\n  4) Go back\n";
