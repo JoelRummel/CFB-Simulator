@@ -11,22 +11,20 @@ class CoachesOrganization {
 	std::vector<Coach*> coaches; // the realm of all coaches
 
   public:
-	Coach* generateCoach() {
-		int prestige = std::round(std::pow(1.038, std::rand() % 100) / 4);
-		Coach* c = new Coach(prestige);
+	Coach* generateCoach(bool isInitial) {
+		Coach* c = new Coach(isInitial);
 		coaches.push_back(c);
 		return c;
 	}
 
 	Coach* generateCoach(CoachType type) {
-		int prestige = -2;
-		Coach* c = new Coach(prestige, type);
+		Coach* c = new Coach(false, type);
 		coaches.push_back(c);
 		return c;
 	}
 
 	void initializeAllCoaches() {
-		for (int i = 0; i < 1500; i++) generateCoach();
+		for (int i = 0; i < 1500; i++) generateCoach(true);
 	}
 
 	Vacancy createVacancy(School* school, CoachType type) {

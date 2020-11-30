@@ -50,7 +50,7 @@ class Coach {
 	double priorityAlumni;    // 0-1
 	double priorityNFL;       // 0-1, independent of the other three metrics
 
-	double ovrPublic; // 0-100
+	int ovrPublic; // 0-100
 
 	int ovrDevelopment; // 0-100
 	int ovrGametime;    // 0-100
@@ -58,15 +58,21 @@ class Coach {
 	int ovrCulture;     // 0-100
 
   public:
-	// Constructs the coach based on a prestige factor from 0-10
-	Coach(int prestige) {
+	// Constructs the coach randomly, bumping up the public OVR randomly if the simulator is getting initialized
+	Coach(bool initial = false) {
 		// TODO: pick a random alma mater from the GlobalData list of schools
 		name = GlobalData::getRandomCoachName();
-		ovrDevelopment = 40 + (prestige * 5) + RNG::randomNumberNormalDist(0, 7);
-		ovrGametime = 40 + (prestige * 5) + RNG::randomNumberNormalDist(0, 7);
-		ovrRecruiting = 40 + (prestige * 5) + RNG::randomNumberNormalDist(0, 7);
-		ovrCulture = 0;
-		ovrPublic = std::round((ovrDevelopment + ovrGametime + ovrRecruiting) / 3.0);
+		ovrDevelopment = RNG::randomCoachOVR();
+		ovrGametime = RNG::randomCoachOVR();
+		ovrRecruiting = RNG::randomCoachOVR();
+		ovrPublic = 40;
+
+		if (initial) {
+			// Bring the public OVR closer to the actual OVR, with a chance to overrate the coach
+			double closerFactor = (std::rand() % 115) / 100.0;
+			ovrPublic += std::round((((ovrDevelopment + ovrGametime + ovrRecruiting) / 3.0) - 40) * closerFactor);
+			ovrPublic = std::min(ovrPublic, 99);
+		}
 		primaryType = (CoachType)(std::rand() % 8);
 
 		priorityAlumni = (std::rand() % 100) / 100.0;
@@ -79,10 +85,11 @@ class Coach {
 		priorityMoney /= sum;
 		priorityStability /= sum;
 	}
-	Coach(int prestige, CoachType type) : Coach(prestige) { primaryType = type; }
+	Coach(bool isInitial, CoachType type) : Coach(isInitial) { primaryType = type; }
 
 	std::string getName() { return name; }
-	double getPublicOvr() { return ovrPublic; }
+	int getPublicOvr() { return ovrPublic; }
+	int getActualOvr() { return std::round((ovrDevelopment + ovrGametime + ovrRecruiting) / 3.0); }
 
 	double getPreferenceLevel(Vacancy v) {
 		double b = v.salary / 1000000;

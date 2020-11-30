@@ -29,6 +29,18 @@ class RNG {
 		return distrib(gen);
 	}
 
+	// p is from 0 to 1. Higher means tighter distribution.
+	static int randomNumberGeometricDist(int p) {
+		std::geometric_distribution<> d(p);
+		return d(gen);
+	}
+
+	static int randomCoachOVR() {
+		std::uniform_real_distribution<> d(0.0, 1.0);
+		double n = d(gen);
+		return 40 + std::min((int)std::round(67 * std::pow(n, 2)), 59);
+	}
+
 	template<typename T>
 	static void shuffle(std::vector<T>& in) {
 		std::shuffle(in.begin(), in.end(), gen);

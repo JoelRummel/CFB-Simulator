@@ -277,8 +277,8 @@ class School {
 		assert(isVacant(type));
 		coaches[(int)type] = newCoach;
 		if (type == CoachType::HC || type == CoachType::OC || type == CoachType::DC || type == CoachType::LB) {
-			std::cout << getName() << " has hired " << newCoach->getName() << " (" << newCoach->getPublicOvr() << " public ovr) as "
-					  << coachTypeToString(type) << std::endl;
+			std::cout << getName() << " has hired " << newCoach->getName() << " (" << newCoach->getPublicOvr() << "/" << newCoach->getActualOvr()
+					  << " public OVR) as " << coachTypeToString(type) << std::endl;
 		}
 	}
 
