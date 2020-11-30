@@ -1,74 +1,74 @@
 name,mascot,division,state,city,prestige,stadium size,budget,NFL rating,academic rating
-Michigan,Wolverines,Big Ten East,Michigan,Ann Arbor,8,110000,39648000,9,9
-Ohio State,Buckeyes,Big Ten East,Ohio,Columbus,10,90000,37920000,10,7
-Michigan State,Spartans,Big Ten East,Michigan,East Lansing,6,0,34748000,0,0
-Penn State,Nittany Lions,Big Ten East,Pennsylvania,State College,8,0,38653000,0,0
+Michigan,Wolverines,Big Ten East,Michigan,Ann Arbor,8,107420,39648000,9,9
+Ohio State,Buckeyes,Big Ten East,Ohio,Columbus,10,102780,37920000,10,7
+Michigan State,Spartans,Big Ten East,Michigan,East Lansing,6,75005,34748000,0,0
+Penn State,Nittany Lions,Big Ten East,Pennsylvania,State College,8,106572,38653000,0,0
 Maryland,Terrapins,Big Ten East,Maryland,College Park,4,0,19025000,0,0
 Indiana,Hoosiers,Big Ten East,Indiana,Bloomington,5,0,23348000,0,0
 Rutgers,Scarlet Knights,Big Ten East,New Jersey,New Brunswick,2,0,24660000,0,0
-Wisconsin,Badgers,Big Ten West,Wisconsin,Madison,9,0,33310000,0,0
+Wisconsin,Badgers,Big Ten West,Wisconsin,Madison,9,82123,33310000,0,0
 Minnesota,Gophers,Big Ten West,Minnesota,Minneapolis,7,0,29416000,0,0
 Purdue,Boilermakers,Big Ten West,Indiana,West Lafayette,4,0,21681000,0,0
-Nebraska,Cornhuskers,Big Ten West,Nebraska,Lincoln,5,0,35309000,0,0
+Nebraska,Cornhuskers,Big Ten West,Nebraska,Lincoln,5,81500,35309000,0,0
 Illinois,Fighting Illini,Big Ten West,Illinois,Champaign,5,0,20112000,0,0
-Iowa,Hawkeyes,Big Ten West,Iowa,Iowa City,7,0,30267000,0,0
-Northwestern,Wildcats,Big Ten West,Illinois,Evanston,3,0,0,0,0
-Florida,Gators,SEC East,Florida,a,8,0,38014000,0,0
-Georgia,Bulldogs,SEC East,Georgia,a,9,0,36667000,0,0
+Iowa,Hawkeyes,Big Ten West,Iowa,Iowa City,7,70585,30267000,0,0
+Northwestern,Wildcats,Big Ten West,Illinois,Evanston,3,0,22000000,0,0
+Florida,Gators,SEC East,Florida,Gainesville,8,90916,38014000,0,0
+Georgia,Bulldogs,SEC East,Georgia,Athens,9,93246,36667000,0,0
 Kentucky,Wildcats,SEC East,Kentucky,Lexington,6,0,22482000,0,0
-Tennessee,Volunteers,SEC East,Tennessee,Knoxville,5,0,48412000,0,0
-Missouri,Tigers,SEC East,Missouri,Columbia,4,0,21934000,0,0
-South Carolina,Gamecocks,SEC East,South Carolina,Columbia,4,0,31730000,0,0
-Vanderbilt,Commodores,SEC East,Tennessee,Nashville,3,0,0,0,0
-Alabama,Crimson Tide,SEC West,Alabama,Tuscaloosa,10,0,57666000,0,0
-LSU,Tigers,SEC West,Louisiana,a,9,0,30186000,0,0
-Auburn,Tigers,SEC West,Alabama,Auburn,8,0,42306000,0,0
-Texas A&M,a,SEC West,Texas,College Station,6,0,33447000,0,0
+Tennessee,Volunteers,SEC East,Tennessee,Knoxville,5,102455,48412000,0,0
+Missouri,Tigers,SEC East,Missouri,Columbia,4,71168,21934000,0,0
+South Carolina,Gamecocks,SEC East,South Carolina,Columbia,4,80250,31730000,0,0
+Vanderbilt,Commodores,SEC East,Tennessee,Nashville,3,0,22000000,0,0
+Alabama,Crimson Tide,SEC West,Alabama,Tuscaloosa,10,100077,57666000,0,0
+LSU,Tigers,SEC West,Louisiana,a,9,102321,30186000,0,0
+Auburn,Tigers,SEC West,Alabama,Auburn,8,87451,42306000,0,0
+Texas A&M,a,SEC West,Texas,College Station,6,102773,33447000,0,0
 Mississippi State,a,SEC West,Mississippi,a,5,0,21510000,0,0
 Ole Miss,a,SEC West,Mississippi,a,4,0,33065000,0,0
-Arkansas,Razorbacks,SEC West,Arkansas,a,3,0,36845000,0,0
-Oklahoma,Sooners,Big 12,Oklahoma,a,9,0,38331000,0,0
-Texas,Longhorns,Big 12,Texas,a,7,0,34243000,0,0
-Baylor,Bears,Big 12,Texas,Waco,7,0,0,0,0
+Arkansas,Razorbacks,SEC West,Arkansas,Fayatteville,3,76212,36845000,0,0
+Oklahoma,Sooners,Big 12,Oklahoma,Norman,9,80126,38331000,0,0
+Texas,Longhorns,Big 12,Texas,Austin,7,100119,34243000,0,0
+Baylor,Bears,Big 12,Texas,Waco,7,0,23000000,0,0
 Oklahoma State,a,Big 12,Oklahoma,a,6,0,20251000,0,0
 Kansas State,a,Big 12,Kansas,a,6,0,18495000,0,0
 Iowa State,a,Big 12,Iowa,a,5,0,20644000,0,0
-Texas Christian,a,Big 12,Texas,a,5,0,0,0,0
+Texas Christian,a,Big 12,Texas,a,5,0,21500000,0,0
 West Virginia,a,Big 12,West Virginia,a,3,0,18694000,0,0
 Texas Tech,a,Big 12,Texas,a,4,0,27682000,0,0
 Kansas,Jayhawks,Big 12,Kansas,a,2,0,17964000,0,0
-Clemson,Tigers,ACC Atlantic,South Carolina,Clemson,10,0,40118000,0,0
+Clemson,Tigers,ACC Atlantic,South Carolina,Clemson,10,86092,40118000,0,0
 Louisville,Cardinals,ACC Atlantic,Kentucky,Louisville,5,0,23487000,0,0
-Wake Forest,a,ACC Atlantic,a,a,5,0,0,0,0
-Florida State,Seminoles,ACC Atlantic,Florida,a,4,0,45461000,0,0
-Boston College,a,ACC Atlantic,a,a,4,0,0,0,0
-Syracuse,a,ACC Atlantic,a,a,4,0,0,0,0
+Wake Forest,a,ACC Atlantic,a,a,5,0,22000000,0,0
+Florida State,Seminoles,ACC Atlantic,Florida,Tallahassee,4,79560,45461000,0,0
+Boston College,a,ACC Atlantic,a,a,4,0,22500000,0,0
+Syracuse,a,ACC Atlantic,a,a,4,0,23000000,0,0
 North Carolina State,a,ACC Atlantic,North Carolina,a,3,0,22800000,0,0
 Virginia,Cavaliers,ACC Coastal,Virginia,a,6,0,20960000,0,0
 North Carolina,a,ACC Coastal,North Carolina,a,6,0,22949000,0,0
-Virginia Tech,Hokies,ACC Coastal,Virginia,a,5,0,30191000,0,0
-Miami (FL),a,ACC Coastal,Florida,Miami,4,0,0,0,0
-Pitt,a,ACC Coastal,Pennsylvania,a,4,0,0,0,0
-Duke,Blue Devils,ACC Coastal,North Carolina,a,3,0,0,0,0
+Virginia Tech,Hokies,ACC Coastal,Virginia,Blacksburg,5,66233,30191000,0,0
+Miami (FL),Hurricanes,ACC Coastal,Florida,Miami,4,65326,23500000,0,0
+Pitt,a,ACC Coastal,Pennsylvania,a,4,0,22750000,0,0
+Duke,Blue Devils,ACC Coastal,North Carolina,a,3,0,21500000,0,0
 Georgia Tech,a,ACC Coastal,Georgia,a,2,0,20884000,0,0
 Oregon,Ducks,Pac-12 North,Oregon,a,9,0,25342000,0,0
-Washington,Huskies,Pac-12 North,Washington,a,7,0,42053000,0,0
+Washington,Huskies,Pac-12 North,Washington,Seattle,7,70083,42053000,0,0
 California,a,Pac-12 North,California,a,6,0,35270000,0,0
 Washington State,Cougars,Pac-12 North,Washington,a,6,0,18589000,0,0
 Oregon State,a,Pac-12 North,Oregon,a,4,0,16095000,0,0
-Stanford,a,Pac-12 North,a,a,4,0,0,0,0
+Stanford,a,Pac-12 North,a,a,4,0,24000000,0,0
 Utah,a,Pac-12 South,Utah,a,8,0,25088000,0,0
-USC,Trojans,Pac-12 South,California,a,6,0,0,0,0
-Arizona State,Sun Devils,Pac-12 South,Arizona,a,6,0,34886000,0,0
-UCLA,a,Pac-12 South,California,a,4,0,29739000,0,0
+USC,Trojans,Pac-12 South,California,Los Angeles,6,77501,35000000,0,0
+Arizona State,Sun Devils,Pac-12 South,Arizona,Tempe,6,65870,34886000,0,0
+UCLA,Bruins,Pac-12 South,California,Pasadena,4,92542,29739000,0,0
 Colorado,a,Pac-12 South,Colorado,a,4,0,19959000,0,0
 Arizona,a,Pac-12 South,Arizona,a,3,0,24087000,0,0
-Notre Dame,Fighting Irish,Independent,Indiana,South Bend,8,0,0,0,0
-Liberty,Flames,Independent,a,a,3,0,0,0,0
-BYU,a,Independent,a,a,4,0,0,0,0
+Notre Dame,Fighting Irish,Independent,Indiana,South Bend,8,77622,37500000,0,0
+Liberty,Flames,Independent,a,a,3,0,8000000,0,0
+BYU,a,Independent,a,a,4,0,21000000,0,0
 Army,Black Knights,Independent,a,a,4,0,9736000,0,0
-New Mexico State,Aggies,Independent,New Mexico,a,1,0,0,0,0
-Massachusetts,a,Independent,Massachusetts,a,0,0,0,0,0
+New Mexico State,Aggies,Independent,New Mexico,a,1,0,6500000,0,0
+Massachusetts,Minutemen,Independent,Massachusetts,Hadley,0,17000,5500000,0,0
 Miami (OH),Red Hawks,MAC East,Ohio,Miami,5,0,8479000,0,0
 Ohio,Bobcats,MAC East,Ohio,a,4,0,9077000,0,0
 Akron,a,MAC East,a,a,0,0,10728000,0,0
@@ -89,24 +89,24 @@ Florida International,a,C-USA East,Florida,a,2,0,10661000,0,0
 Middle Tennessee State,a,C-USA East,Tennessee,a,2,0,10364000,0,0
 Old Dominion,a,C-USA East,a,a,0,0,9938000,0,0
 Louisiana Tech,a,C-USA West,Louisiana,a,5,0,7463000,0,0
-UAB,a,C-USA West,Alabama,Birmingham,4,0,7766000,0,0
+UAB,Blazers,C-USA West,Alabama,Birmingham,4,71594,7766000,0,0
 Southern Mississippi,a,C-USA West,Mississippi,a,3,0,7827000,0,0
 North Texas,a,C-USA West,Texas,a,2,0,14048000,0,0
 UTSA,a,C-USA West,a,a,1,0,9391000,0,0
-Rice,a,C-USA West,a,a,2,0,0,0,0
-UTEP,a,C-USA West,a,a,0,0,0,0,0
+Rice,a,C-USA West,a,a,2,0,10000000,0,0
+UTEP,a,C-USA West,a,a,0,0,9500000,0,0
 Cincinnati,Bearcats,AAC East,Ohio,Cincinnati,6,0,14274000,0,0
 UCF,a,AAC East,Florida,a,6,0,22936000,0,0
-Temple,a,AAC East,a,a,5,0,0,0,0
-USF,a,AAC East,Florida,a,3,0,12758000,0,0
+Temple,Owls,AAC East,Pennsylvania,Philadelphia,5,69172,14000000,0,0
+South Florida,Bulls,AAC East,Florida,Tampa,3,65647,12758000,0,0
 East Carolina,a,AAC East,a,a,2,0,11418000,0,0
 Connecticut,a,AAC East,Connecticut,a,1,0,16959000,0,0
 Memphis,a,AAC West,a,a,6,0,15112000,0,0
-Navy,a,AAC West,a,a,6,0,0,0,0
-SMU,a,AAC West,a,a,5,0,0,0,0
-Tulane,a,AAC West,a,a,4,0,0,0,0
+Navy,a,AAC West,a,a,6,0,14000000,0,0
+SMU,a,AAC West,a,a,5,0,13000000,0,0
+Tulane,a,AAC West,a,a,4,0,12750000,0,0
 Houston,a,AAC West,a,a,2,0,14986000,0,0
-Tulsa,a,AAC West,a,a,2,0,0,0,0
+Tulsa,a,AAC West,a,a,2,0,12500000,0,0
 Appalachian State,a,Sun Belt East,a,a,6,0,7812000,0,0
 Georgia Southern,a,Sun Belt East,Georgia,a,4,0,6440000,0,0
 Georgia State,a,Sun Belt East,Georgia,a,3,0,7671000,0,0
@@ -123,9 +123,9 @@ Utah State,a,MWC Mountain,Utah,a,4,0,9802000,0,0
 Wyoming,a,MWC Mountain,Wyoming,a,3,0,9932000,0,0
 Colorado State,a,MWC Mountain,Colorado,a,2,0,16057000,0,0
 New Mexico,a,MWC Mountain,New Mexico,a,1,0,9608000,0,0
-San Diego State,a,MWC West,a,a,5,0,14505000,0,0
+San Diego State,Aztecs,MWC West,California,San Diego,5,70561,14505000,0,0
 Hawaii,a,MWC West,Hawaii,a,4,0,11701000,0,0
 Nevada,a,MWC West,Nevada,a,3,0,8938000,0,0
 San Jose State,a,MWC West,a,a,2,0,8385000,0,0
 Fresno State,a,MWC West,a,a,2,0,13271000,0,0
-Nevada-Las Vegas,a,MWC West,Nevada,Las Vegas,1,0,9703000,0,0
+Nevada-Las Vegas,Rebels,MWC West,Nevada,Paradise,1,65000,9703000,0,0
