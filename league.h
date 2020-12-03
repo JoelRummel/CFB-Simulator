@@ -247,6 +247,8 @@ class League {
 
 	void scheduleFinals() {
 		// Find the two semifinals from week 14 (week 15 if 1-indexed)
+		assert(schedule[14][0]->gameResult.awayStats != nullptr);
+		assert(schedule[14][1]->gameResult.homeStats != nullptr);
 		School* winner1;
 		School* winner2;
 		if (schedule[14][0]->gameResult.awayWon) winner1 = schedule[14][0]->away;
@@ -440,12 +442,12 @@ class League {
 			}
 			std::cout << "week " << (week + 1) << " done... ";
 			std::cout.flush();
-			if (week == 11) scheduleConferenceChampionshipGames();
-			if (week == 12) {
+			if (week == 12) scheduleConferenceChampionshipGames();
+			if (week == 13) {
 				rankTeams();
 				schedulePlayoffs();
 			}
-			if (week == 13) scheduleFinals();
+			if (week == 14) scheduleFinals();
 		}
 		std::cout << "\nAll weeks played - season complete." << std::endl;
 
