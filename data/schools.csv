@@ -1,131 +1,131 @@
-name,mascot,division,state,city,prestige,stadium size,budget,NFL rating,academic ranking
-Michigan,Wolverines,Big Ten East,Michigan,Ann Arbor,8,107420,39648000,9,25
-Ohio State,Buckeyes,Big Ten East,Ohio,Columbus,10,102780,37920000,10,54
-Michigan State,Spartans,Big Ten East,Michigan,East Lansing,6,75005,34748000,0,84
-Penn State,Nittany Lions,Big Ten East,Pennsylvania,State College,8,106572,38653000,0,57
-Maryland,Terrapins,Big Ten East,Maryland,College Park,4,51802,19025000,0,64
-Indiana,Hoosiers,Big Ten East,Indiana,Bloomington,5,52929,23348000,0,79
-Rutgers,Scarlet Knights,Big Ten East,New Jersey,New Brunswick,2,52454,24660000,0,62
-Wisconsin,Badgers,Big Ten West,Wisconsin,Madison,9,82123,33310000,0,46
-Minnesota,Golden Gophers,Big Ten West,Minnesota,Minneapolis,7,52525,29416000,0,70
-Purdue,Boilermakers,Big Ten West,Indiana,West Lafayette,4,57236,21681000,0,57
-Nebraska,Cornhuskers,Big Ten West,Nebraska,Lincoln,5,81500,35309000,0,139
-Illinois,Fighting Illini,Big Ten West,Illinois,Champaign,5,60670,20112000,0,48
-Iowa,Hawkeyes,Big Ten West,Iowa,Iowa City,7,70585,30267000,0,84
-Northwestern,Wildcats,Big Ten West,Illinois,Evanston,3,47130,22000000,0,9
-Florida,Gators,SEC East,Florida,Gainesville,8,90916,38014000,0,34
-Georgia,Bulldogs,SEC East,Georgia,Athens,9,93246,36667000,0,50
-Kentucky,Wildcats,SEC East,Kentucky,Lexington,6,61000,22482000,0,139
-Tennessee,Volunteers,SEC East,Tennessee,Knoxville,5,102455,48412000,0,104
-Missouri,Tigers,SEC East,Missouri,Columbia,4,71168,21934000,0,111
-South Carolina,Gamecocks,SEC East,South Carolina,Columbia,4,80250,31730000,0,104
-Vanderbilt,Commodores,SEC East,Tennessee,Nashville,3,39790,22000000,0,15
-Alabama,Crimson Tide,SEC West,Alabama,Tuscaloosa,10,100077,57666000,0,153
-LSU,Tigers,SEC West,Louisiana,a,9,102321,30186000,0,153
-Auburn,Tigers,SEC West,Alabama,Auburn,8,87451,42306000,0,104
-Texas A&M,a,SEC West,Texas,College Station,6,102773,33447000,0,70
-Mississippi State,Bulldogs,SEC West,Mississippi,Starkville,5,61337,21510000,0,211
-Ole Miss,Rebels,SEC West,Mississippi,Oxford,4,64038,33065000,0,162
-Arkansas,Razorbacks,SEC West,Arkansas,Fayatteville,3,76212,36845000,0,153
-Oklahoma,Sooners,Big 12,Oklahoma,Norman,9,80126,38331000,0,132
-Texas,Longhorns,Big 12,Texas,Austin,7,100119,34243000,0,48
-Baylor,Bears,Big 12,Texas,Waco,7,45140,23000000,0,79
-Oklahoma State,Cowboys,Big 12,Oklahoma,Stillwater,6,60218,20251000,0,192
-Kansas State,Wildcats,Big 12,Kansas,Manhattan,6,50000,18495000,0,162
-Iowa State,Cyclones,Big 12,Iowa,Ames,5,61500,20644000,0,121
-TCU,Horned Frogs,Big 12,Texas,Fort Worth,5,45000,21500000,0,97
-West Virginia,Mountaineers,Big 12,West Virginia,Morgantown,3,60540,18694000,0,228
-Texas Tech,Red Raiders,Big 12,Texas,Lubbock,4,60454,27682000,0,218
-Kansas,Jayhawks,Big 12,Kansas,Lawrence,2,50071,17964000,0,130
-Clemson,Tigers,ACC Atlantic,South Carolina,Clemson,10,86092,40118000,0,70
-Louisville,Cardinals,ACC Atlantic,Kentucky,Louisville,5,61000,23487000,0,192
-Wake Forest,Demon Deacons,ACC Atlantic,North Carolina,Winston-Salem,5,31500,22000000,0,27
-Florida State,Seminoles,ACC Atlantic,Florida,Tallahassee,4,79560,45461000,0,57
-Boston College,Eagles,ACC Atlantic,Massachusetts,Chestnut Hill,4,44500,22500000,0,37
-Syracuse,Orange,ACC Atlantic,California,Syracuse,4,49262,23000000,0,54
-NC State,Wolfpack,ACC Atlantic,North Carolina,Raleigh,3,57583,22800000,0,84
-Virginia,Cavaliers,ACC Coastal,Virginia,Charlottesville,6,61500,20960000,0,28
-North Carolina,Tar Heels,ACC Coastal,North Carolina,Chapel Hill,6,51000,22949000,0,29
-Virginia Tech,Hokies,ACC Coastal,Virginia,Blacksburg,5,66233,30191000,0,74
-Miami (FL),Hurricanes,ACC Coastal,Florida,Miami,4,65326,23500000,0,57
-Pittsburgh,Panthers,ACC Coastal,Pennsylvania,Pittsburgh,4,60190,22750000,0,57
-Duke,Blue Devils,ACC Coastal,North Carolina,Durham,3,40004,21500000,0,10
-Georgia Tech,Yellow Jackets,ACC Coastal,Georgia,Atlanta,2,55000,20884000,0,29
-Oregon,Ducks,Pac-12 North,Oregon,Eugene,9,54000,25342000,0,104
-Washington,Huskies,Pac-12 North,Washington,Seattle,7,70083,42053000,0,62
-California,Golden Bears,Pac-12 North,California,Berkeley,6,62717,35270000,0,22
-Washington State,Cougars,Pac-12 North,Washington,Pullman,6,35117,18589000,0,166
-Oregon State,Beavers,Pac-12 North,Oregon,Corvallis,4,45674,16095000,0,139
-Stanford,Cardinal,Pac-12 North,California,Stanford,4,50000,24000000,0,6
-Utah,Utes,Pac-12 South,Utah,Salt Lake City,8,45807,25088000,0,104
-USC,Trojans,Pac-12 South,California,Los Angeles,6,77501,35000000,0,22
-Arizona State,Sun Devils,Pac-12 South,Arizona,Tempe,6,65870,34886000,0,117
-UCLA,Bruins,Pac-12 South,California,Pasadena,4,92542,29739000,0,20
-Colorado,Buffaloes,Pac-12 South,Colorado,Boulder,4,50183,19959000,0,104
-Arizona,Wildcats,Pac-12 South,Arizona,Tucson,3,55675,24087000,0,117
-Notre Dame,Fighting Irish,Independent,Indiana,South Bend,8,77622,37500000,0,15
-Liberty,Flames,Independent,Virginia,Lynchburg,3,0,8000000,0,300
-BYU,Cougars,Independent,Utah,Provo,4,63725,21000000,0,77
-Army,Black Knights,Independent,New York,West Point,4,40000,9736000,0,150
-New Mexico State,Aggies,Independent,New Mexico,Las Cruces,1,30343,6500000,0,263
-Massachusetts,Minutemen,Independent,Massachusetts,Hadley,0,17000,5500000,0,64
-Miami (OH),Red Hawks,MAC East,Ohio,Miami,5,0,8479000,0,91
-Ohio,Bobcats,MAC East,Ohio,a,4,0,9077000,0,185
-Akron,Zips,MAC East,Ohio,Akron,0,30000,10728000,0,300
-Kent State,Golden Flashes,MAC East,Ohio,Kent,3,30520,5981000,0,211
-Buffalo,Bulls,MAC East,New York,Buffalo,5,29013,7860000,0,79
-Bowling Green,a,MAC East,a,a,1,0,6419000,0,246
-Central Michigan,Chippewas,MAC West,Michigan,Mount Pleasant,4,30255,7350000,0,240
-Western Michigan,Broncos,MAC West,Michigan,Kalamazoo,4,30100,9069000,0,246
-Eastern Michigan,Eagles,MAC West,Michigan,Ypsilanti,2,30200,8286000,0,300
-Ball State,Cardinals,MAC West,Indiana,Muncie,3,22500,7395000,0,192
-Northern Illinois,Huskies,MAC West,Illinois,DeKalb,2,30998,8716000,0,300
-Toledo,Rockets,MAC West,Ohio,Toledo,3,26038,9486000,0,300
-Florida Atlantic,Owls,C-USA East,Florida,Boca Raton,5,30000,8102000,0,281
-Marshall,Thundering Herd,C-USA East,West Virginia,Huntington,4,38227,8864000,0,300
-Western Kentucky,a,C-USA East,Kentucky,a,4,0,8752000,0,300
-Charlotte,a,C-USA East,a,a,3,0,10234000,0,228
-FIU,Panthers,C-USA East,Florida,Miami,2,23500,10661000,0,218
-Middle Tennessee,Blue Raiders,C-USA East,Tennessee,Murfreesboro,2,31000,10364000,0,300
-Old Dominion,Monarchs,C-USA East,Virginia,Norfolk,0,19818,9938000,0,263
-Louisiana Tech,Bulldogs,C-USA West,Louisiana,Ruston,5,28562,7463000,0,272
-UAB,Blazers,C-USA West,Alabama,Birmingham,4,71594,7766000,0,166
-Southern Miss,Golden Eagles,C-USA West,Mississippi,Hattiesburg,3,36000,7827000,0,300
-North Texas,Mean Green,C-USA West,Texas,Denton,2,30850,14048000,0,300
-UTSA,Roadrunners,C-USA West,Texas,San Antonio,1,64000,9391000,0,300
-Rice,Owls,C-USA West,Texas,Houston,2,47000,10000000,0,17
-UTEP,Miners,C-USA West,Texas,El Paso,0,51500,9500000,0,300
-Cincinnati,Bearcats,AAC East,Ohio,Cincinnati,6,40101,14274000,0,139
-UCF,Knights,AAC East,Florida,Orlando,6,45323,22936000,0,166
-Temple,Owls,AAC East,Pennsylvania,Philadelphia,5,69172,14000000,0,104
-South Florida,Bulls,AAC East,Florida,Tampa,3,65647,12758000,0,104
-East Carolina,Pirates,AAC East,North Carolina,Greenville,2,50000,11418000,0,228
-UConn,Huskies,AAC East,Connecticut,East Hartford,1,42704,16959000,0,64
-Memphis,a,AAC West,a,a,6,0,15112000,0,272
-Navy,Midshipman,AAC West,Maryland,Annapolis,6,34000,14000000,0,150
-SMU,Mustangs,AAC West,Texas,University Park,5,32000,13000000,0,64
-Tulane,Green Wave,AAC West,Louisiana,New Orleans,4,30000,12750000,0,40
-Houston,Cougars,AAC West,Texas,Houston,2,40000,14986000,0,185
-Tulsa,Golden Hurricanes,AAC West,Oklahoma,Tulsa,2,30000,12500000,0,121
-Appalachian State,a,Sun Belt East,a,a,6,0,7812000,0,300
-Georgia Southern,a,Sun Belt East,Georgia,a,4,0,6440000,0,300
-Georgia State,a,Sun Belt East,Georgia,a,3,0,7671000,0,211
-Troy,Trojans,Sun Belt East,Alabama,Troy,3,30402,8289000,0,300
-Coastal Carolina,a,Sun Belt East,a,a,2,0,8411000,0,300
-Louisiana-Lafayette,Ragin' Cajuns,Sun Belt West,Louisiana,Lafayette,5,36900,8826000,0,300
-Arkansas State,Red Wolves,Sun Belt West,Arkansas,Jonesboro,4,30964,17041000,0,300
+name,mascot,division,state,city,prestige,stadium size,budget,NFL players,academic ranking
+Michigan,Wolverines,Big Ten East,Michigan,Ann Arbor,8,107420,39648000,33,25
+Ohio State,Buckeyes,Big Ten East,Ohio,Columbus,10,102780,37920000,50,54
+Michigan State,Spartans,Big Ten East,Michigan,East Lansing,6,75005,34748000,12,84
+Penn State,Nittany Lions,Big Ten East,Pennsylvania,State College,8,106572,38653000,32,57
+Maryland,Terrapins,Big Ten East,Maryland,College Park,4,51802,19025000,11,64
+Indiana,Hoosiers,Big Ten East,Indiana,Bloomington,5,52929,23348000,9,79
+Rutgers,Scarlet Knights,Big Ten East,New Jersey,New Brunswick,2,52454,24660000,10,62
+Wisconsin,Badgers,Big Ten West,Wisconsin,Madison,9,82123,33310000,25,46
+Minnesota,Golden Gophers,Big Ten West,Minnesota,Minneapolis,7,52525,29416000,9,70
+Purdue,Boilermakers,Big Ten West,Indiana,West Lafayette,4,57236,21681000,10,57
+Nebraska,Cornhuskers,Big Ten West,Nebraska,Lincoln,5,81500,35309000,18,139
+Illinois,Fighting Illini,Big Ten West,Illinois,Champaign,5,60670,20112000,10,48
+Iowa,Hawkeyes,Big Ten West,Iowa,Iowa City,7,70585,30267000,28,84
+Northwestern,Wildcats,Big Ten West,Illinois,Evanston,3,47130,22000000,7,9
+Florida,Gators,SEC East,Florida,Gainesville,8,90916,38014000,39,34
+Georgia,Bulldogs,SEC East,Georgia,Athens,9,93246,36667000,32,50
+Kentucky,Wildcats,SEC East,Kentucky,Lexington,6,61000,22482000,12,139
+Tennessee,Volunteers,SEC East,Tennessee,Knoxville,5,102455,48412000,19,104
+Missouri,Tigers,SEC East,Missouri,Columbia,4,71168,21934000,13,111
+South Carolina,Gamecocks,SEC East,South Carolina,Columbia,4,80250,31730000,24,104
+Vanderbilt,Commodores,SEC East,Tennessee,Nashville,3,39790,22000000,12,15
+Alabama,Crimson Tide,SEC West,Alabama,Tuscaloosa,10,100077,57666000,56,153
+LSU,Tigers,SEC West,Louisiana,Baton Rouge,9,102321,30186000,41,153
+Auburn,Tigers,SEC West,Alabama,Auburn,8,87451,42306000,25,104
+Texas A&M,Aggies,SEC West,Texas,College Station,6,102773,33447000,27,70
+Mississippi State,Bulldogs,SEC West,Mississippi,Starkville,5,61337,21510000,21,211
+Ole Miss,Rebels,SEC West,Mississippi,Oxford,4,64038,33065000,14,162
+Arkansas,Razorbacks,SEC West,Arkansas,Fayatteville,3,76212,36845000,13,153
+Oklahoma,Sooners,Big 12,Oklahoma,Norman,9,80126,38331000,29,132
+Texas,Longhorns,Big 12,Texas,Austin,7,100119,34243000,25,48
+Baylor,Bears,Big 12,Texas,Waco,7,45140,23000000,7,79
+Oklahoma State,Cowboys,Big 12,Oklahoma,Stillwater,6,60218,20251000,11,192
+Kansas State,Wildcats,Big 12,Kansas,Manhattan,6,50000,18495000,9,162
+Iowa State,Cyclones,Big 12,Iowa,Ames,5,61500,20644000,5,121
+TCU,Horned Frogs,Big 12,Texas,Fort Worth,5,45000,21500000,14,97
+West Virginia,Mountaineers,Big 12,West Virginia,Morgantown,3,60540,18694000,15,228
+Texas Tech,Red Raiders,Big 12,Texas,Lubbock,4,60454,27682000,13,218
+Kansas,Jayhawks,Big 12,Kansas,Lawrence,2,50071,17964000,5,130
+Clemson,Tigers,ACC Atlantic,South Carolina,Clemson,10,86092,40118000,29,70
+Louisville,Cardinals,ACC Atlantic,Kentucky,Louisville,5,61000,23487000,9,192
+Wake Forest,Demon Deacons,ACC Atlantic,North Carolina,Winston-Salem,5,31500,22000000,8,27
+Florida State,Seminoles,ACC Atlantic,Florida,Tallahassee,4,79560,45461000,28,57
+Boston College,Eagles,ACC Atlantic,Massachusetts,Chestnut Hill,4,44500,22500000,14,37
+Syracuse,Orange,ACC Atlantic,California,Syracuse,4,49262,23000000,7,54
+NC State,Wolfpack,ACC Atlantic,North Carolina,Raleigh,3,57583,22800000,20,84
+Virginia,Cavaliers,ACC Coastal,Virginia,Charlottesville,6,61500,20960000,12,28
+North Carolina,Tar Heels,ACC Coastal,North Carolina,Chapel Hill,6,51000,22949000,10,29
+Virginia Tech,Hokies,ACC Coastal,Virginia,Blacksburg,5,66233,30191000,16,74
+Miami (FL),Hurricanes,ACC Coastal,Florida,Miami,4,65326,23500000,30,57
+Pittsburgh,Panthers,ACC Coastal,Pennsylvania,Pittsburgh,4,60190,22750000,14,57
+Duke,Blue Devils,ACC Coastal,North Carolina,Durham,3,40004,21500000,6,10
+Georgia Tech,Yellow Jackets,ACC Coastal,Georgia,Atlanta,2,55000,20884000,6,29
+Oregon,Ducks,Pac-12 North,Oregon,Eugene,9,54000,25342000,13,104
+Washington,Huskies,Pac-12 North,Washington,Seattle,7,70083,42053000,28,62
+California,Golden Bears,Pac-12 North,California,Berkeley,6,62717,35270000,18,22
+Washington State,Cougars,Pac-12 North,Washington,Pullman,6,35117,18589000,7,166
+Oregon State,Beavers,Pac-12 North,Oregon,Corvallis,4,45674,16095000,10,139
+Stanford,Cardinal,Pac-12 North,California,Stanford,4,50000,24000000,27,6
+Utah,Utes,Pac-12 South,Utah,Salt Lake City,8,45807,25088000,19,104
+USC,Trojans,Pac-12 South,California,Los Angeles,6,77501,35000000,23,22
+Arizona State,Sun Devils,Pac-12 South,Arizona,Tempe,6,65870,34886000,7,117
+UCLA,Bruins,Pac-12 South,California,Pasadena,4,92542,29739000,25,20
+Colorado,Buffaloes,Pac-12 South,Colorado,Boulder,4,50183,19959000,13,104
+Arizona,Wildcats,Pac-12 South,Arizona,Tucson,3,55675,24087000,5,117
+Notre Dame,Fighting Irish,Independent,Indiana,South Bend,8,77622,37500000,29,15
+Liberty,Flames,Independent,Virginia,Lynchburg,3,0,8000000,1,300
+BYU,Cougars,Independent,Utah,Provo,4,63725,21000000,7,77
+Army,Black Knights,Independent,New York,West Point,4,40000,9736000,1,150
+New Mexico State,Aggies,Independent,New Mexico,Las Cruces,1,30343,6500000,1,263
+Massachusetts,Minutemen,Independent,Massachusetts,Hadley,0,17000,5500000,4,64
+Miami (OH),Red Hawks,MAC East,Ohio,Miami,5,0,8479000,3,91
+Ohio,Bobcats,MAC East,Ohio,a,4,0,9077000,2,185
+Akron,Zips,MAC East,Ohio,Akron,0,30000,10728000,2,300
+Kent State,Golden Flashes,MAC East,Ohio,Kent,3,30520,5981000,2,211
+Buffalo,Bulls,MAC East,New York,Buffalo,5,29013,7860000,2,79
+Bowling Green,a,MAC East,a,a,1,0,6419000,1,246
+Central Michigan,Chippewas,MAC West,Michigan,Mount Pleasant,4,30255,7350000,4,240
+Western Michigan,Broncos,MAC West,Michigan,Kalamazoo,4,30100,9069000,5,246
+Eastern Michigan,Eagles,MAC West,Michigan,Ypsilanti,2,30200,8286000,3,300
+Ball State,Cardinals,MAC West,Indiana,Muncie,3,22500,7395000,2,192
+Northern Illinois,Huskies,MAC West,Illinois,DeKalb,2,30998,8716000,5,300
+Toledo,Rockets,MAC West,Ohio,Toledo,3,26038,9486000,8,300
+Florida Atlantic,Owls,C-USA East,Florida,Boca Raton,5,30000,8102000,9,281
+Marshall,Thundering Herd,C-USA East,West Virginia,Huntington,4,38227,8864000,5,300
+Western Kentucky,a,C-USA East,Kentucky,a,4,0,8752000,6,300
+Charlotte,a,C-USA East,a,a,3,0,10234000,4,228
+FIU,Panthers,C-USA East,Florida,Miami,2,23500,10661000,4,218
+MTSU,Blue Raiders,C-USA East,Tennessee,Murfreesboro,2,31000,10364000,3,300
+Old Dominion,Monarchs,C-USA East,Virginia,Norfolk,0,19818,9938000,4,263
+Louisiana Tech,Bulldogs,C-USA West,Louisiana,Ruston,5,28562,7463000,9,272
+UAB,Blazers,C-USA West,Alabama,Birmingham,4,71594,7766000,3,166
+Southern Miss,Golden Eagles,C-USA West,Mississippi,Hattiesburg,3,36000,7827000,11,300
+North Texas,Mean Green,C-USA West,Texas,Denton,2,30850,14048000,3,300
+UTSA,Roadrunners,C-USA West,Texas,San Antonio,1,64000,9391000,2,300
+Rice,Owls,C-USA West,Texas,Houston,2,47000,10000000,8,17
+UTEP,Miners,C-USA West,Texas,El Paso,0,51500,9500000,4,300
+Cincinnati,Bearcats,AAC East,Ohio,Cincinnati,6,40101,14274000,12,139
+UCF,Knights,AAC East,Florida,Orlando,6,45323,22936000,13,166
+Temple,Owls,AAC East,Pennsylvania,Philadelphia,5,69172,14000000,20,104
+South Florida,Bulls,AAC East,Florida,Tampa,3,65647,12758000,6,104
+East Carolina,Pirates,AAC East,North Carolina,Greenville,2,50000,11418000,2,228
+UConn,Huskies,AAC East,Connecticut,East Hartford,1,42704,16959000,8,64
+Memphis,a,AAC West,a,a,6,0,15112000,11,272
+Navy,Midshipman,AAC West,Maryland,Annapolis,6,34000,14000000,2,150
+SMU,Mustangs,AAC West,Texas,University Park,5,32000,13000000,10,64
+Tulane,Green Wave,AAC West,Louisiana,New Orleans,4,30000,12750000,3,40
+Houston,Cougars,AAC West,Texas,Houston,2,40000,14986000,13,185
+Tulsa,Golden Hurricanes,AAC West,Oklahoma,Tulsa,2,30000,12500000,2,121
+Appalachian State,a,Sun Belt East,a,a,6,0,7812000,5,300
+Georgia Southern,a,Sun Belt East,Georgia,a,4,0,6440000,5,300
+Georgia State,a,Sun Belt East,Georgia,a,3,0,7671000,2,211
+Troy,Trojans,Sun Belt East,Alabama,Troy,3,30402,8289000,2,300
+Coastal Carolina,a,Sun Belt East,a,a,2,0,8411000,1,300
+Louisiana-Lafayette,Ragin' Cajuns,Sun Belt West,Louisiana,Lafayette,5,36900,8826000,3,300
+Arkansas State,Red Wolves,Sun Belt West,Arkansas,Jonesboro,4,30964,17041000,2,300
 Louisiana-Monroe,Warhawks,Sun Belt West,Louisiana,Monroe,3,30427,5367000,0,300
-Texas State,Bobcats,Sun Belt West,Texas,San Marcos,1,30000,7477000,0,300
-South Alabama,Jaguars,Sun Belt West,Alabama,Mobile,1,40646,9705000,0,300
-Boise State,Broncos,MWC Mountain,Idaho,Boise,6,36387,17366000,0,300
-Air Force,Falcons,MWC Mountain,Colorado,Colorado Springs,6,46692,10598000,0,150
-Utah State,a,MWC Mountain,Utah,a,4,0,9802000,0,254
-Wyoming,Cowboys,MWC Mountain,Wyoming,Laramie,3,32580,9932000,0,228
-Colorado State,Rams,MWC Mountain,Colorado,Fort Collins,2,41000,16057000,0,166
-New Mexico,Lobos,MWC Mountain,New Mexico,Albuquerque,1,39224,9608000,0,218
-San Diego State,Aztecs,MWC West,California,San Diego,5,70561,14505000,0,147
-Hawaii,Warriors,MWC West,Hawaii,Honolulu,4,50000,11701000,0,166
-Nevada,a,MWC West,Nevada,a,3,0,8938000,0,240
-San Jose State,Spartans,MWC West,California,San Jose,2,30456,8385000,0,300
-Fresno State,Bulldogs,MWC West,California,Fresno,2,40727,13271000,0,211
+Texas State,Bobcats,Sun Belt West,Texas,San Marcos,1,30000,7477000,3,300
+South Alabama,Jaguars,Sun Belt West,Alabama,Mobile,1,40646,9705000,1,300
+Boise State,Broncos,MWC Mountain,Idaho,Boise,6,36387,17366000,12,300
+Air Force,Falcons,MWC Mountain,Colorado,Colorado Springs,6,46692,10598000,2,150
+Utah State,a,MWC Mountain,Utah,a,4,0,9802000,8,254
+Wyoming,Cowboys,MWC Mountain,Wyoming,Laramie,3,32580,9932000,13,228
+Colorado State,Rams,MWC Mountain,Colorado,Fort Collins,2,41000,16057000,7,166
+New Mexico,Lobos,MWC Mountain,New Mexico,Albuquerque,1,39224,9608000,2,218
+San Diego State,Aztecs,MWC West,California,San Diego,5,70561,14505000,7,147
+Hawaii,Warriors,MWC West,Hawaii,Honolulu,4,50000,11701000,4,166
+Nevada,a,MWC West,Nevada,a,3,0,8938000,4,240
+San Jose State,Spartans,MWC West,California,San Jose,2,30456,8385000,3,300
+Fresno State,Bulldogs,MWC West,California,Fresno,2,40727,13271000,8,211
 Nevada-Las Vegas,Rebels,MWC West,Nevada,Paradise,1,65000,9703000,0,300
