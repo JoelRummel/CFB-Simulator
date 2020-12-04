@@ -113,7 +113,7 @@ class Roster {
 
 	void printPositionGroup(Position pos) {
 		// We need to decide relevant statistics
-		std::vector<std::pair<Rating, double>> ratings = getRatingFactors(pos);
+		std::vector<std::pair<Rating, int>> ratings = getRatingFactors(pos).first;
 		printf("Name                 Year       OVR  ");
 		for (int i = 0; i < ratings.size(); i++) { printf("%-5s", ratingToStr(ratings[i].first).c_str()); }
 		printf("\n------------------------------------");
