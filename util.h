@@ -29,6 +29,11 @@ class RNG {
 		return distrib(gen);
 	}
 
+	static double randomNumberUniformDist(double lower = 0.0, double upper = 1.0) {
+		std::uniform_real_distribution<> d(lower, upper);
+		return d(gen);
+	}
+
 	// p is from 0 to 1. Higher means tighter distribution.
 	static int randomNumberGeometricDist(int p) {
 		std::geometric_distribution<> d(p);
@@ -36,8 +41,7 @@ class RNG {
 	}
 
 	static int randomCoachOVR() {
-		std::uniform_real_distribution<> d(0.0, 1.0);
-		double n = d(gen);
+		double n = randomNumberUniformDist();
 		return 40 + std::min((int)std::round(67 * std::pow(n, 2)), 59);
 	}
 
