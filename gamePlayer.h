@@ -612,7 +612,7 @@ class GamePlayer {
 								} else {
 									// moderate chance for an interception...
 									Player* interceptor = *select_randomly(coverers.begin(), coverers.end());
-									if (std::rand() % 200 < interceptor->getRating(CATCH) * 0.5) {
+									if (std::rand() % 330 < interceptor->getRating(CATCH) * 0.5) {
 										printPlay(positionToStr(interceptor->getPosition()) + " " + interceptor->getName() +
 												  " had the receiver covered and intercepted the ball!");
 										yardLine -= getYardsFromCatch(target);
@@ -629,9 +629,9 @@ class GamePlayer {
 								if (target->gameState.zone == MIDDLE) penaltyFactor = 0.9;
 								if (target->gameState.zone == DEEP) penaltyFactor = 0.75;
 								// missed throw?
-								if (std::rand() % 115 > 80 + (ballCarrier->getRating(PASSACCURACY) * 0.2 * penaltyFactor)) {
+								if (std::rand() % 112 > 80 + (ballCarrier->getRating(PASSACCURACY) * 0.2 * penaltyFactor)) {
 									Player* interceptor = *select_randomly(coverers.begin(), coverers.end());
-									if (std::rand() % 300 < interceptor->getRating(CATCH) * 0.5) {
+									if (std::rand() % 390 < interceptor->getRating(CATCH) * 0.5) {
 										printPlay("The QB was off-target and " + positionToStr(interceptor->getPosition()) + " " +
 												  interceptor->getName() + " intercepted the ball!");
 										yardLine -= getYardsFromCatch(target);
@@ -644,7 +644,7 @@ class GamePlayer {
 								// deflected ball?
 								if (std::rand() % 150 < 0.5 * target->gameState.coverRating) {
 									Player* interceptor = *select_randomly(coverers.begin(), coverers.end());
-									if (std::rand() % 300 < interceptor->getRating(CATCH) * 0.5) {
+									if (std::rand() % 330 < interceptor->getRating(CATCH) * 0.5) {
 										printPlay(positionToStr(interceptor->getPosition()) + " " + interceptor->getName() +
 												  " made a play on the ball and intercepted it!");
 										yardLine -= getYardsFromCatch(target);
