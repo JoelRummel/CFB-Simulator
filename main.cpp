@@ -3,11 +3,6 @@
 
 #include <iostream>
 
-void printPlayer(Player& p) {
-	std::cout << positionToStr(p.getPosition()) << " " << p.getName() << " (" << p.getRating() << " OVR, " << p.getPotential() << " POT) - "
-			  << p.getYearString() << "\n";
-}
-
 int getInt() {
 	int i;
 	std::cin >> i;
