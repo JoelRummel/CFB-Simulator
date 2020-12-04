@@ -343,8 +343,8 @@ class League {
 																						std::make_pair("Clemson", "Georgia Tech"),
 																						std::make_pair("Florida State", "Miami (FL)"),
 																						std::make_pair("Louisville", "Virginia"),
-																						std::make_pair("North Carolina State", "North Carolina"),
-																						std::make_pair("Syracuse", "Pitt"),
+																						std::make_pair("NC State", "North Carolina"),
+																						std::make_pair("Syracuse", "Pittsburgh"),
 																						std::make_pair("Wake Forest", "Duke") };
 							opponent = pickMyPartner(pairings, name);
 							assignMatchup(findSchool(oppDiv, opponent), school);
