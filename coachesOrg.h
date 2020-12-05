@@ -30,11 +30,11 @@ class CoachesOrganization {
 	Vacancy createVacancy(School* school, CoachType type) {
 		int budget = school->getBudget();
 		if (type != CoachType::HC) {
-			if (type == CoachType::DC || type == CoachType::OC) budget /= 3;
+			if (type == CoachType::DC || type == CoachType::OC) budget /= 3.5;
 			else if (type == CoachType::ST)
-				budget /= 4;
+				budget /= 5;
 			else
-				budget /= 6;
+				budget /= 7;
 		}
 		Vacancy v { school, school->getName(), type, budget };
 		return v;
