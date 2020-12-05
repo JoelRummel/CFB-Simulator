@@ -90,6 +90,10 @@ class Coach {
 	std::string getName() { return name; }
 	int getPublicOvr() { return ovrPublic; }
 	int getActualOvr() { return std::round((ovrDevelopment + ovrGametime + ovrRecruiting) / 3.0); }
+	int getOvrDevelopment() { return ovrDevelopment; }
+	int getOvrRecruiting() { return ovrRecruiting; }
+	int getOvrGametime() { return ovrGametime; }
+	std::string getTypeString() { return coachTypeToString(currentJob.type); }
 
 	double getPreferenceLevel(Vacancy v) {
 		double b = v.salary / 1000000;
