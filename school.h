@@ -106,6 +106,25 @@ class School {
 			return std::make_pair(m->gameResult.homeStats, m->gameResult.awayStats);
 	}
 
+	void printCoachBars(Coach* c[3], std::string rating) {
+		printf("%-25s|%-25s|%-25s\n", c[0]->getTypeString().c_str(), c[1]->getTypeString().c_str(),
+			   c[2] != nullptr ? c[2]->getTypeString().c_str() : "");
+		double cumPercent; // CUMULATIVE percent, obviously
+		for (int i = 0; i < (c[2] != nullptr ? 3 : 2); i++) {
+			int r;
+			if (rating == "d") r = c[i]->getOvrDevelopment();
+			else if (rating == "r")
+				r = c[i]->getOvrRecruiting();
+			else
+				r = c[i]->getOvrGametime();
+			double pct = ((r - 40) / 59.0) * 100.0;
+			cumPercent += pct;
+			for (int j = 0; j < 100; j += 4) std::cout << ((j < pct) ? "█" : " ");
+			std::cout << "|";
+		}
+		printf("  Total: %.1f%%\n\n", cumPercent / (c[2] != nullptr ? 3 : 2));
+	}
+
   public:
 	NonConStrategy strategy;
 
@@ -290,6 +309,48 @@ class School {
 		std::cout << "      Conf. record: " << getWinLossString(true) << "\n";
 		std::cout << "      Head Coach: " << coaches[(int)CoachType::HC]->getName() << " (" << coaches[(int)CoachType::HC]->getPublicOvr()
 				  << " public OVR)\n";
+	}
+	void printCoachingStaff() {
+		// Print details of each coach
+		std::cout << std::endl;
+		for (int i = 0; i < 11; i++) {
+			Coach* c = coaches[i];
+			printf("%-27s%-20s%d/%d public OVR ( %d DVLP | %d RCRT | %d GAME )\n", coachTypeToString((CoachType)i).c_str(), c->getName().c_str(),
+				   c->getPublicOvr(), c->getActualOvr(), c->getOvrDevelopment(), c->getOvrRecruiting(), c->getOvrGametime());
+		}
+	}
+	void printCoachingImpact(Position p) {
+		Coach* c[3];
+		c[0] = coaches[(int)CoachType::HC];
+		c[1] = coaches[(int)CoachType::OC];
+		Coach* dc = coaches[(int)CoachType::DC];
+		if (p == CB || p == S) {
+			c[1] = dc;
+			c[2] = coaches[(int)CoachType::DB];
+		} else if (p == LB) {
+			c[1] = dc;
+			c[2] = coaches[(int)CoachType::LB];
+		} else if (p == DL) {
+			c[1] = dc;
+			c[2] = coaches[(int)CoachType::DL];
+		} else if (p == QB) {
+			c[2] = coaches[(int)CoachType::QB];
+		} else if (p == HB) {
+			c[2] = coaches[(int)CoachType::RB];
+		} else if (p == OL) {
+			c[2] = coaches[(int)CoachType::OL];
+		} else if (p == WR || p == TE) {
+			c[2] = coaches[(int)CoachType::WR];
+		} else {
+			c[1] = coaches[(int)CoachType::ST];
+			c[2] = nullptr;
+		}
+		std::cout << "PLAYER DEVELOPMENT:\n";
+		printCoachBars(c, "d");
+		std::cout << "RECRUITING:\n";
+		printCoachBars(c, "r");
+		std::cout << "GAME PLANNING + MOTIVATION:\n";
+		printCoachBars(c, "g");
 	}
 	void prepareNextSeason() {
 		ranking = -1;

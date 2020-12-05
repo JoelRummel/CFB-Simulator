@@ -649,6 +649,18 @@ class League {
 		school->printDetails();
 	}
 
+	void printSchoolCoachingStaff(std::string schoolName) {
+		School* school = findSchoolByName(schoolName);
+		if (school == nullptr) return;
+		school->printCoachingStaff();
+	}
+
+	void printSchoolCoachingByPosition(std::string schoolName, Position p) {
+		School* school = findSchoolByName(schoolName);
+		if (school == nullptr) return;
+		school->printCoachingImpact(p);
+	}
+
 	League() {
 		coachesOrg.initializeAllCoaches();
 

@@ -54,7 +54,7 @@ struct Driver {
 			league->printSchoolDetails(schoolName);
 			while (true) {
 				std::cout << "\nOptions: \n  1) View " + schoolName + "'s roster\n  2) View " + schoolName + "'s schedule/results\n  3) View " +
-								 schoolName + "'s season stats\n  4) Go back\n";
+								 schoolName + "'s season stats\n  4) View " + schoolName + "'s coaching staff\n  5) Go back\n";
 				std::cout << "Enter selection: ";
 				int choice = getInt();
 				if (choice == 1) {
@@ -94,6 +94,17 @@ struct Driver {
 						++player;
 					}
 					if (choice < 0) delete stats;
+				} else if (choice == 4) {
+					league->printSchoolCoachingStaff(schoolName);
+					std::string pos;
+					while (true) {
+						std::cout << "\nEnter a position (valid positions are QB, HB, WR, TE, OL, DL, LB, CB, S, K, P) to see a breakdown of coach "
+									 "contributions to that position, or leave blank to return: ";
+
+						std::getline(std::cin, pos);
+						if (pos == "") break;
+						league->printSchoolCoachingByPosition(schoolName, strToPosition(pos));
+					}
 				} else
 					break;
 			}
