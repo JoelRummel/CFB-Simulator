@@ -301,6 +301,21 @@ class School {
 		}
 	}
 
+	void applyGametimeBonuses() {
+		for (Position p : { QB, HB, WR, TE, OL, DL, LB, CB, S, K, P }) {
+			std::vector<Player*> players = roster.getAllPlayersAt(p, false);
+			for (Player* player : players) {
+				double bonus = coaches[(int)getPositionalCoachType(p)]->getActualOvr();
+				CoachType t = getSecondLevelCoachType(p);
+				if (t != CoachType::ST) bonus += coaches[(int)t]->getActualOvr();
+				bonus += coaches[(int)CoachType::HC]->getActualOvr();
+				bonus -= (t == CoachType::ST ? 80 : 120);
+				bonus /= (59.0 * (t == CoachType::ST ? 2 : 3));
+				player->setGametimeBonus(bonus);
+			}
+		}
+	}
+
 	bool isVacant(CoachType position) { return coaches[(int)position] == nullptr; }
 
 	void printDetails() {
@@ -322,29 +337,9 @@ class School {
 	void printCoachingImpact(Position p) {
 		Coach* c[3];
 		c[0] = coaches[(int)CoachType::HC];
-		c[1] = coaches[(int)CoachType::OC];
-		Coach* dc = coaches[(int)CoachType::DC];
-		if (p == CB || p == S) {
-			c[1] = dc;
-			c[2] = coaches[(int)CoachType::DB];
-		} else if (p == LB) {
-			c[1] = dc;
-			c[2] = coaches[(int)CoachType::LB];
-		} else if (p == DL) {
-			c[1] = dc;
-			c[2] = coaches[(int)CoachType::DL];
-		} else if (p == QB) {
-			c[2] = coaches[(int)CoachType::QB];
-		} else if (p == HB) {
-			c[2] = coaches[(int)CoachType::RB];
-		} else if (p == OL) {
-			c[2] = coaches[(int)CoachType::OL];
-		} else if (p == WR || p == TE) {
-			c[2] = coaches[(int)CoachType::WR];
-		} else {
-			c[1] = coaches[(int)CoachType::ST];
-			c[2] = nullptr;
-		}
+		c[1] = coaches[(int)getSecondLevelCoachType(p)];
+		c[2] = coaches[(int)getPositionalCoachType(p)];
+		if (getPositionalCoachType(p) == CoachType::ST) c[2] = nullptr;
 		std::cout << "PLAYER DEVELOPMENT:\n";
 		printCoachBars(c, "d");
 		std::cout << "RECRUITING:\n";

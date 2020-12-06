@@ -512,8 +512,11 @@ class League {
 
 	void initializeSeason() {
 		createMatchups();
-		// Tell all schools to fix up depth charts
-		for (auto& school : allSchools) { school->getRoster()->organizeDepthChart(); }
+		// Tell all schools to fix up depth charts and apply their coach bonuses
+		for (auto& school : allSchools) {
+			school->getRoster()->organizeDepthChart();
+			school->applyGametimeBonuses();
+		}
 	}
 
   public:

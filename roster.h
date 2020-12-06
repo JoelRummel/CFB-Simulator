@@ -73,13 +73,15 @@ class Roster {
 		generateSpecialTeams();
 	}
 
-	std::vector<Player*> getAllPlayersAt(Position p) {
+	std::vector<Player*> getAllPlayersAt(Position p, bool sorted = true) {
 		std::vector<Player*> vec;
 		for (int i = 0; i < (int)roster.size(); ++i) {
 			if (roster[i].getPosition() == p) vec.push_back(&(roster[i]));
 		}
-		SortByRating sbr;
-		std::sort(vec.begin(), vec.end(), sbr);
+		if (sorted) {
+			SortByRating sbr;
+			std::sort(vec.begin(), vec.end(), sbr);
+		}
 		return vec;
 	}
 
@@ -95,6 +97,10 @@ class Roster {
 	void organizeDepthChart() {
 		depthChart.clear();
 		for (Position p : { QB, HB, WR, TE, OL, DL, LB, CB, S, K, P }) { depthChart.push_back(getAllPlayersAt(p)); }
+	}
+
+	void applyGametimeBonus(double pct) {
+		for (auto& p : roster) { p.setGametimeBonus(pct); }
 	}
 
 	void printRoster() {

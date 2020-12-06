@@ -194,9 +194,9 @@ class Player {
 	std::string name;
 	Position position;
 	int year;
-	double trainingMultiplier;
 	std::vector<int> ratings;
 	int ovr;
+	double gametimeBonus;
 
   public:
 	struct GameState {
@@ -228,7 +228,13 @@ class Player {
 	int getYear() const { return year; }
 	std::string getYearString() const { return year == 1 ? "Freshman" : year == 2 ? "Sophomore" : year == 3 ? "Junior" : "Senior"; }
 	int getOVR() const { return ovr; }
-	int getRating(Rating r) const { return ratings[r]; }
+	int getRating(Rating r) const {
+		// Gametime "bonus" is a bit of a misnomer. Lack of a bonus is penalizing and a full bonus simply does nothing.
+		int penalty = 15;
+		penalty = std::round((1 - gametimeBonus) * penalty);
+		return ratings[r] - penalty;
+	}
+	void setGametimeBonus(double b) { gametimeBonus = b; }
 	void advanceTick() {
 		assert(!(position == WR && gameState.zone == BACKFIELD));
 		gameState.tick++;
