@@ -36,7 +36,7 @@ class CoachesOrganization {
 			else
 				budget /= 7;
 		}
-		Vacancy v { school, school->getName(), type, budget };
+		Vacancy v { school, school->getName(), type, budget, school->getPrestige() };
 		return v;
 	}
 
