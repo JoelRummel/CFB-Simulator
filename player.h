@@ -518,6 +518,7 @@ struct TeamStats {
 		bool agg = (games > 1);
 		double dGames = (double)games;
 		printf("OFFENSE\n----------------------------------------\n");
+		if (agg) printf("Average points: %24.1f\n", points / dGames);
 		printf("Total yards: %27d\n", offensiveYards());
 		if (agg) printf("   Average: %28.1f\n", offensiveYards() / dGames);
 		printf("Rushing yards: %25d\n", rushingYards());
@@ -629,6 +630,7 @@ struct TeamStats {
 		this->numPossessions += rhs.numPossessions;
 		this->yardsAllowed += rhs.yardsAllowed;
 		this->games += rhs.games;
+		this->points += rhs.points;
 
 		return *this;
 	}
@@ -639,4 +641,13 @@ struct GameResult {
 	TeamStats* homeStats = nullptr;
 	bool awayWon;
 	bool homeWon;
+
+	GameResult& operator+=(GameResult& rhs) {
+		*(this->awayStats) += *(rhs.awayStats);
+		*(this->homeStats) += *(rhs.homeStats);
+		// These pretty much become invalidated
+		this->awayWon = false;
+		this->homeWon = false;
+		return *this;
+	}
 };
