@@ -26,11 +26,11 @@ struct Driver {
 	}
 
 	void mainMenu() {
-		std::cout << "\nOptions: \n  1) View conference standings\n  2) View AP top 25\n  3) View information by school\n  4) Advance the "
+		std::cout << "\n===== " << league->getCurrentYear() << " WEEK " << league->getCurrentWeek()
+				  << " =====\nOptions: \n  1) View conference standings\n  2) View AP top 25\n  3) View information by school\n  4) Advance the "
 					 "season\nEnter selection: ";
 		int choice = getInt();
 		if (choice == 1) {
-			// TODO
 			conferenceStandingsMenu();
 		} else if (choice == 2) {
 			if (league->getCurrentWeek() <= 3) std::cout << "League rankings will be available starting week 4\n";
@@ -133,10 +133,30 @@ struct Driver {
 			std::cout << "\nEnter a matchup number, or enter a school name to play its game: \n";
 			std::string input;
 			std::getline(std::cin, input);
+			bool played;
+			bool byName = true;
 			try {
 				int matchupIndex = std::stoi(input);
-				league->simOneGame(matchupIndex);
-			} catch (std::invalid_argument e) { league->simOneGame(input); }
+				played = league->simOneGame(matchupIndex, false);
+				byName = false;
+			} catch (std::invalid_argument e) { played = league->simOneGame(input, false); }
+			if (!played) {
+				std::cout << "This game has already been played and the result for the rest of the simulation is final.\nHowever, you can simulate "
+							 "it again repeatedly to see what the expected result is.\n  1) Just replay the game once\n  2) Rapidly simulate the "
+							 "game multiple times\n  3) Go back\nEnter your selection: ";
+				choice = getInt();
+				if (choice == 1) {
+					if (byName) league->simOneGame(input, true);
+					else
+						league->simOneGame(std::stoi(input), true);
+				} else if (choice == 2) {
+					std::cout << "How many times would you like to simulate this game: ";
+					int times = getInt();
+					if (byName) league->simOneGameRepeatedly(input, times);
+					else
+						league->simOneGameRepeatedly(std::stoi(input), times);
+				}
+			}
 		} else if (choice == 2) {
 			std::cout << "Number of weeks to advance: ";
 			for (int weeks = getInt(); weeks > 0; weeks--) league->simOneWeek();

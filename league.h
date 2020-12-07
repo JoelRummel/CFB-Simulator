@@ -478,11 +478,12 @@ class League {
 		if (week == 15) scheduleFinals();
 	}
 
-	void playOneGame(int matchupIndex) {
+	GameResult playOneGame(int matchupIndex, bool silent) {
 		School::Matchup* matchup = schedule[week][matchupIndex];
 		GamePlayer game(matchup->away, matchup->home);
-		GameResult result = game.startRealTimeGameLoop(true);
-		matchup->gameResult = result;
+		GameResult result = game.startRealTimeGameLoop(!silent);
+		if (matchup->gameResult.awayStats == nullptr) matchup->gameResult = result;
+		return result;
 	}
 
 	void rankTeams() {
@@ -691,21 +692,65 @@ class League {
 
 	void simOneWeek() { playOneWeek(); }
 
-	void simOneGame(int gameIndex) {
-		if (schedule[week][gameIndex - 1]->gameResult.homeStats != nullptr) {
-			std::cout << "Error: this game has already been played!" << std::endl;
+	bool simOneGame(int gameIndex, bool replay) {
+		if (schedule[week][gameIndex - 1]->gameResult.homeStats != nullptr && !replay) {
+			return false;
 		} else {
-			playOneGame(gameIndex - 1);
+			playOneGame(gameIndex - 1, false);
+			return true;
 		}
 	}
 
-	void simOneGame(std::string schoolName) {
+	bool simOneGame(std::string schoolName, bool replay) {
 		int i = 0;
 		for (auto& matchup : schedule[week]) {
 			if (matchup->away->getName() == schoolName || matchup->home->getName() == schoolName) {
-				playOneGame(i);
-				return;
+				if (matchup->gameResult.homeStats == nullptr || replay) playOneGame(i, false);
+				else
+					return false;
+				return true;
 			}
+			i++;
+		}
+		std::cout << "Error: no school with that name\n";
+		return true;
+	}
+
+	void simOneGameRepeatedly(int gameIndex, int numTimes) {
+		std::cout << "Simulating";
+		GameResult collectiveResult;
+		int homeWins = 0;
+		int awayWins = 0;
+		for (int i = 0; i < numTimes; i++) {
+			if (i % 10 == 0) {
+				std::cout << ".";
+				std::cout.flush();
+			}
+			GameResult result = playOneGame(gameIndex - 1, true);
+			if (!result.awayWon && !result.homeWon) {
+				i--;
+				continue;
+			}
+			if (result.awayWon) awayWins++;
+			else
+				homeWins++;
+			if (collectiveResult.awayStats == nullptr) collectiveResult = result;
+			else
+				collectiveResult += result;
+		}
+		std::cout << " done." << std::endl;
+		std::cout << "\nAway - home wins: " << awayWins << " - " << homeWins << "\n";
+		printf("Away won %.1f%% of the time\n\n", ((double)awayWins / numTimes) * 100.0);
+		std::cout << "AWAY STATS:\n";
+		collectiveResult.awayStats->printBigStuff();
+		std::cout << "\nHOME STATS:\n";
+		collectiveResult.homeStats->printBigStuff();
+	}
+
+	void simOneGameRepeatedly(std::string schoolName, int numTimes) {
+		int i = 0;
+		for (auto& matchup : schedule[week]) {
+			if (matchup->away->getName() == schoolName || matchup->home->getName() == schoolName) { simOneGameRepeatedly(i + 1, numTimes); }
 			i++;
 		}
 	}
@@ -722,4 +767,5 @@ class League {
 	}
 
 	int getCurrentWeek() { return week + 1; }
+	int getCurrentYear() { return year; }
 };
