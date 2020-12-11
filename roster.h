@@ -99,10 +99,6 @@ class Roster {
 		for (Position p : { QB, HB, WR, TE, OL, DL, LB, CB, S, K, P }) { depthChart.push_back(getAllPlayersAt(p)); }
 	}
 
-	void applyGametimeBonus(double pct) {
-		for (auto& p : roster) { p.setGametimeBonus(pct); }
-	}
-
 	void printRoster() {
 		std::cout << "    Name                 Pos Year       OVR \n";
 		std::cout << "-------------------------------------------\n";
@@ -128,7 +124,7 @@ class Roster {
 		for (auto& player : roster) {
 			if (player.getPosition() != pos) continue;
 			printf("%-21s%-11s%-5d", player.getName().c_str(), player.getYearString().c_str(), player.getOVR());
-			for (auto& rating : ratings) { printf("%-5d", player.getRating(rating.first)); }
+			for (auto& rating : ratings) { printf("%-5d", player.getRating(rating.first, true)); }
 			printf("\n");
 		}
 	}
