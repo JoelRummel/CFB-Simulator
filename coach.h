@@ -103,7 +103,7 @@ class Coach {
 		ovrPublic = 40;
 
 		double rand = RNG::randomNumberUniformDist();
-		int ovr = std::max(std::min(std::floor(60 * std::pow(rand, 4)), 59.0), std::round(12 * rand)); // The plus 40 is implied
+		int ovr = std::max(std::min(std::floor(60 * std::pow(rand, 4)), 59.0), std::round(15 * rand)); // The plus 40 is implied
 		for (int i = ovr * 3; i > 0; i) {
 			int chunk = RNG::randomNumberUniformDist(1, 3);
 			if (chunk > i) chunk = i;
@@ -156,6 +156,18 @@ class Coach {
 	int getOvrGametime() { return ovrGametime; }
 	std::string getTypeString() { return coachTypeToString(currentJob.type); }
 
+	// Assessment: 0-1 inclusive. This function moves the public OVR needle towards the assessment percentage.
+	void givePublicAssessment(double assessment) {
+		assessment += (1 - assessment) * 0.4; // this is because 40 OVR is the public minimum
+		double diff = (assessment * 100) - ovrPublic;
+		double acc = 0.25;
+		if (currentJob.type == CoachType::OC || currentJob.type == CoachType::DC) acc = 0.5;
+		if (currentJob.type == CoachType::HC) acc = 0.75;
+		ovrPublic += std::round(acc * diff);
+		ovrPublic = std::min(ovrPublic, 99);
+		ovrPublic = std::max(ovrPublic, 40);
+	}
+
 	double getPreferenceLevel(Vacancy v) {
 		double b = v.salary / 1000000; // expected to be somewhere from roughly 6-50 (more often 10-30) for HC jobs, 1.3-4.2 for positional jobs
 		b += (b * priorityPrestige * (v.prestige / 10));
@@ -165,6 +177,15 @@ class Coach {
 	}
 
 	int pickJob(std::vector<Vacancy>& vacancies) {
+		int favorite = pickFavoriteJob(vacancies);
+		if (favorite != -1) {
+			resign();
+			currentJob = vacancies[favorite];
+		}
+		return favorite;
+	}
+
+	int pickFavoriteJob(std::vector<Vacancy>& vacancies) {
 		double highestPreference = isEmployed() ? getPreferenceLevel(currentJob) : -100000;
 		int bestJob = -1;
 		for (int i = 0; i < (int)vacancies.size(); i++) {
@@ -182,10 +203,6 @@ class Coach {
 				bestJob = i;
 				highestPreference = p;
 			}
-		}
-		if (bestJob != -1) {
-			resign();
-			currentJob = vacancies[bestJob];
 		}
 		return bestJob;
 	}

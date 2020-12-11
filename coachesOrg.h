@@ -24,7 +24,8 @@ class CoachesOrganization {
 	}
 
 	void initializeAllCoaches() {
-		for (int i = 0; i < 1500; i++) generateCoach(true);
+		coaches.reserve(1600);
+		for (int i = 0; i < 1600; i++) generateCoach(true);
 	}
 
 	Vacancy createVacancy(School* school, CoachType type) {
@@ -55,9 +56,16 @@ class CoachesOrganization {
 		std::vector<Vacancy> vacancies = getAllVacancies(allSchools);
 		SortByPublicOvr sbpo;
 		std::sort(coaches.begin(), coaches.end(), sbpo);
-		for (Coach* coach : coaches) {
+		for (int i = 0; i < (int)coaches.size(); i++) {
+			Coach* coach = coaches[i];
+			if (coach->isEmployed()) continue; // they got sniped earlier on
 			int jobTaken = coach->pickJob(vacancies);
 			if (jobTaken == -1) continue;
+			// The school now has a chance to snipe someone better
+			std::vector<Coach*> snipeSet(coaches.begin() + i, coaches.end());
+			Coach* sniped = vacancies[jobTaken].school->snipeCoach(snipeSet, vacancies, jobTaken);
+			if (sniped != coach) i--;
+
 			vacancies[jobTaken].school->signCoach(coach, vacancies[jobTaken].type);
 			vacancies.erase(vacancies.begin() + jobTaken);
 			if (vacancies.empty()) break;

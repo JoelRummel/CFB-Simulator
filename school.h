@@ -7,6 +7,16 @@
 #include <string>
 // todo: delete above include
 
+struct SortByAdjustedPublicOvr {
+	double adj;
+
+	bool operator()(Coach* a, Coach* b) {
+		double aAdjusted = a->getPublicOvr() - ((a->getPublicOvr() - a->getActualOvr()) * adj);
+		double bAdjusted = b->getPublicOvr() - ((b->getPublicOvr() - b->getActualOvr()) * adj);
+		return (aAdjusted > bAdjusted);
+	}
+};
+
 class School {
   public:
 	struct Matchup {
@@ -96,6 +106,8 @@ class School {
 	double publicRealRating = 0;
 	double privateRealRating = 0;
 	int ranking = -1;
+	int offenseRanking = -1;
+	int defenseRanking = -1;
 
 	Coach* coaches[11];
 
@@ -230,6 +242,7 @@ class School {
 		return schedule[week]->gameResult.homeStats;
 	}
 
+	// TODO: old, outdated function. get rid of it
 	double getAverageOffense() {
 		int yards = 0;
 		int games = 0;
@@ -245,8 +258,21 @@ class School {
 		return (double)yards / games;
 	}
 
+	std::pair<double, double> getAverageOffenseDefense() {
+		// Make sure not to include postseason
+		TeamStats ts;
+		for (int i = 0; i < 13; i++) {
+			if (schedule[i] != nullptr) ts += *(getOrderedStats(getGameResults(i)).first);
+		}
+		return std::make_pair(ts.offensiveYards() / (double)ts.games, ts.yardsAllowed / (double)ts.games);
+	}
+
 	int getRanking() { return ranking; }
 	void setRanking(int r) { ranking = r; }
+	void setOffenseRanking(int r) { offenseRanking = r; }
+	void setDefenseRanking(int r) { defenseRanking = r; }
+	int getOffenseRanking() { return offenseRanking; }
+	int getDefenseRanking() { return defenseRanking; }
 
 	double getPublicRating() { return publicRealRating; }
 
@@ -301,6 +327,34 @@ class School {
 		}
 	}
 
+	Coach* snipeCoach(std::vector<Coach*> snipeSet, std::vector<Vacancy>& competitors, int myVacancyIndex) {
+		// assume the first element of the vector is the coach who originally wanted to sign with us
+		Coach* hc = coaches[(int)CoachType::HC];
+		Coach* original = snipeSet[0]; // failsafe variable
+		if (hc == nullptr) return original;
+		double assessmentAbility = (hc->getActualOvr() - 40) / 59.0;
+		// Sort into our favorite coaches (yikes on efficiency)
+		SortByAdjustedPublicOvr sbao { assessmentAbility };
+		std::sort(snipeSet.begin(), snipeSet.end(), sbao);
+		for (Coach* candidate : snipeSet) {
+			if (candidate->pickFavoriteJob(competitors) == myVacancyIndex) return candidate;
+		}
+		return original;
+	}
+
+	void assessCoaches() {
+		// Assess head coach using national ranking
+		double rankingRatio = (130 - ranking) / 129.0;
+		double offRatio = (((130 - offenseRanking) / 129.0) * 0.5) + (rankingRatio * 0.5);
+		double defRatio = (((130 - defenseRanking) / 129.0) * 0.5) + (rankingRatio * 0.5);
+		double allRatio = (0.5 * offRatio) + (0.5 * defRatio);
+		for (CoachType position : { CoachType::HC, CoachType::ST }) coaches[(int)position]->givePublicAssessment(allRatio);
+		for (CoachType position : { CoachType::OC, CoachType::OL, CoachType::QB, CoachType::RB, CoachType::WR })
+			coaches[(int)position]->givePublicAssessment(offRatio);
+		for (CoachType position : { CoachType::DC, CoachType::DB, CoachType::LB, CoachType::DL })
+			coaches[(int)position]->givePublicAssessment(defRatio);
+	}
+
 	void applyGametimeBonuses() {
 		for (Position p : { QB, HB, WR, TE, OL, DL, LB, CB, S, K, P }) {
 			std::vector<Player*> players = roster.getAllPlayersAt(p, false);
@@ -347,15 +401,21 @@ class School {
 		std::cout << "GAME PLANNING + MOTIVATION:\n";
 		printCoachBars(c, "g");
 	}
-	void prepareNextSeason() {
-		ranking = -1;
-		simpleRating = 0;
-		publicRealRating = 0;
-		privateRealRating = 0;
+	// Normally used in case of scheduling error and need to start again from scratch
+	void nukeSchedule() {
 		numGamesScheduled = 0;
 		conferenceGamesScheduled = 0;
 		crossConfGamesScheduled = 0;
 		schedule.clear(); // this prolly causes a memory leak
 		schedule.resize(16, nullptr);
+	}
+	void prepareNextSeason() {
+		ranking = -1;
+		offenseRanking = -1;
+		defenseRanking = -1;
+		simpleRating = 0;
+		publicRealRating = 0;
+		privateRealRating = 0;
+		nukeSchedule();
 	}
 };

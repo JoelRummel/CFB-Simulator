@@ -17,6 +17,14 @@ struct SortByPublicRating {
 	bool operator()(School* a, School* b) { return (a->getPublicRating() > b->getPublicRating()); }
 };
 
+struct SortByOffense {
+	bool operator()(School* a, School* b) { return (a->getAverageOffenseDefense().first > b->getAverageOffenseDefense().first); }
+};
+
+struct SortByDefense {
+	bool operator()(School* a, School* b) { return (a->getAverageOffenseDefense().second < b->getAverageOffenseDefense().second); }
+};
+
 struct SortByConferenceRecord {
 	bool operator()(School* a, School* b) {
 		for (bool v : { true, false }) {
@@ -65,6 +73,7 @@ class League {
 	}
 
 	void assignMatchup(int week, School* away, School* home) {
+		if (week == -1) throw std::string("Bad schedule, restart and retry");
 		School::Matchup* ptr = new School::Matchup { away, home };
 		schedule[week].push_back(ptr);
 		bool confGame = false;
@@ -442,12 +451,7 @@ class League {
 			}
 			std::cout << "week " << (week + 1) << " done... ";
 			std::cout.flush();
-			if (week == 12) scheduleConferenceChampionshipGames();
-			if (week == 13) {
-				rankTeams();
-				schedulePlayoffs();
-			}
-			if (week == 14) scheduleFinals();
+			performNewWeekTasks(week + 1);
 		}
 		std::cout << "\nAll weeks played - season complete." << std::endl;
 
@@ -472,10 +476,18 @@ class League {
 		}
 		std::cout << "done." << std::endl;
 		week++;
-		if (week >= 3 && (week <= 14 || week == 16)) rankTeams();
-		if (week == 13) scheduleConferenceChampionshipGames();
-		if (week == 14) schedulePlayoffs();
-		if (week == 15) scheduleFinals();
+		performNewWeekTasks(week);
+	}
+
+	void performNewWeekTasks(int newWeek) {
+		if (newWeek >= 3 && (newWeek <= 14 || newWeek == 16)) rankTeams();
+		if (newWeek == 13) {
+			scheduleConferenceChampionshipGames();
+			assignOffenseDefenseRankings();
+		}
+		if (newWeek == 14) schedulePlayoffs();
+		if (newWeek == 15) scheduleFinals();
+		if (newWeek == 16) assessAllCoaches();
 	}
 
 	GameResult playOneGame(int matchupIndex, bool silent) {
@@ -497,6 +509,20 @@ class League {
 		for (int i = 0; i < (int)allSchools.size(); i++) { allSchools[i]->setRanking(i + 1); }
 	}
 
+	void assignOffenseDefenseRankings() {
+		std::vector<School*> sortedSchools = allSchools;
+		SortByOffense sbo;
+		std::sort(sortedSchools.begin(), sortedSchools.end(), sbo);
+		for (int i = 0; i < (int)sortedSchools.size(); i++) { sortedSchools[i]->setOffenseRanking(i + 1); }
+		SortByDefense sbd;
+		std::sort(sortedSchools.begin(), sortedSchools.end(), sbd);
+		for (int i = 0; i < (int)sortedSchools.size(); i++) { sortedSchools[i]->setDefenseRanking(i + 1); }
+	}
+
+	void assessAllCoaches() {
+		for (School* school : allSchools) school->assessCoaches();
+	}
+
 	School* findSchoolByName(std::string schoolName) {
 		School* school = nullptr;
 		for (auto& s : allSchools) {
@@ -512,7 +538,17 @@ class League {
 	}
 
 	void initializeSeason() {
-		createMatchups();
+		bool success = false;
+		while (!success) {
+			try {
+				createMatchups();
+				success = true;
+			} catch (std::string e) {
+				schedule.clear();
+				schedule.resize(16);
+				for (auto& school : allSchools) school->nukeSchedule();
+			}
+		}
 		// Tell all schools to fix up depth charts and apply their coach bonuses
 		for (auto& school : allSchools) {
 			school->getRoster()->organizeDepthChart();
