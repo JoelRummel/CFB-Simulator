@@ -97,6 +97,7 @@ class School {
 	int budget;
 	Roster roster;
 	int prestige;
+	int prestigeFraction = 0;
 	std::vector<Matchup*> schedule;
 	int numGamesScheduled = 0;
 	int conferenceGamesScheduled = 0;
@@ -342,6 +343,27 @@ class School {
 		return original;
 	}
 
+	void assessSelf() {
+		std::vector<int> boundaries { 4, 9, 16, 26, 41, 56, 76, 96, 116, 126, 131 };
+		int performance;
+		// We should never get past 11 iterations anyways
+		for (int i = 0; i < 11; i++) {
+			if (ranking < boundaries[i]) {
+				performance = 10 - i;
+				break;
+			}
+		}
+		for (int movements = performance - prestige; movements != 0; movements += (movements > 0 ? -1 : 1)) {
+			if (movements > 0) prestigeFraction += 1;
+			else
+				prestigeFraction -= 1;
+			if (std::abs(prestigeFraction) > 1) {
+				prestige += prestigeFraction / 2; // either 2/2 or -2/2
+				prestigeFraction = 0;
+			}
+		}
+	}
+
 	void assessCoaches() {
 		// Assess head coach using national ranking
 		double rankingRatio = (130 - ranking) / 129.0;
@@ -353,6 +375,9 @@ class School {
 			coaches[(int)position]->givePublicAssessment(offRatio);
 		for (CoachType position : { CoachType::DC, CoachType::DB, CoachType::LB, CoachType::DL })
 			coaches[(int)position]->givePublicAssessment(defRatio);
+
+		// Take the opportunity to adjust our prestige as well
+		assessSelf();
 	}
 
 	void applyGametimeBonuses() {
@@ -374,7 +399,9 @@ class School {
 
 	void printDetails() {
 		std::cout << "\n===== " << str_upper(getRankedName()) << " " << str_upper(getMascot()) << " =====\n";
-		std::cout << "      Record:       " << getWinLossString() << "\n";
+		std::cout << "      Prestige: ";
+		for (int i = 1; i < 11; i++) std::cout << (i <= prestige ? "★" : "☆");
+		std::cout << "\n      Record:       " << getWinLossString() << "\n";
 		std::cout << "      Conf. record: " << getWinLossString(true) << "\n";
 		std::cout << "      Head Coach: " << coaches[(int)CoachType::HC]->getName() << " (" << coaches[(int)CoachType::HC]->getPublicOvr()
 				  << " public OVR)\n";
