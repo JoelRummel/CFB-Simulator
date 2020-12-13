@@ -4,7 +4,7 @@
 #include "player.h"
 #include "util.h"
 
-enum class CoachType { QB, WR, RB, OL, DL, LB, DB, ST, OC, DC, HC };
+enum class CoachType { QB, WR, RB, OL, DL, LB, DB, ST, OC, DC, HC, UN };
 
 std::string coachTypeToString(CoachType t) {
 	switch (t) {
@@ -19,6 +19,7 @@ std::string coachTypeToString(CoachType t) {
 	case CoachType::OC: return "Offensive Coordinator";
 	case CoachType::DC: return "Defensive Coordinator";
 	case CoachType::HC: return "Head Coach";
+	case CoachType::UN: return "Unemployed";
 	}
 	return "ERRRRRRRRROR";
 }
@@ -145,6 +146,8 @@ class Coach {
 		priorityMoney /= sum;
 		priorityStability /= sum;
 		priorityPrestige /= sum;
+
+		currentJob.type = CoachType::UN;
 	}
 	Coach(bool isInitial, CoachType type) : Coach(isInitial) { primaryType = type; }
 
@@ -155,14 +158,16 @@ class Coach {
 	int getOvrRecruiting() { return ovrRecruiting; }
 	int getOvrGametime() { return ovrGametime; }
 	std::string getTypeString() { return coachTypeToString(currentJob.type); }
+	CoachType getJobType() { return currentJob.type; }
+	School* getEmployer() { return currentJob.school; }
 
 	// Assessment: 0-1 inclusive. This function moves the public OVR needle towards the assessment percentage.
 	void givePublicAssessment(double assessment) {
 		assessment += (1 - assessment) * 0.4; // this is because 40 OVR is the public minimum
 		double diff = (assessment * 100) - ovrPublic;
-		double acc = 0.25;
-		if (currentJob.type == CoachType::OC || currentJob.type == CoachType::DC) acc = 0.5;
-		if (currentJob.type == CoachType::HC) acc = 0.75;
+		double acc = 0.2;
+		if (currentJob.type == CoachType::OC || currentJob.type == CoachType::DC) acc = 0.3;
+		if (currentJob.type == CoachType::HC) acc = 0.5;
 		ovrPublic += std::round(acc * diff);
 		ovrPublic = std::min(ovrPublic, 99);
 		ovrPublic = std::max(ovrPublic, 40);
@@ -224,6 +229,7 @@ class Coach {
 		history.push_back(h);
 		yearsInCurrentJob = 0;
 		currentJob.school = nullptr;
+		currentJob.type = CoachType::UN;
 	}
 
 	void incrementYear() {
@@ -231,3 +237,9 @@ class Coach {
 		age++;
 	}
 };
+
+std::ostream& operator<<(std::ostream& in, Coach* c) {
+	printf("%-27s%-20s%d/%d public OVR ( %d DVLP | %d RCRT | %d GAME )", c->getTypeString().c_str(), c->getName().c_str(), c->getPublicOvr(),
+		   c->getActualOvr(), c->getOvrDevelopment(), c->getOvrRecruiting(), c->getOvrGametime());
+	return in;
+}

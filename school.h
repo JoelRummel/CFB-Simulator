@@ -411,8 +411,7 @@ class School {
 		std::cout << std::endl;
 		for (int i = 0; i < 11; i++) {
 			Coach* c = coaches[i];
-			printf("%-27s%-20s%d/%d public OVR ( %d DVLP | %d RCRT | %d GAME )\n", coachTypeToString((CoachType)i).c_str(), c->getName().c_str(),
-				   c->getPublicOvr(), c->getActualOvr(), c->getOvrDevelopment(), c->getOvrRecruiting(), c->getOvrGametime());
+			std::cout << c << "\n";
 		}
 	}
 	void printCoachingImpact(Position p) {
