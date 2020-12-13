@@ -405,6 +405,10 @@ class School {
 		std::cout << "      Conf. record: " << getWinLossString(true) << "\n";
 		std::cout << "      Head Coach: " << coaches[(int)CoachType::HC]->getName() << " (" << coaches[(int)CoachType::HC]->getPublicOvr()
 				  << " public OVR)\n";
+		if (offenseRanking != -1) {
+			std::cout << "      Offense ranking: " << offenseRanking << "\n";
+			std::cout << "      Defense ranking: " << defenseRanking << "\n";
+		}
 	}
 	void printCoachingStaff() {
 		// Print details of each coach
