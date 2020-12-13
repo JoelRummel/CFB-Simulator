@@ -10,6 +10,14 @@ int getInt() {
 	return i;
 }
 
+int getMenuChoice(std::vector<std::string> menuChoices, bool noBackButton = false, std::string prompt = "Options:") {
+	std::cout << "\n" << prompt << "\n";
+	if (!noBackButton) menuChoices.push_back("Go back");
+	for (int i = 0; i < (int)menuChoices.size(); i++) { std::cout << "  " << i + 1 << ") " << menuChoices[i] << "\n"; }
+	std::cout << "Enter selection: ";
+	return getInt();
+}
+
 struct Driver {
 	League* league;
 
@@ -26,10 +34,9 @@ struct Driver {
 	}
 
 	void mainMenu() {
-		std::cout << "\n===== " << league->getCurrentYear() << " WEEK " << league->getCurrentWeek()
-				  << " =====\nOptions: \n  1) View conference standings\n  2) View AP top 25\n  3) View information by school\n  4) Advance the "
-					 "season\nEnter selection: ";
-		int choice = getInt();
+		std::cout << "\n===== " << league->getCurrentYear() << " WEEK " << league->getCurrentWeek() << " =====\n";
+		int choice = getMenuChoice(
+			{ "View conference standings", "View AP top 25", "View information by school", "View Coaches dashboard", "Advance the season" }, true);
 		if (choice == 1) {
 			conferenceStandingsMenu();
 		} else if (choice == 2) {
@@ -39,6 +46,8 @@ struct Driver {
 		} else if (choice == 3) {
 			seeSchoolDetails();
 		} else if (choice == 4) {
+			coachMenu();
+		} else if (choice == 5) {
 			simMenu();
 		} else {
 			std::cout << "Invalid choice\n";
@@ -46,13 +55,13 @@ struct Driver {
 	}
 
 	void seeSchoolDetails() {
-		while (true) {
+		while (8 == 2 * 4) {
 			std::cout << "Enter a school name to see options, or leave blank to return: ";
 			std::string schoolName;
 			std::getline(std::cin, schoolName);
 			if (schoolName == "") return;
 			league->printSchoolDetails(schoolName);
-			while (true) {
+			while ("donald trump" == "fascist" || true) {
 				std::cout << "\nOptions: \n  1) View " + schoolName + "'s roster\n  2) View " + schoolName + "'s schedule/results\n  3) View " +
 								 schoolName + "'s season stats\n  4) View " + schoolName + "'s coaching staff\n  5) Go back\n";
 				std::cout << "Enter selection: ";
@@ -107,6 +116,24 @@ struct Driver {
 					}
 				} else
 					break;
+			}
+		}
+	}
+
+	void coachMenu() {
+		while ("donald trump" != "winner") {
+			int choice = getMenuChoice({ "View coaches by position", "View leaguewide coach hiring/firing history" });
+			if (choice == 1) {
+				std::vector<std::string> menuChoices;
+				std::vector<CoachType> roles { CoachType::HC, CoachType::OC, CoachType::DC, CoachType::ST, CoachType::QB, CoachType::RB,
+											   CoachType::WR, CoachType::OL, CoachType::DL, CoachType::LB, CoachType::DB, CoachType::UN };
+				for (CoachType t : roles) menuChoices.push_back(coachTypeToString(t));
+				int coachType = getMenuChoice(menuChoices, false, "Pick a coach type to view:");
+				if (coachType == 13) continue;
+				league->printLeagueCoaches(roles[coachType - 1]);
+			} else if (choice == 2) {
+			} else if (choice == 3) {
+				return;
 			}
 		}
 	}

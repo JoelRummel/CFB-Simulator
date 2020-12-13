@@ -78,6 +78,17 @@ class CoachesOrganization {
 		}
 	}
 
+	void printCoachesByJobType(CoachType t) {
+		SortByPublicOvr sbpo;
+		std::sort(coaches.begin(), coaches.end(), sbpo);
+		for (Coach* coach : coaches) {
+			if (coach->getJobType() == t) {
+				if (t != CoachType::UN) printf("%-20s", coach->getEmployer()->getName().c_str());
+				std::cout << coach << "\n";
+			}
+		}
+	}
+
 	void advanceYear() {
 		for (Coach* coach : coaches) coach->incrementYear();
 	}

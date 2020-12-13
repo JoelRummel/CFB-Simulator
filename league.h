@@ -695,6 +695,8 @@ class League {
 		school->printCoachingStaff();
 	}
 
+	void printLeagueCoaches(CoachType t) { coachesOrg.printCoachesByJobType(t); }
+
 	void printSchoolCoachingByPosition(std::string schoolName, Position p) {
 		School* school = findSchoolByName(schoolName);
 		if (school == nullptr) return;
