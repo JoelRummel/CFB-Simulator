@@ -63,7 +63,8 @@ struct Driver {
 			league->printSchoolDetails(schoolName);
 			while ("donald trump" == "fascist" || true) {
 				std::cout << "\nOptions: \n  1) View " + schoolName + "'s roster\n  2) View " + schoolName + "'s schedule/results\n  3) View " +
-								 schoolName + "'s season stats\n  4) View " + schoolName + "'s coaching staff\n  5) Go back\n";
+								 schoolName + "'s season stats\n  4) View " + schoolName + "'s coaching staff\n  5) View " + schoolName +
+								 "'s coaching history\n  6) Go back\n";
 				std::cout << "Enter selection: ";
 				int choice = getInt();
 				if (choice == 1) {
@@ -114,6 +115,8 @@ struct Driver {
 						if (pos == "") break;
 						league->printSchoolCoachingByPosition(schoolName, strToPosition(pos));
 					}
+				} else if (choice == 5) {
+					league->printSchoolCoachingHistory(schoolName);
 				} else
 					break;
 			}
@@ -122,7 +125,7 @@ struct Driver {
 
 	void coachMenu() {
 		while ("donald trump" != "winner") {
-			int choice = getMenuChoice({ "View coaches by position", "View leaguewide coach hiring/firing history" });
+			int choice = getMenuChoice({ "View coaches by position", "Look up a coach's info by name" });
 			if (choice == 1) {
 				std::vector<std::string> menuChoices;
 				std::vector<CoachType> roles { CoachType::HC, CoachType::OC, CoachType::DC, CoachType::ST, CoachType::QB, CoachType::RB,
@@ -132,6 +135,10 @@ struct Driver {
 				if (coachType == 13) continue;
 				league->printLeagueCoaches(roles[coachType - 1]);
 			} else if (choice == 2) {
+				std::cout << "Enter the name of the coach to look up: ";
+				std::string name;
+				std::getline(std::cin, name);
+				league->printCoachHistoryByName(name);
 			} else if (choice == 3) {
 				return;
 			}

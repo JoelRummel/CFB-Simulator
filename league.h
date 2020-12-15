@@ -523,6 +523,10 @@ class League {
 		for (School* school : allSchools) school->assessCoaches();
 	}
 
+	void makeCoachContractDecisions() {
+		for (School* school : allSchools) school->makeCoachingDecisions();
+	}
+
 	School* findSchoolByName(std::string schoolName) {
 		School* school = nullptr;
 		for (auto& s : allSchools) {
@@ -695,6 +699,12 @@ class League {
 		school->printCoachingStaff();
 	}
 
+	void printSchoolCoachingHistory(std::string schoolName) {
+		School* school = findSchoolByName(schoolName);
+		if (school == nullptr) return;
+		school->printCoachingHistory();
+	}
+
 	void printLeagueCoaches(CoachType t) { coachesOrg.printCoachesByJobType(t); }
 
 	void printSchoolCoachingByPosition(std::string schoolName, Position p) {
@@ -702,6 +712,8 @@ class League {
 		if (school == nullptr) return;
 		school->printCoachingImpact(p);
 	}
+
+	void printCoachHistoryByName(std::string coachName) { coachesOrg.printCoachHistoryByName(coachName); }
 
 	League() {
 		coachesOrg.initializeAllCoaches();
@@ -795,6 +807,9 @@ class League {
 
 	void prepareNextSeason() {
 		coachesOrg.advanceYear();
+		makeCoachContractDecisions();
+		coachesOrg.fillAllVacancies(allSchools);
+
 		for (School* school : allSchools) school->prepareNextSeason();
 		year++;
 		week = 0;

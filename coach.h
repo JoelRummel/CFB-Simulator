@@ -62,6 +62,12 @@ struct Vacancy {
 	int salary;
 	int prestige;
 };
+struct Contract {
+	int yearsTotal;
+	int yearsRemaining;
+	int originalPrestige;
+	std::vector<int> prestigeTargets; // These are the minimum prestiges per each extension
+};
 
 struct CoachingHistory {
 	Vacancy job;
@@ -92,6 +98,7 @@ class Coach {
 	int ovrCulture;     // 0-100
 
   public:
+	Contract currentContract;
 	// Constructs the coach randomly, bumping up the public OVR randomly if the simulator is getting initialized
 	Coach(bool initial = false) {
 		// TODO: pick a random alma mater from the GlobalData list of schools
@@ -163,11 +170,24 @@ class Coach {
 
 	// Assessment: 0-1 inclusive. This function moves the public OVR needle towards the assessment percentage.
 	void givePublicAssessment(double assessment) {
-		assessment += (1 - assessment) * 0.4; // this is because 40 OVR is the public minimum
-		double diff = (assessment * 100) - ovrPublic;
-		double acc = 0.2;
-		if (currentJob.type == CoachType::OC || currentJob.type == CoachType::DC) acc = 0.3;
-		if (currentJob.type == CoachType::HC) acc = 0.5;
+		double rating = 40;
+		// Pick different assessment curves depending on job level
+		if (currentJob.type == CoachType::HC) {
+			if (assessment > 0.4) rating += std::floor((40 * std::pow(assessment, 3)) + 20);
+			else
+				rating += std::floor((30 * assessment) + 10);
+		} else if (currentJob.type == CoachType::OC || currentJob.type == CoachType::DC || currentJob.type == CoachType::ST) {
+			if (assessment > 0.4) rating += std::floor((45 * std::pow(assessment, 3)) + 10);
+			else
+				rating += std::floor((20 * assessment) + 5);
+		} else {
+			if (assessment > 0.2) rating += std::floor(45 * std::pow(assessment, 3));
+			else
+				rating += std::floor(5 * assessment);
+		}
+
+		double diff = rating - ovrPublic;
+		double acc = 0.5;
 		ovrPublic += std::round(acc * diff);
 		ovrPublic = std::min(ovrPublic, 99);
 		ovrPublic = std::max(ovrPublic, 40);
@@ -181,17 +201,15 @@ class Coach {
 		return b;
 	}
 
+	// Todo: eliminate this function, it is redundant and worthless now
 	int pickJob(std::vector<Vacancy>& vacancies) {
 		int favorite = pickFavoriteJob(vacancies);
-		if (favorite != -1) {
-			resign();
-			currentJob = vacancies[favorite];
-		}
 		return favorite;
 	}
 
 	int pickFavoriteJob(std::vector<Vacancy>& vacancies) {
-		double highestPreference = isEmployed() ? getPreferenceLevel(currentJob) : -100000;
+		if (isEmployed() && yearsInCurrentJob == 0) return -1;
+		double highestPreference = isEmployed() ? getPreferenceLevel(currentJob) : -1000000;
 		int bestJob = -1;
 		for (int i = 0; i < (int)vacancies.size(); i++) {
 			if (vacancies[i].type != CoachType::HC) {
@@ -215,31 +233,37 @@ class Coach {
 	void takeJob(Vacancy v) {
 		assert(!isEmployed());
 		currentJob = v;
+		yearsInCurrentJob = 0;
 	}
 
 	bool isEmployed() { return (currentJob.school != nullptr); }
 
-	void resign(bool fired = false) {
+	bool resign(bool fired = false) {
+		bool wasEmployed = isEmployed();
 		int yearStart, yearEnd;
 		if (history.size() == 0) yearStart = 2020; // TODO: this breaks if the coach was created later
 		else
 			yearStart = history.back().yearEnd + 1;
 		yearEnd = yearStart + yearsInCurrentJob;
-		CoachingHistory h { currentJob, yearStart, yearEnd };
+		CoachingHistory h { currentJob, yearStart, yearEnd, fired };
 		history.push_back(h);
 		yearsInCurrentJob = 0;
 		currentJob.school = nullptr;
 		currentJob.type = CoachType::UN;
+		return wasEmployed;
 	}
 
 	void incrementYear() {
-		yearsInCurrentJob++;
+		if (isEmployed()) yearsInCurrentJob++;
 		age++;
 	}
+
+	std::vector<CoachingHistory> getHistory() { return history; }
 };
 
 std::ostream& operator<<(std::ostream& in, Coach* c) {
-	printf("%-27s%-20s%d/%d public OVR ( %d DVLP | %d RCRT | %d GAME )", c->getTypeString().c_str(), c->getName().c_str(), c->getPublicOvr(),
-		   c->getActualOvr(), c->getOvrDevelopment(), c->getOvrRecruiting(), c->getOvrGametime());
+	printf("%-27s%-20s%d/%d public OVR ( %d DVLP | %d RCRT | %d GAME ) Year %d of %d", c->getTypeString().c_str(), c->getName().c_str(),
+		   c->getPublicOvr(), c->getActualOvr(), c->getOvrDevelopment(), c->getOvrRecruiting(), c->getOvrGametime(),
+		   c->currentContract.yearsTotal - c->currentContract.yearsRemaining + 1, c->currentContract.yearsTotal);
 	return in;
 }

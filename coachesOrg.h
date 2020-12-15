@@ -58,14 +58,22 @@ class CoachesOrganization {
 		std::sort(coaches.begin(), coaches.end(), sbpo);
 		for (int i = 0; i < (int)coaches.size(); i++) {
 			Coach* coach = coaches[i];
-			if (coach->isEmployed()) continue; // they got sniped earlier on
 			int jobTaken = coach->pickJob(vacancies);
 			if (jobTaken == -1) continue;
 			// The school now has a chance to snipe someone better
-			std::vector<Coach*> snipeSet(coaches.begin() + i, coaches.end());
+			std::vector<Coach*> snipeSet(coaches.begin() + i, (coaches.size() > i + 30) ? (coaches.begin() + i + 30) : (coaches.end()));
 			Coach* sniped = vacancies[jobTaken].school->snipeCoach(snipeSet, vacancies, jobTaken);
 			if (sniped != coach) i--;
+			coach = sniped;
 
+			if (coach->isEmployed()) {
+				// lmao they took a better gig
+				Vacancy v = createVacancy(coach->getEmployer(), coach->getJobType());
+				vacancies.push_back(v);
+				coach->getEmployer()->loseCoach(coach->getJobType());
+				coach->resign();
+			}
+			coach->takeJob(vacancies[jobTaken]);
 			vacancies[jobTaken].school->signCoach(coach, vacancies[jobTaken].type);
 			vacancies.erase(vacancies.begin() + jobTaken);
 			if (vacancies.empty()) break;
@@ -85,6 +93,24 @@ class CoachesOrganization {
 			if (coach->getJobType() == t) {
 				if (t != CoachType::UN) printf("%-20s", coach->getEmployer()->getName().c_str());
 				std::cout << coach << "\n";
+			}
+		}
+	}
+
+	void printCoachHistoryByName(std::string coachName) {
+		for (Coach* coach : coaches) {
+			if (coach->getName() == coachName) {
+				std::cout << coachName << " (" << coach->getPublicOvr() << "/" << coach->getActualOvr() << " OVR)\n";
+				std::cout << "Current job: " << coach->getTypeString();
+				if (coach->isEmployed()) std::cout << " at " << coach->getEmployer()->getName();
+				std::cout << "\n\n========== HISTORY:\n";
+				for (CoachingHistory history : coach->getHistory()) {
+					std::cout << history.yearStart << " - " << history.yearEnd << ": " << coachTypeToString(history.job.type) << " at "
+							  << history.job.schoolName;
+					if (history.fired) std::cout << " (fired)";
+					std::cout << "\n";
+				}
+				return;
 			}
 		}
 	}

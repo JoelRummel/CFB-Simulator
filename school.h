@@ -1,6 +1,7 @@
 #pragma once
 
 #include "coach.h"
+#include "coachlogs.h"
 #include "roster.h"
 
 #include <iostream>
@@ -11,8 +12,8 @@ struct SortByAdjustedPublicOvr {
 	double adj;
 
 	bool operator()(Coach* a, Coach* b) {
-		double aAdjusted = a->getPublicOvr() - ((a->getPublicOvr() - a->getActualOvr()) * adj);
-		double bAdjusted = b->getPublicOvr() - ((b->getPublicOvr() - b->getActualOvr()) * adj);
+		double aAdjusted = a->getPublicOvr() - ((a->getPublicOvr() - a->getActualOvr()) * (adj / 2));
+		double bAdjusted = b->getPublicOvr() - ((b->getPublicOvr() - b->getActualOvr()) * (adj / 2));
 		return (aAdjusted > bAdjusted);
 	}
 };
@@ -111,6 +112,7 @@ class School {
 	int defenseRanking = -1;
 
 	Coach* coaches[11];
+	CoachingLogs coachLogs;
 
 	std::pair<TeamStats*, TeamStats*> getOrderedStats(Matchup* m) {
 		if (this == m->away) {
@@ -319,13 +321,55 @@ class School {
 
 	void publishPrivateRating() { publicRealRating = privateRealRating; }
 
-	void signCoach(Coach* newCoach, CoachType type) {
-		assert(isVacant(type));
-		coaches[(int)type] = newCoach;
-		if (type == CoachType::HC || type == CoachType::OC || type == CoachType::DC || type == CoachType::LB) {
-			std::cout << getName() << " has hired " << newCoach->getName() << " (" << newCoach->getPublicOvr() << "/" << newCoach->getActualOvr()
-					  << " public OVR) as " << coachTypeToString(type) << std::endl;
+	void makeCoachingDecisions() {
+		Coach* coach = coaches[(int)CoachType::HC];
+		coach->currentContract.yearsRemaining--;
+		int minimumPrestige = coach->currentContract.prestigeTargets[0] - coach->currentContract.yearsRemaining;
+		if (prestige < minimumPrestige) {
+			// Clean house!!
+			std::cout << getName() << " has fired their coaching staff (HC: " << coach->getPublicOvr() << "/" << coach->getActualOvr() << ")\n";
+			for (int i = 0; i < 11; i++) {
+				coaches[i]->resign(true);
+				coachLogs.recordFire(coaches[i], (CoachType)i);
+				coaches[i] = nullptr;
+			}
+		} else {
+			if (coach->currentContract.yearsRemaining == 0) {
+				// Sign extension
+				if (coach->currentContract.prestigeTargets.size() > 1)
+					coach->currentContract.prestigeTargets.erase(coach->currentContract.prestigeTargets.begin());
+				coach->currentContract.yearsTotal = (prestige - minimumPrestige) + 3;
+				coach->currentContract.yearsRemaining = coach->currentContract.yearsTotal;
+				// Todo: log the extension someplace
+				coachLogs.recordExtension(coach, CoachType::HC, coach->currentContract.yearsTotal);
+			}
 		}
+	}
+
+	void signCoach(Coach* newCoach, CoachType type) {
+		coaches[(int)type] = newCoach;
+		Contract contract;
+		int plusOne = (newCoach->getPublicOvr() > 90 ? 1 : 0);
+		contract.yearsTotal = (std::rand() % 2) + 3 + plusOne;
+		contract.yearsRemaining = contract.yearsTotal;
+		contract.originalPrestige = prestige;
+
+		// Now THIS is the fun part: minimum ending prestige
+		if (type == CoachType::HC) switch (prestige) {
+			case 10: contract.prestigeTargets = { 9, 9, 9 }; break;
+			case 9: contract.prestigeTargets = { 8, 9, 9 }; break;
+			case 8: contract.prestigeTargets = { 7, 8, 9 }; break;
+			case 7: contract.prestigeTargets = { 6, 7, 8 }; break;
+			case 6: contract.prestigeTargets = { 5, 6, 7 }; break;
+			case 5: contract.prestigeTargets = { 4, 5, 6 }; break;
+			case 4: contract.prestigeTargets = { 4, 5, 5 }; break;
+			case 3: contract.prestigeTargets = { 3, 4, 4 }; break;
+			case 2: contract.prestigeTargets = { 2, 3, 3 }; break;
+			case 1:
+			case 0: contract.prestigeTargets = { 1, 2, 2 };
+			}
+		newCoach->currentContract = contract;
+		coachLogs.recordHire(newCoach, type, contract.yearsTotal);
 	}
 
 	Coach* snipeCoach(std::vector<Coach*> snipeSet, std::vector<Vacancy>& competitors, int myVacancyIndex) {
@@ -341,6 +385,11 @@ class School {
 			if (candidate->pickFavoriteJob(competitors) == myVacancyIndex) return candidate;
 		}
 		return original;
+	}
+
+	void loseCoach(CoachType role) {
+		coachLogs.recordLoss(coaches[(int)role], role);
+		coaches[(int)role] = nullptr;
 	}
 
 	void assessSelf() {
@@ -369,8 +418,8 @@ class School {
 		double rankingRatio = (130 - ranking) / 129.0;
 		double offRatio = (((130 - offenseRanking) / 129.0) * 0.5) + (rankingRatio * 0.5);
 		double defRatio = (((130 - defenseRanking) / 129.0) * 0.5) + (rankingRatio * 0.5);
-		double allRatio = (0.5 * offRatio) + (0.5 * defRatio);
-		for (CoachType position : { CoachType::HC, CoachType::ST }) coaches[(int)position]->givePublicAssessment(allRatio);
+		// double allRatio = (0.5 * offRatio) + (0.5 * defRatio);
+		for (CoachType position : { CoachType::HC, CoachType::ST }) coaches[(int)position]->givePublicAssessment(rankingRatio);
 		for (CoachType position : { CoachType::OC, CoachType::OL, CoachType::QB, CoachType::RB, CoachType::WR })
 			coaches[(int)position]->givePublicAssessment(offRatio);
 		for (CoachType position : { CoachType::DC, CoachType::DB, CoachType::LB, CoachType::DL })
@@ -431,6 +480,7 @@ class School {
 		std::cout << "GAME PLANNING + MOTIVATION:\n";
 		printCoachBars(c, "g");
 	}
+	void printCoachingHistory() { coachLogs.printHiringFiringRecords(); }
 	// Normally used in case of scheduling error and need to start again from scratch
 	void nukeSchedule() {
 		numGamesScheduled = 0;
@@ -447,5 +497,6 @@ class School {
 		publicRealRating = 0;
 		privateRealRating = 0;
 		nukeSchedule();
+		coachLogs.advanceYear();
 	}
 };
