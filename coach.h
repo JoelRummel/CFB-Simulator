@@ -89,6 +89,10 @@ class Coach {
 	double priorityAlumni;    // 0-1
 	double priorityPrestige;  // 0-1
 	double priorityNFL;       // 0-1, independent of the other three metrics
+	double tempMoney;
+	double tempStability;
+	double tempAlumni;
+	double tempPrestige;
 
 	int ovrPublic; // 0-100
 
@@ -96,6 +100,14 @@ class Coach {
 	int ovrGametime;    // 0-100
 	int ovrRecruiting;  // 0-100
 	int ovrCulture;     // 0-100
+
+	void normalizePriorities() {
+		double sum = priorityAlumni + priorityMoney + priorityStability + priorityPrestige;
+		priorityAlumni /= sum;
+		priorityMoney /= sum;
+		priorityStability /= sum;
+		priorityPrestige /= sum;
+	}
 
   public:
 	Contract currentContract;
@@ -143,16 +155,16 @@ class Coach {
 		priorityStability = (std::rand() % 100) / 100.0;
 		priorityPrestige = (std::rand() % 100) / 100.0;
 		priorityNFL = (std::rand() % 100) / 100.0;
+		tempAlumni = priorityAlumni;
+		tempMoney = priorityMoney;
+		tempStability = priorityStability;
+		tempPrestige = priorityPrestige;
 		if (initial) {
 			// Make prestige a bigger deal for initial coaches in order to better reflect the current state of the world
-			priorityPrestige += (1 - priorityPrestige) * 0.75;
+			priorityPrestige += (1 - priorityPrestige) * 0.9;
 		}
 		// Normalize the first four metrics
-		double sum = priorityAlumni + priorityMoney + priorityStability + priorityPrestige;
-		priorityAlumni /= sum;
-		priorityMoney /= sum;
-		priorityStability /= sum;
-		priorityPrestige /= sum;
+		normalizePriorities();
 
 		currentJob.type = CoachType::UN;
 	}
@@ -251,6 +263,13 @@ class Coach {
 	}
 
 	void incrementYear() {
+		if (tempMoney != -1) {
+			priorityMoney = tempMoney;
+			priorityAlumni = tempAlumni;
+			priorityPrestige = tempPrestige;
+			priorityStability = tempStability;
+			normalizePriorities();
+		}
 		if (isEmployed()) yearsInCurrentJob++;
 		age++;
 	}
