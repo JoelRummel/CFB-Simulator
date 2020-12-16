@@ -806,8 +806,8 @@ class League {
 	}
 
 	void prepareNextSeason() {
-		coachesOrg.advanceYear();
 		makeCoachContractDecisions();
+		coachesOrg.advanceYear();
 		coachesOrg.fillAllVacancies(allSchools);
 
 		for (School* school : allSchools) school->prepareNextSeason();
