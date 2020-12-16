@@ -172,19 +172,16 @@ class Coach {
 	void givePublicAssessment(double assessment) {
 		double rating = 40;
 		// Pick different assessment curves depending on job level
+		int m = 40;
+		int b = 0;
 		if (currentJob.type == CoachType::HC) {
-			if (assessment > 0.4) rating += std::floor((40 * std::pow(assessment, 3)) + 20);
-			else
-				rating += std::floor((30 * assessment) + 10);
+			m = 50;
+			b = 10;
 		} else if (currentJob.type == CoachType::OC || currentJob.type == CoachType::DC || currentJob.type == CoachType::ST) {
-			if (assessment > 0.4) rating += std::floor((45 * std::pow(assessment, 3)) + 10);
-			else
-				rating += std::floor((20 * assessment) + 5);
-		} else {
-			if (assessment > 0.2) rating += std::floor(45 * std::pow(assessment, 3));
-			else
-				rating += std::floor(5 * assessment);
+			m = 45;
+			b = 5;
 		}
+		rating += std::floor((m * assessment) + b);
 
 		double diff = rating - ovrPublic;
 		double acc = 0.5;
