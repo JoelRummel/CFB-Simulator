@@ -160,8 +160,8 @@ struct Driver {
 		}
 
 		std::cout << "\nOptions: \n";
-		std::cout << "  1) Play one game\n  2) Advance one or more weeks\n  3) Advance through the end of the season\n  4) Back\nEnter selection: ";
-		int choice = getInt();
+		int choice =
+			getMenuChoice({ "Play one game", "Advance one or more weeks", "Advance through the end of the season", "Advance multiple seasons" });
 		if (choice == 1) {
 			league->printWeekMatchups();
 			std::cout << "\nEnter a matchup number, or enter a school name to play its game: \n";
@@ -196,6 +196,19 @@ struct Driver {
 			for (int weeks = getInt(); weeks > 0; weeks--) league->simOneWeek();
 		} else if (choice == 3)
 			league->simSeason();
+		else if (choice == 4) {
+			std::cout << "Number of seasons to advance: ";
+			int seasons = getInt();
+			std::cout << "Advancing... ";
+			std::cout.flush();
+			for (seasons; seasons > 0; seasons--) {
+				league->simSeason();
+				league->prepareNextSeason();
+				std::cout << ".";
+				std::cout.flush();
+			}
+			std::cout << "done.\n\n";
+		}
 	}
 
 	void conferenceStandingsMenu() {
