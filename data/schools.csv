@@ -70,11 +70,11 @@ Army,Black Knights,Independent,New York,West Point,4,40000,9736000,1,150
 New Mexico State,Aggies,Independent,New Mexico,Las Cruces,1,30343,6500000,1,263
 Massachusetts,Minutemen,Independent,Massachusetts,Hadley,0,17000,5500000,4,64
 Miami (OH),Red Hawks,MAC East,Ohio,Miami,5,0,8479000,3,91
-Ohio,Bobcats,MAC East,Ohio,a,4,0,9077000,2,185
+Ohio,Bobcats,MAC East,Ohio,Athens,4,27000,9077000,2,185
 Akron,Zips,MAC East,Ohio,Akron,0,30000,10728000,2,300
 Kent State,Golden Flashes,MAC East,Ohio,Kent,3,30520,5981000,2,211
 Buffalo,Bulls,MAC East,New York,Buffalo,5,29013,7860000,2,79
-Bowling Green,a,MAC East,a,a,1,0,6419000,1,246
+Bowling Green,Falcons,MAC East,Ohio,Bowling Green,1,24000,6419000,1,246
 Central Michigan,Chippewas,MAC West,Michigan,Mount Pleasant,4,30255,7350000,4,240
 Western Michigan,Broncos,MAC West,Michigan,Kalamazoo,4,30100,9069000,5,246
 Eastern Michigan,Eagles,MAC West,Michigan,Ypsilanti,2,30200,8286000,3,300
@@ -83,8 +83,8 @@ Northern Illinois,Huskies,MAC West,Illinois,DeKalb,2,30998,8716000,5,300
 Toledo,Rockets,MAC West,Ohio,Toledo,3,26038,9486000,8,300
 Florida Atlantic,Owls,C-USA East,Florida,Boca Raton,5,30000,8102000,9,281
 Marshall,Thundering Herd,C-USA East,West Virginia,Huntington,4,38227,8864000,5,300
-Western Kentucky,a,C-USA East,Kentucky,a,4,0,8752000,6,300
-Charlotte,a,C-USA East,a,a,3,0,10234000,4,228
+Western Kentucky,Hilltoppers,C-USA East,Kentucky,Bowling Green,4,22000,8752000,6,300
+Charlotte,49ers,C-USA East,North Carolina,Charlotte,3,15314,10234000,4,228
 FIU,Panthers,C-USA East,Florida,Miami,2,23500,10661000,4,218
 MTSU,Blue Raiders,C-USA East,Tennessee,Murfreesboro,2,31000,10364000,3,300
 Old Dominion,Monarchs,C-USA East,Virginia,Norfolk,0,19818,9938000,4,263
