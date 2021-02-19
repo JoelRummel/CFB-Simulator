@@ -44,7 +44,7 @@ class RNG {
 
 	static int randomCoachOVR() {
 		double n = randomNumberUniformDist();
-		return 40 + std::min((int)std::round(67 * std::pow(n, 2)), 59);
+		return 40 + std::min((int)std::round(60 * std::pow(n, 1.5)), 59);
 	}
 
 	template<typename T>
