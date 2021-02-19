@@ -7,8 +7,41 @@
 #include <sstream>
 #include <vector>
 
+struct State {
+	std::string name;
+	std::string acro;
+	int signees;
+};
+
+struct City {
+	std::string name;
+	std::string state;
+	double latitude;
+	double longitude;
+	int population;
+};
+
+struct SchoolData {
+	std::string name;
+	std::string mascot;
+	Conference division;
+	std::string state;
+	std::string city;
+	int prestige;
+	int stadiumCapacity;
+	int budget;
+	int nflRating;
+	int academicRating;
+};
+
 class GlobalData {
-  private:
+private:
+	static std::vector<std::string> getCsvLine(std::fstream& in) {
+		std::string line;
+		std::getline(in, line); // clear header row
+		return split(line, ',');
+	}
+
 	struct NameData {
 		NameData() {}
 		int totalFrequency = 0;
@@ -69,88 +102,111 @@ class GlobalData {
 		}
 	};
 
-	inline static NameData firstNames;
-	inline static NameData lastNames;
-	inline static CoachNames coachNames;
+	template <typename T>
+	class DataParser {
+	public:
+		std::vector<T> data;
 
-  public:
-	struct SchoolsData {
-		struct SchoolData {
-			std::string name;
-			std::string mascot;
-			Conference division;
-			std::string state;
-			std::string city;
-			int prestige;
-			int stadiumCapacity;
-			int budget;
-			int nflRating;
-			int academicRating;
-		};
-		std::vector<SchoolData> schoolData;
-		void readInData(std::string fileName) {
+		virtual T parseLine(std::vector<std::string> row);
+
+		void readInData(std::string filename) {
 			std::fstream in(fileName);
 			std::string line;
 			std::getline(in, line); // clear header row
 			while (in.good()) {
-				std::getline(in, line);
-				std::vector<std::string> row = split(line, ',');
-				SchoolData sd {
-					row[0],           row[1], BIG12, row[3], row[4], std::stoi(row[5]), std::stoi(row[6]), std::stoi(row[7]), std::stoi(row[8]),
-					std::stoi(row[9])
-				};
-				if (row[2] == "Big Ten East") sd.division = BIGTENEAST;
-				else if (row[2] == "Big Ten West")
-					sd.division = BIGTENWEST;
-				else if (row[2] == "SEC East")
-					sd.division = SECEAST;
-				else if (row[2] == "SEC West")
-					sd.division = SECWEST;
-				else if (row[2] == "Pac-12 North")
-					sd.division = PAC12NORTH;
-				else if (row[2] == "Pac-12 South")
-					sd.division = PAC12SOUTH;
-				else if (row[2] == "ACC Coastal")
-					sd.division = ACCCOASTAL;
-				else if (row[2] == "ACC Atlantic")
-					sd.division = ACCATLANTIC;
-				else if (row[2] == "MAC West")
-					sd.division = MACWEST;
-				else if (row[2] == "MAC East")
-					sd.division = MACEAST;
-				else if (row[2] == "C-USA East")
-					sd.division = CUSAEAST;
-				else if (row[2] == "C-USA West")
-					sd.division = CUSAWEST;
-				else if (row[2] == "AAC East")
-					sd.division = AACEAST;
-				else if (row[2] == "AAC West")
-					sd.division = AACWEST;
-				else if (row[2] == "Sun Belt East")
-					sd.division = SUNBELTEAST;
-				else if (row[2] == "Sun Belt West")
-					sd.division = SUNBELTWEST;
-				else if (row[2] == "MWC Mountain")
-					sd.division = MWCMOUNTAIN;
-				else if (row[2] == "MWC West")
-					sd.division = MWCWEST;
-				else if (row[2] == "Independent")
-					sd.division = INDEPENDENT;
-				schoolData.push_back(sd);
+				T datum = parseLine(getCsvLine(in));
+				data.push_back(datum);
 			}
-			in.close();
+		}
+	};
+
+	class StateData : public DataParser<State> {
+		State parseLine(std::vector<std::string> row) {
+			State state;
+			state.name = row[0];
+			state.acro = row[1];
+			state.signees = std::stoi(row[2]);
+			return state;
+		}
+	};
+
+	class CityData : public DataParser<City> {
+		City parseLine(std::vector<std::string> row) {
+			City city;
+			city.name = row[0];
+			city.state = row[1];
+			city.latitude = std::stod(row[2]);
+			city.longitude = std::stod(row[3]);
+			city.population = std::stoi(row[4]);
+			return city;
+		}
+	};
+
+	inline static NameData firstNames;
+	inline static NameData lastNames;
+	inline static CoachNames coachNames;
+	inline static StateData stateData;
+	inline static CityData cityData;
+
+	class SchoolsData : public DataParser<SchoolData> {
+		SchoolData parseLine(std::vector<std::string> row) {
+			SchoolData sd{
+				row[0], row[1], BIG12, row[3], row[4], std::stoi(row[5]), std::stoi(row[6]), std::stoi(row[7]), std::stoi(row[8]),
+				std::stoi(row[9])
+			};
+			if (row[2] == "Big Ten East") sd.division = BIGTENEAST;
+			else if (row[2] == "Big Ten West")
+				sd.division = BIGTENWEST;
+			else if (row[2] == "SEC East")
+				sd.division = SECEAST;
+			else if (row[2] == "SEC West")
+				sd.division = SECWEST;
+			else if (row[2] == "Pac-12 North")
+				sd.division = PAC12NORTH;
+			else if (row[2] == "Pac-12 South")
+				sd.division = PAC12SOUTH;
+			else if (row[2] == "ACC Coastal")
+				sd.division = ACCCOASTAL;
+			else if (row[2] == "ACC Atlantic")
+				sd.division = ACCATLANTIC;
+			else if (row[2] == "MAC West")
+				sd.division = MACWEST;
+			else if (row[2] == "MAC East")
+				sd.division = MACEAST;
+			else if (row[2] == "C-USA East")
+				sd.division = CUSAEAST;
+			else if (row[2] == "C-USA West")
+				sd.division = CUSAWEST;
+			else if (row[2] == "AAC East")
+				sd.division = AACEAST;
+			else if (row[2] == "AAC West")
+				sd.division = AACWEST;
+			else if (row[2] == "Sun Belt East")
+				sd.division = SUNBELTEAST;
+			else if (row[2] == "Sun Belt West")
+				sd.division = SUNBELTWEST;
+			else if (row[2] == "MWC Mountain")
+				sd.division = MWCMOUNTAIN;
+			else if (row[2] == "MWC West")
+				sd.division = MWCWEST;
+			else if (row[2] == "Independent")
+				sd.division = INDEPENDENT;
+			return sd;
 		}
 	};
 	inline static SchoolsData schoolsData;
 
+public:
 	static void loadEverything() {
 		firstNames.readInData("data/firstNames.txt");
 		lastNames.readInData("data/lastNames.txt");
 		coachNames.readInData("data/coachNames.txt");
 		schoolsData.readInData("data/schools.csv");
+		stateData.readInData("data/states.csv");
+		cityData.readInData("data/cities.csv");
 	}
 
 	static std::string getRandomName() { return firstNames.getRandomName() + " " + lastNames.getRandomName(); }
 	static std::string getRandomCoachName() { return coachNames.getRandomName() + " " + coachNames.getRandomName(true); }
-	static std::vector<SchoolsData::SchoolData> getSchoolsData() { return schoolsData.schoolData; }
+	static std::vector<SchoolData>& getSchoolsData() { return schoolsData.data; }
 };
