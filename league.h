@@ -715,26 +715,6 @@ class League {
 
 	void printCoachHistoryByName(std::string coachName) { coachesOrg.printCoachHistoryByName(coachName); }
 
-	League() {
-		coachesOrg.initializeAllCoaches();
-
-		schedule.resize(16); // thirteen total regular season weeks, one bye per team + 2 bowl weeks, 1 CCG week
-
-		conferences.resize(20);
-
-		for (auto sd : GlobalData::getSchoolsData()) {
-			conferences[sd.division].emplace_back(sd.name, sd.mascot, sd.state, sd.city, sd.prestige, sd.stadiumCapacity, sd.budget, sd.nflRating,
-												  sd.academicRating);
-		}
-
-		assembleSchoolVector();
-		sortSchoolVectorByPrestige();
-
-		coachesOrg.fillAllVacancies(allSchools);
-
-		initializeSeason();
-	}
-
 	void simSeason() {
 		playEntireSchedule();
 		rankTeams();
@@ -745,7 +725,8 @@ class League {
 	bool simOneGame(int gameIndex, bool replay) {
 		if (schedule[week][gameIndex - 1]->gameResult.homeStats != nullptr && !replay) {
 			return false;
-		} else {
+		}
+		else {
 			playOneGame(gameIndex - 1, false);
 			return true;
 		}
@@ -821,4 +802,28 @@ class League {
 
 	int getCurrentWeek() { return week + 1; }
 	int getCurrentYear() { return year; }
+
+	League() {
+		coachesOrg.initializeAllCoaches();
+
+		schedule.resize(16); // thirteen total regular season weeks, one bye per team + 2 bowl weeks, 1 CCG week
+
+		conferences.resize(20);
+
+		for (auto sd : GlobalData::getSchoolsData()) {
+			City* city = GlobalData::getCityByName(GlobalData::stateNameToCode(sd.state), sd.city);
+			if (city == nullptr) {
+				std::cout << sd.name << " could not find city: " << sd.city << ", " << sd.state << std::endl;
+			}
+			conferences[sd.division].emplace_back(sd.name, sd.mascot, sd.state, city, sd.prestige, sd.stadiumCapacity, sd.budget, sd.nflRating,
+				sd.academicRating);
+		}
+
+		assembleSchoolVector();
+		sortSchoolVectorByPrestige();
+
+		coachesOrg.fillAllVacancies(allSchools);
+
+		initializeSeason();
+	}
 };
