@@ -89,8 +89,8 @@ class School {
 
   private:
 	std::string name;
+	City* city;
 	std::string mascot;
-	std::string city;
 	std::string state;
 	int nflRating;
 	int academicRating;
@@ -153,8 +153,7 @@ class School {
 
 	std::string getName() { return name; }
 	std::string getMascot() { return mascot; }
-	std::string getCityName() { return city; }
-	std::string getStateName() { return state; }
+	City* getCity() { return city; }
 	int getStadiumCapacity() { return stadiumCapacity; }
 	int getBudget() { return budget; }
 	int getNFLRating() { return nflRating; }
