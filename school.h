@@ -143,9 +143,9 @@ class School {
   public:
 	NonConStrategy strategy;
 
-	School(std::string na, std::string ma, std::string st, std::string ci, int pr, int ss, int bu, int nfl, int ac) :
-			name { na }, mascot { ma }, state { st }, city { ci }, prestige { pr }, stadiumCapacity { ss }, budget { bu }, nflRating { nfl },
-			academicRating { ac } {
+	School(std::string na, std::string ma, std::string st, City* ci, int pr, int ss, int bu, int nfl, int ac) :
+		name{ na }, mascot{ ma }, state{ st }, city{ ci }, prestige{ pr }, stadiumCapacity{ ss }, budget{ bu }, nflRating{ nfl },
+		academicRating{ ac } {
 		roster.generateRoster(pr);
 		schedule.resize(16, nullptr);
 		for (int i = 0; i < 11; i++) coaches[i] = nullptr;
