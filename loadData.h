@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <unordered_map>
 
 struct State {
 	std::string name;
@@ -19,6 +20,10 @@ struct City {
 	double latitude;
 	double longitude;
 	int population;
+
+	std::string formalName() {
+		return name + ", " + state;
+	}
 };
 
 struct SchoolData {
@@ -107,10 +112,10 @@ private:
 	public:
 		std::vector<T> data;
 
-		virtual T parseLine(std::vector<std::string> row);
+		virtual T parseLine(std::vector<std::string> row) = 0;
 
 		void readInData(std::string filename) {
-			std::fstream in(fileName);
+			std::fstream in(filename);
 			std::string line;
 			std::getline(in, line); // clear header row
 			while (in.good()) {
@@ -121,6 +126,8 @@ private:
 	};
 
 	class StateData : public DataParser<State> {
+		int totalSignees;
+
 		State parseLine(std::vector<std::string> row) {
 			State state;
 			state.name = row[0];
@@ -128,9 +135,35 @@ private:
 			state.signees = std::stoi(row[2]);
 			return state;
 		}
+
+	public:
+		StateData() { totalSignees = 0; }
+
+		State* pickRandomState() {
+			if (totalSignees == 0) {
+				for (State& state : data) {
+					totalSignees += state.signees;
+				}
+			}
+			int pointer = -1;
+			for (int index = std::rand() % totalSignees; index > 0; index) {
+				pointer++;
+				index -= data[pointer].signees;
+			}
+			if (pointer == -1) pointer = 0;
+			return &(data[pointer]);
+		}
+
+		std::string stateNameToCode(std::string name) {
+			for (auto& state : data) {
+				if (state.name == name) return state.acro;
+			}
+			throw "Invalid state name: " + name;
+		}
 	};
 
 	class CityData : public DataParser<City> {
+		std::unordered_map<std::string, int> totalStatePop;
 		City parseLine(std::vector<std::string> row) {
 			City city;
 			city.name = row[0];
@@ -139,6 +172,32 @@ private:
 			city.longitude = std::stod(row[3]);
 			city.population = std::stoi(row[4]);
 			return city;
+		}
+
+	public:
+		City* pickRandomCity(std::string state) {
+			if (totalStatePop.find(state) == totalStatePop.end()) {
+				totalStatePop[state] = 0;
+				for (City& city : data) {
+					if (city.state == state) totalStatePop[state] += city.population;
+				}
+			}
+			int pointer = -1;
+			for (int index = std::rand() % totalStatePop[state]; index > 0; index) {
+				pointer++;
+				if (data[pointer].state != state) continue;
+				index -= data[pointer].population;
+			}
+			if (pointer == -1) pointer = 0;
+			return &(data[pointer]);
+		}
+
+		City* getCityByName(std::string stateCode, std::string name) {
+			for (auto& city : data) {
+				if (city.state == stateCode && city.name == name)
+					return &city;
+			}
+			return nullptr;
 		}
 	};
 
@@ -209,4 +268,10 @@ public:
 	static std::string getRandomName() { return firstNames.getRandomName() + " " + lastNames.getRandomName(); }
 	static std::string getRandomCoachName() { return coachNames.getRandomName() + " " + coachNames.getRandomName(true); }
 	static std::vector<SchoolData>& getSchoolsData() { return schoolsData.data; }
+	static City* getRandomCity() {
+		State* state = stateData.pickRandomState();
+		return cityData.pickRandomCity(state->acro);
+	}
+	static std::string stateNameToCode(std::string name) { return stateData.stateNameToCode(name); }
+	static City* getCityByName(std::string stateCode, std::string name) { return cityData.getCityByName(stateCode, name); }
 };
