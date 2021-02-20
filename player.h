@@ -194,6 +194,7 @@ class Player {
 	std::string name;
 	Position position;
 	int year;
+	City* hometown = GlobalData::getRandomCity();
 	std::vector<int> ratings;
 	int ovr;
 	double gametimeBonus;
@@ -228,6 +229,7 @@ class Player {
 	int getYear() const { return year; }
 	std::string getYearString() const { return year == 1 ? "Freshman" : year == 2 ? "Sophomore" : year == 3 ? "Junior" : "Senior"; }
 	int getOVR() const { return ovr; }
+	City* getHometown() const { return hometown; }
 	int getRating(Rating r, bool stripBonus = false) const {
 		// Gametime "bonus" is a bit of a misnomer. Lack of a bonus is penalizing and a full bonus simply does nothing.
 		int penalty = 15;
