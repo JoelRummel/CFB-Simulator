@@ -260,12 +260,15 @@ class Player {
 	}
 };
 
-Player playerFactory(Position p, int y, int prestige) {
+Player playerFactory(Position p, int y, int prestige, int o = -1) {
 	std::string name = GlobalData::getRandomName();
 
-	int ovr = 97 + (5 * (y - 4)); // absolute max OVR, with highest prestige
-	ovr -= RNG::randomNumberNormalDist(7 + ((10 - prestige) * 3), 6);
-	ovr = std::min(ovr, 99);
+	int ovr = o;
+	if (o == -1) {
+		ovr = 97 + (5 * (y - 4)); // absolute max OVR, with highest prestige
+		ovr -= RNG::randomNumberNormalDist(7 + ((10 - prestige) * 3), 6);
+		ovr = std::min(ovr, 99);
+	}
 
 	using Archetype = std::vector<std::pair<Rating, int>>;
 	std::vector<int> rats(21, 30);
