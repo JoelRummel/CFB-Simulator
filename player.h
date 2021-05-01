@@ -109,6 +109,7 @@ std::string ratingToStr(Rating r) {
 	case PUNTPOWER: return "PUPO";
 	case PUNTACCURACY: return "PUAC";
 	}
+	return "ERROR";
 }
 
 enum Action {
@@ -153,53 +154,67 @@ std::pair<std::vector<std::pair<Rating, int>>, std::vector<std::pair<Rating, int
 	case HB:
 		return n({ f(SPEED, 85), f(STRENGTH, 90), f(BREAKTACKLE, 99), f(BALLSECURITY, 99), f(RUNBLOCK, 85), f(PASSBLOCK, 70), f(CATCH, 80),
 				   f(RUNVISION, 90), f(GETTINGOPEN, 70) },
-				 { f(SPEED, 99), f(STRENGTH, 70), f(BREAKTACKLE, 90), f(BALLSECURITY, 95), f(RUNBLOCK, 70), f(PASSBLOCK, 85), f(CATCH, 85),
-				   f(RUNVISION, 99), f(GETTINGOPEN, 85) });
+			{ f(SPEED, 99), f(STRENGTH, 70), f(BREAKTACKLE, 90), f(BALLSECURITY, 95), f(RUNBLOCK, 70), f(PASSBLOCK, 85), f(CATCH, 85),
+			  f(RUNVISION, 99), f(GETTINGOPEN, 85) });
 	case WR:
 		return n({ f(SPEED, 90), f(STRENGTH, 85), f(BREAKTACKLE, 80), f(RUNBLOCK, 80), f(CATCH, 99), f(BALLSECURITY, 99), f(RUNVISION, 80),
 				   f(GETTINGOPEN, 99) },
-				 { f(SPEED, 99), f(STRENGTH, 70), f(BREAKTACKLE, 95), f(RUNBLOCK, 70), f(CATCH, 95), f(BALLSECURITY, 90), f(RUNVISION, 99),
-				   f(GETTINGOPEN, 95) });
+			{ f(SPEED, 99), f(STRENGTH, 70), f(BREAKTACKLE, 95), f(RUNBLOCK, 70), f(CATCH, 95), f(BALLSECURITY, 90), f(RUNVISION, 99),
+			  f(GETTINGOPEN, 95) });
 	case TE:
 		return n({ f(SPEED, 75), f(STRENGTH, 95), f(BREAKTACKLE, 70), f(BALLSECURITY, 85), f(CATCH, 85), f(RUNVISION, 70), f(RUNBLOCK, 90),
 				   f(PASSBLOCK, 90), f(GETTINGOPEN, 80) },
-				 { f(SPEED, 90), f(STRENGTH, 85), f(BREAKTACKLE, 85), f(BALLSECURITY, 90), f(CATCH, 95), f(RUNVISION, 85), f(RUNBLOCK, 70),
-				   f(PASSBLOCK, 70), f(GETTINGOPEN, 90) });
+			{ f(SPEED, 90), f(STRENGTH, 85), f(BREAKTACKLE, 85), f(BALLSECURITY, 90), f(CATCH, 95), f(RUNVISION, 85), f(RUNBLOCK, 70),
+			  f(PASSBLOCK, 70), f(GETTINGOPEN, 90) });
 	case OL: return n({ f(STRENGTH, 99), f(RUNBLOCK, 99), f(PASSBLOCK, 95) }, { f(STRENGTH, 99), f(RUNBLOCK, 95), f(PASSBLOCK, 99) });
 
 	case DL:
 		return n({ f(STRENGTH, 99), f(SPEED, 70), f(RUNSTOP, 99), f(PASSRUSH, 90), f(TACKLE, 99), f(STRIPBALL, 75), f(PASSCOVER, 60) },
-				 { f(STRENGTH, 90), f(SPEED, 85), f(RUNSTOP, 90), f(PASSRUSH, 99), f(TACKLE, 95), f(STRIPBALL, 80), f(PASSCOVER, 70) });
+			{ f(STRENGTH, 90), f(SPEED, 85), f(RUNSTOP, 90), f(PASSRUSH, 99), f(TACKLE, 95), f(STRIPBALL, 80), f(PASSCOVER, 70) });
 	case LB:
 		return n({ f(STRENGTH, 95), f(SPEED, 85), f(RUNSTOP, 95), f(PASSRUSH, 80), f(PASSCOVER, 80), f(TACKLE, 95), f(STRIPBALL, 90), f(CATCH, 65) },
-				 { f(STRENGTH, 90), f(SPEED, 95), f(RUNSTOP, 80), f(PASSRUSH, 85), f(PASSCOVER, 95), f(TACKLE, 90), f(STRIPBALL, 80), f(CATCH, 80) });
+			{ f(STRENGTH, 90), f(SPEED, 95), f(RUNSTOP, 80), f(PASSRUSH, 85), f(PASSCOVER, 95), f(TACKLE, 90), f(STRIPBALL, 80), f(CATCH, 80) });
 	case CB:
 		return n({ f(STRENGTH, 85), f(SPEED, 95), f(PASSCOVER, 95), f(TACKLE, 95), f(STRIPBALL, 90), f(PASSRUSH, 80), f(RUNSTOP, 85), f(CATCH, 80) },
-				 { f(STRENGTH, 80), f(SPEED, 99), f(PASSCOVER, 99), f(TACKLE, 85), f(STRIPBALL, 80), f(PASSRUSH, 70), f(RUNSTOP, 65), f(CATCH, 95) });
+			{ f(STRENGTH, 80), f(SPEED, 99), f(PASSCOVER, 99), f(TACKLE, 85), f(STRIPBALL, 80), f(PASSRUSH, 70), f(RUNSTOP, 65), f(CATCH, 95) });
 	case S:
 		return n({ f(STRENGTH, 90), f(SPEED, 90), f(PASSCOVER, 90), f(TACKLE, 99), f(STRIPBALL, 95), f(PASSRUSH, 80), f(RUNSTOP, 85), f(CATCH, 80) },
-				 { f(STRENGTH, 85), f(SPEED, 95), f(PASSCOVER, 99), f(TACKLE, 90), f(STRIPBALL, 80), f(PASSRUSH, 70), f(RUNSTOP, 65), f(CATCH, 90) });
+			{ f(STRENGTH, 85), f(SPEED, 95), f(PASSCOVER, 99), f(TACKLE, 90), f(STRIPBALL, 80), f(PASSRUSH, 70), f(RUNSTOP, 65), f(CATCH, 90) });
 	case K:
 		return n({ f(KICKPOWER, 99), f(KICKACCURACY, 90), f(PUNTPOWER, 80), f(PUNTACCURACY, 70) },
-				 { f(KICKPOWER, 90), f(KICKACCURACY, 99), f(PUNTPOWER, 70), f(PUNTACCURACY, 80) });
+			{ f(KICKPOWER, 90), f(KICKACCURACY, 99), f(PUNTPOWER, 70), f(PUNTACCURACY, 80) });
 	case P:
 		return n({ f(KICKPOWER, 80), f(KICKACCURACY, 70), f(PUNTPOWER, 99), f(PUNTACCURACY, 90) },
-				 { f(KICKPOWER, 70), f(KICKACCURACY, 80), f(PUNTPOWER, 90), f(PUNTACCURACY, 99) });
+			{ f(KICKPOWER, 70), f(KICKACCURACY, 80), f(PUNTPOWER, 90), f(PUNTACCURACY, 99) });
 	default: return n({}, {});
 	};
 }
 
+std::vector<int> createRatingsVector(Position p, int ovr, double archetypePointer) {
+	using Archetype = std::vector<std::pair<Rating, int>>;
+	std::vector<int> rats(21, 30);
+	std::pair<Archetype, Archetype> archetypes = getRatingFactors(p);
+	Archetype a = archetypes.first;
+	for (int i = 0; i < (int)a.size(); i++) {
+		int diff = archetypes.second[i].second - a[i].second;
+		a[i].second += std::round(diff * archetypePointer);
+		rats[(int)a[i].first] = std::round(a[i].second * (ovr / 99.0));
+	}
+	return rats;
+}
+
 class Player {
-  private:
+private:
 	std::string name;
 	Position position;
 	int year;
 	City* hometown = GlobalData::getRandomCity();
 	std::vector<int> ratings;
 	int ovr;
+	double archetypePointer;
 	double gametimeBonus;
 
-  public:
+public:
 	struct GameState {
 		int fatigue = 100;
 		int energy = 100;
@@ -221,8 +236,8 @@ class Player {
 
 	GameState gameState;
 
-	Player(std::string n, Position p, int y, int OVR, const std::vector<int>& rats) :
-			name { n }, position { p }, year { y }, ovr { OVR }, ratings { rats } {};
+	Player(std::string n, Position p, int y, int OVR, const std::vector<int>& rats, double arch) :
+		name{ n }, position{ p }, year{ y }, ovr{ OVR }, ratings{ rats }, archetypePointer{ arch } {};
 
 	std::string getName() const { return name; }
 	Position getPosition() const { return position; }
@@ -237,6 +252,16 @@ class Player {
 		if (stripBonus) penalty = 0;
 		return ratings[r] - penalty;
 	}
+	bool ageAndGraduate() {
+		year++;
+		return (year > 4);
+	}
+	void train(int amount) {
+		ovr += amount;
+		if (ovr > 99) ovr = 99;
+		ratings = createRatingsVector(position, ovr, archetypePointer);
+	}
+
 	void setGametimeBonus(double b) { gametimeBonus = b; }
 	void advanceTick() {
 		assert(!(position == WR && gameState.zone == BACKFIELD));
@@ -260,6 +285,7 @@ class Player {
 	}
 };
 
+
 Player playerFactory(Position p, int y, int prestige, int o = -1) {
 	std::string name = GlobalData::getRandomName();
 
@@ -270,18 +296,10 @@ Player playerFactory(Position p, int y, int prestige, int o = -1) {
 		ovr = std::min(ovr, 99);
 	}
 
-	using Archetype = std::vector<std::pair<Rating, int>>;
-	std::vector<int> rats(21, 30);
-	std::pair<Archetype, Archetype> archetypes = getRatingFactors(p);
 	double archetypePointer = RNG::randomNumberUniformDist();
-	Archetype a = archetypes.first;
-	for (int i = 0; i < (int)a.size(); i++) {
-		int diff = archetypes.second[i].second - a[i].second;
-		a[i].second += std::round(diff * archetypePointer);
-		rats[(int)a[i].first] = std::round(a[i].second * (ovr / 99.0));
-	}
+	std::vector<int> rats = createRatingsVector(p, ovr, archetypePointer);
 
-	return Player(name, p, y, ovr, rats);
+	return Player(name, p, y, ovr, rats, archetypePointer);
 }
 
 struct PlayerStats {
