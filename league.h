@@ -3,6 +3,7 @@
 #include "coachesOrg.h"
 #include "gamePlayer.h"
 #include "loadData.h"
+#include "recruitLounge.h"
 
 bool areSameConference(Conference div1, Conference div2) {
 	if (div1 == div2) return true;
@@ -47,13 +48,15 @@ struct SortByConferenceRecord {
 };
 
 class League {
-  private:
+private:
 	std::vector<std::vector<School>> conferences;        // IMPORTANT: everything actually lives here!
 	std::vector<std::vector<School::Matchup*>> schedule; // gets resized to 13
 
 	std::vector<School*> allSchools;
 
 	CoachesOrganization coachesOrg;
+
+	TopRecruitingClass latestTRC;
 
 	int year = 2020;
 	int week = 0;
@@ -74,7 +77,7 @@ class League {
 
 	void assignMatchup(int week, School* away, School* home) {
 		if (week == -1) throw std::string("Bad schedule, restart and retry");
-		School::Matchup* ptr = new School::Matchup { away, home };
+		School::Matchup* ptr = new School::Matchup{ away, home };
 		schedule[week].push_back(ptr);
 		bool confGame = false;
 		bool crossConfGame = false;
@@ -301,7 +304,7 @@ class League {
 							// Protected matchup
 							// lmao kill me
 							std::string opponent = "";
-							std::vector<std::pair<std::string, std::string>> pairings { std::make_pair("Maryland", "Minnesota"),
+							std::vector<std::pair<std::string, std::string>> pairings{ std::make_pair("Maryland", "Minnesota"),
 																						std::make_pair("Michigan", "Wisconsin"),
 																						std::make_pair("Michigan State", "Northwestern"),
 																						std::make_pair("Ohio State", "Nebraska"),
@@ -323,7 +326,7 @@ class League {
 						if (crossConfGames == 0) {
 							// Protected matchup
 							std::string opponent = "";
-							std::vector<std::pair<std::string, std::string>> pairings { std::make_pair("Alabama", "Tennessee"),
+							std::vector<std::pair<std::string, std::string>> pairings{ std::make_pair("Alabama", "Tennessee"),
 																						std::make_pair("Arkansas", "Missouri"),
 																						std::make_pair("Auburn", "Georgia"),
 																						std::make_pair("LSU", "Florida"),
@@ -348,7 +351,7 @@ class League {
 							// Protected matchup
 							// lmao kill me
 							std::string opponent = "";
-							std::vector<std::pair<std::string, std::string>> pairings { std::make_pair("Boston College", "Virginia Tech"),
+							std::vector<std::pair<std::string, std::string>> pairings{ std::make_pair("Boston College", "Virginia Tech"),
 																						std::make_pair("Clemson", "Georgia Tech"),
 																						std::make_pair("Florida State", "Miami (FL)"),
 																						std::make_pair("Louisville", "Virginia"),
@@ -460,7 +463,7 @@ class League {
 		for (auto& school : allSchools) {
 			std::pair<int, int> record = school->getWinLossRecord();
 			std::cout << school->getName() << ": " << record.first << " - " << record.second << " .... " << school->getAverageOffense()
-					  << " yds/avg\n";
+				<< " yds/avg\n";
 		}
 	}
 
@@ -539,6 +542,7 @@ class League {
 			std::cout << "Error - couldn't find a school with that name\n";
 			return nullptr;
 		}
+		return school;
 	}
 
 	void initializeSeason() {
@@ -560,7 +564,7 @@ class League {
 		}
 	}
 
-  public:
+public:
 	void printSchoolResults(std::string schoolName) {
 		School* school = findSchoolByName(schoolName);
 		if (school == nullptr) return;
@@ -609,7 +613,7 @@ class League {
 			i++;
 			if (matchup->gameResult.homeStats != nullptr) {
 				printf("%2d) %26s vs. %-26s (%d - %d)\n", i, matchup->away->getRankedName().c_str(), matchup->home->getRankedName().c_str(),
-					   matchup->gameResult.awayStats->points, matchup->gameResult.homeStats->points);
+					matchup->gameResult.awayStats->points, matchup->gameResult.homeStats->points);
 			} else {
 				printf("%2d) %26s vs. %-26s\n", i, matchup->away->getRankedName().c_str(), matchup->home->getRankedName().c_str());
 			}
@@ -715,6 +719,23 @@ class League {
 
 	void printCoachHistoryByName(std::string coachName) { coachesOrg.printCoachHistoryByName(coachName); }
 
+	void printRecruitingSummary() {
+		std::cout << "School              5★ 4★ 3★ 2★ 1★ 0★\n";
+		std::cout << "=====================================\n";
+		for (auto school : allSchools) school->printLatestRecruitingClass();
+		std::cout << "\n";
+		for (int i = 0; i < 10; i++) {
+			/**
+			 *  1) Jaylen Edwards       Athens, MI        LB 80 OVR
+			 *     School: Ohio State         Top Priority: Academics
+			 */
+			Recruit& r = latestTRC.recruits[i];
+			Player* p = r.getUnderlyingPlayer();
+			printf("%2d) %-20s %-20s %-2s %-2d OVR\n", i + 1, p->getName().c_str(), p->getHometown()->formalName().c_str(), positionToStr(p->getPosition()).c_str(), p->getOVR());
+			printf("    School: %-12s Top Priority: %s\n\n", latestTRC.schoolChoices[i]->getName().c_str(), r.getTopPreferenceStr().c_str());
+		}
+	}
+
 	void simSeason() {
 		playEntireSchedule();
 		rankTeams();
@@ -725,8 +746,7 @@ class League {
 	bool simOneGame(int gameIndex, bool replay) {
 		if (schedule[week][gameIndex - 1]->gameResult.homeStats != nullptr && !replay) {
 			return false;
-		}
-		else {
+		} else {
 			playOneGame(gameIndex - 1, false);
 			return true;
 		}
@@ -792,6 +812,10 @@ class League {
 		coachesOrg.fillAllVacancies(allSchools);
 
 		for (School* school : allSchools) school->prepareNextSeason();
+		RecruitLounge recruits;
+		recruits.generateNewRecruitingClass();
+		latestTRC = recruits.signRecruitingClass(allSchools);
+
 		year++;
 		week = 0;
 		schedule.clear();
@@ -814,6 +838,7 @@ class League {
 			City* city = GlobalData::getCityByName(GlobalData::stateNameToCode(sd.state), sd.city);
 			if (city == nullptr) {
 				std::cout << sd.name << " could not find city: " << sd.city << ", " << sd.state << std::endl;
+				exit(1);
 			}
 			conferences[sd.division].emplace_back(sd.name, sd.mascot, sd.state, city, sd.prestige, sd.stadiumCapacity, sd.budget, sd.nflRating,
 				sd.academicRating);
@@ -823,6 +848,14 @@ class League {
 		sortSchoolVectorByPrestige();
 
 		coachesOrg.fillAllVacancies(allSchools);
+
+		// Let's do a proper initialization
+		for (int i = 0; i < 4; i++) {
+			for (auto& school : allSchools) school->advanceRosterOneYear();
+			RecruitLounge recruits;
+			recruits.generateNewRecruitingClass();
+			latestTRC = recruits.signRecruitingClass(allSchools);
+		}
 
 		initializeSeason();
 	}

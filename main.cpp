@@ -36,7 +36,7 @@ struct Driver {
 	void mainMenu() {
 		std::cout << "\n===== " << league->getCurrentYear() << " WEEK " << league->getCurrentWeek() << " =====\n";
 		int choice = getMenuChoice(
-			{ "View conference standings", "View AP top 25", "View information by school", "View Coaches dashboard", "Advance the season" }, true);
+			{ "View conference standings", "View AP top 25", "View information by school", "View Coaches dashboard", "View most recent recruiting summary", "Advance the season" }, true);
 		if (choice == 1) {
 			conferenceStandingsMenu();
 		} else if (choice == 2) {
@@ -48,6 +48,8 @@ struct Driver {
 		} else if (choice == 4) {
 			coachMenu();
 		} else if (choice == 5) {
+			league->printRecruitingSummary();
+		} else if (choice == 6) {
 			simMenu();
 		} else {
 			std::cout << "Invalid choice\n";
@@ -63,14 +65,14 @@ struct Driver {
 			league->printSchoolDetails(schoolName);
 			while ("donald trump" == "fascist" || true) {
 				std::cout << "\nOptions: \n  1) View " + schoolName + "'s roster\n  2) View " + schoolName + "'s schedule/results\n  3) View " +
-								 schoolName + "'s season stats\n  4) View " + schoolName + "'s coaching staff\n  5) View " + schoolName +
-								 "'s coaching history\n  6) Go back\n";
+					schoolName + "'s season stats\n  4) View " + schoolName + "'s coaching staff\n  5) View " + schoolName +
+					"'s coaching history\n  6) Go back\n";
 				std::cout << "Enter selection: ";
 				int choice = getInt();
 				if (choice == 1) {
 					league->printSchoolRoster(schoolName);
 					std::cout << "Enter a position group to see their rating breakdowns.\nValid position groups are QB, HB, WR, TE, OL, DL, LB, CB, "
-								 "S, K, P: ";
+						"S, K, P: ";
 					std::string pos;
 					std::getline(std::cin, pos);
 					league->printPositionGroup(schoolName, strToPosition(pos));
@@ -94,7 +96,7 @@ struct Driver {
 						stats = league->printSchoolGameStats(schoolName, choice);
 					if (stats == nullptr) continue;
 					std::cout << "Press enter repeatedly to iterate over individual player stats. Type "
-								 "anything and then hit enter to exit.\n";
+						"anything and then hit enter to exit.\n";
 					int player = 0;
 					while (true) {
 						std::string skip = "";
@@ -109,7 +111,7 @@ struct Driver {
 					std::string pos;
 					while (true) {
 						std::cout << "\nEnter a position (valid positions are QB, HB, WR, TE, OL, DL, LB, CB, S, K, P) to see a breakdown of coach "
-									 "contributions to that position, or leave blank to return: ";
+							"contributions to that position, or leave blank to return: ";
 
 						std::getline(std::cin, pos);
 						if (pos == "") break;
@@ -128,7 +130,7 @@ struct Driver {
 			int choice = getMenuChoice({ "View coaches by position", "Look up a coach's info by name" });
 			if (choice == 1) {
 				std::vector<std::string> menuChoices;
-				std::vector<CoachType> roles { CoachType::HC, CoachType::OC, CoachType::DC, CoachType::ST, CoachType::QB, CoachType::RB,
+				std::vector<CoachType> roles{ CoachType::HC, CoachType::OC, CoachType::DC, CoachType::ST, CoachType::QB, CoachType::RB,
 											   CoachType::WR, CoachType::OL, CoachType::DL, CoachType::LB, CoachType::DB, CoachType::UN };
 				for (CoachType t : roles) menuChoices.push_back(coachTypeToString(t));
 				int coachType = getMenuChoice(menuChoices, false, "Pick a coach type to view:");
@@ -176,8 +178,8 @@ struct Driver {
 			} catch (std::invalid_argument e) { played = league->simOneGame(input, false); }
 			if (!played) {
 				std::cout << "This game has already been played and the result for the rest of the simulation is final.\nHowever, you can simulate "
-							 "it again repeatedly to see what the expected result is.\n  1) Just replay the game once\n  2) Rapidly simulate the "
-							 "game multiple times\n  3) Go back\nEnter your selection: ";
+					"it again repeatedly to see what the expected result is.\n  1) Just replay the game once\n  2) Rapidly simulate the "
+					"game multiple times\n  3) Go back\nEnter your selection: ";
 				choice = getInt();
 				if (choice == 1) {
 					if (byName) league->simOneGame(input, true);
@@ -215,7 +217,7 @@ struct Driver {
 		while (true) {
 			std::cout
 				<< "\nConferences:\n  1) Big Ten\n  2) PAC-12\n  3) Big 12\n  4) ACC\n  5) SEC\n  6) MAC\n  7) C-USA\n  8) AAC\n  9) Sun Belt\n  10) "
-				   "MWC\n  11) Independent\n  12) Go back\n";
+				"MWC\n  11) Independent\n  12) Go back\n";
 			std::cout << "Enter a choice: ";
 			int choice = getInt();
 			std::pair<Conference, Conference> divs;

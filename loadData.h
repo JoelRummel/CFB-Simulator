@@ -24,6 +24,10 @@ struct City {
 	std::string formalName() {
 		return name + ", " + state;
 	}
+
+	static double distance(City* city1, City* city2) {
+		return distanceEarth(city1->latitude, city1->longitude, city2->latitude, city2->longitude);
+	}
 };
 
 struct SchoolData {
