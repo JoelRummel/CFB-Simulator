@@ -19,7 +19,7 @@ struct SortByAdjustedPublicOvr {
 };
 
 class School {
-  public:
+public:
 	struct Matchup {
 		School* away;
 		School* home;
@@ -79,7 +79,7 @@ class School {
 			}
 		}
 
-	  private:
+	private:
 		int difficulty(int prestige) {
 			if (prestige <= 4) return 0;
 			if (prestige <= 7) return 1;
@@ -87,7 +87,7 @@ class School {
 		}
 	};
 
-  private:
+private:
 	std::string name;
 	City* city;
 	std::string mascot;
@@ -113,6 +113,7 @@ class School {
 
 	Coach* coaches[11];
 	CoachingLogs coachLogs;
+	int recruitingClass[6];
 
 	std::pair<TeamStats*, TeamStats*> getOrderedStats(Matchup* m) {
 		if (this == m->away) {
@@ -123,7 +124,7 @@ class School {
 
 	void printCoachBars(Coach* c[3], std::string rating) {
 		printf("%-25s|%-25s|%-25s\n", c[0]->getTypeString().c_str(), c[1]->getTypeString().c_str(),
-			   c[2] != nullptr ? c[2]->getTypeString().c_str() : "");
+			c[2] != nullptr ? c[2]->getTypeString().c_str() : "");
 		double cumPercent; // CUMULATIVE percent, obviously
 		for (int i = 0; i < (c[2] != nullptr ? 3 : 2); i++) {
 			int r;
@@ -140,7 +141,7 @@ class School {
 		printf("  Total: %.1f%%\n\n", cumPercent / (c[2] != nullptr ? 3 : 2));
 	}
 
-  public:
+public:
 	NonConStrategy strategy;
 
 	School(std::string na, std::string ma, std::string st, City* ci, int pr, int ss, int bu, int nfl, int ac) :
@@ -149,6 +150,7 @@ class School {
 		roster.generateRoster(pr);
 		schedule.resize(16, nullptr);
 		for (int i = 0; i < 11; i++) coaches[i] = nullptr;
+		for (int i = 0; i < 6; i++) recruitingClass[i] = 0;
 	}
 
 	std::string getName() { return name; }
@@ -320,6 +322,27 @@ class School {
 
 	void publishPrivateRating() { publicRealRating = privateRealRating; }
 
+	Player* signRecruit(Player* player, int stars) {
+		recruitingClass[stars]++;
+		return roster.addPlayer(player);
+	}
+
+	double getRecruitingMultiplier(Position pos) {
+		double multiplier = coaches[(int)CoachType::HC]->getOvrRecruiting() - 40;
+		multiplier += coaches[(int)getPositionalCoachType(pos)]->getOvrRecruiting() - 40;
+		if (pos == P || pos == K) return multiplier / 118.0;
+		multiplier += coaches[(int)getSecondLevelCoachType(pos)]->getOvrRecruiting() - 40;
+		return multiplier / 177.0;
+	}
+
+	double getDevelopmentMultiplier(Position pos) {
+		double multiplier = coaches[(int)CoachType::HC]->getOvrDevelopment() - 40;
+		multiplier += coaches[(int)getPositionalCoachType(pos)]->getOvrDevelopment() - 40;
+		if (pos == P || pos == K) return multiplier / 118.0;
+		multiplier += coaches[(int)getSecondLevelCoachType(pos)]->getOvrDevelopment() - 40;
+		return multiplier / 177.0;
+	}
+
 	void makeCoachingDecisions() {
 		Coach* coach = coaches[(int)CoachType::HC];
 		coach->currentContract.yearsRemaining--;
@@ -355,18 +378,18 @@ class School {
 
 		// Now THIS is the fun part: minimum ending prestige
 		if (type == CoachType::HC) switch (prestige) {
-			case 10: contract.prestigeTargets = { 9, 9, 9 }; break;
-			case 9: contract.prestigeTargets = { 8, 9, 9 }; break;
-			case 8: contract.prestigeTargets = { 7, 8, 9 }; break;
-			case 7: contract.prestigeTargets = { 6, 7, 8 }; break;
-			case 6: contract.prestigeTargets = { 5, 6, 7 }; break;
-			case 5: contract.prestigeTargets = { 4, 5, 6 }; break;
-			case 4: contract.prestigeTargets = { 4, 5, 5 }; break;
-			case 3: contract.prestigeTargets = { 3, 4, 4 }; break;
-			case 2: contract.prestigeTargets = { 2, 3, 3 }; break;
-			case 1:
-			case 0: contract.prestigeTargets = { 1, 2, 2 };
-			}
+		case 10: contract.prestigeTargets = { 9, 9, 9 }; break;
+		case 9: contract.prestigeTargets = { 8, 9, 9 }; break;
+		case 8: contract.prestigeTargets = { 7, 8, 9 }; break;
+		case 7: contract.prestigeTargets = { 6, 7, 8 }; break;
+		case 6: contract.prestigeTargets = { 5, 6, 7 }; break;
+		case 5: contract.prestigeTargets = { 4, 5, 6 }; break;
+		case 4: contract.prestigeTargets = { 4, 5, 5 }; break;
+		case 3: contract.prestigeTargets = { 3, 4, 4 }; break;
+		case 2: contract.prestigeTargets = { 2, 3, 3 }; break;
+		case 1:
+		case 0: contract.prestigeTargets = { 1, 2, 2 };
+		}
 		newCoach->currentContract = contract;
 		coachLogs.recordHire(newCoach, type, contract.yearsTotal);
 	}
@@ -378,7 +401,7 @@ class School {
 		if (hc == nullptr) return original;
 		double assessmentAbility = (hc->getActualOvr() - 40) / 59.0;
 		// Sort into our favorite coaches (yikes on efficiency)
-		SortByAdjustedPublicOvr sbao { assessmentAbility };
+		SortByAdjustedPublicOvr sbao{ assessmentAbility };
 		std::sort(snipeSet.begin(), snipeSet.end(), sbao);
 		for (Coach* candidate : snipeSet) {
 			if (candidate->pickFavoriteJob(competitors) == myVacancyIndex) return candidate;
@@ -392,7 +415,7 @@ class School {
 	}
 
 	void assessSelf() {
-		std::vector<int> boundaries { 4, 9, 16, 26, 41, 56, 76, 96, 116, 126, 131 };
+		std::vector<int> boundaries{ 4, 9, 16, 26, 41, 56, 76, 96, 116, 126, 131 };
 		int performance;
 		// We should never get past 11 iterations anyways
 		for (int i = 0; i < 11; i++) {
@@ -432,10 +455,10 @@ class School {
 		for (Position p : { QB, HB, WR, TE, OL, DL, LB, CB, S, K, P }) {
 			std::vector<Player*> players = roster.getAllPlayersAt(p, false);
 			for (Player* player : players) {
-				double bonus = coaches[(int)getPositionalCoachType(p)]->getActualOvr();
+				double bonus = coaches[(int)getPositionalCoachType(p)]->getOvrGametime();
 				CoachType t = getSecondLevelCoachType(p);
-				if (t != CoachType::ST) bonus += coaches[(int)t]->getActualOvr();
-				bonus += coaches[(int)CoachType::HC]->getActualOvr();
+				if (t != CoachType::ST) bonus += coaches[(int)t]->getOvrGametime();
+				bonus += coaches[(int)CoachType::HC]->getOvrGametime();
 				bonus -= (t == CoachType::ST ? 80 : 120);
 				bonus /= (59.0 * (t == CoachType::ST ? 2 : 3));
 				player->setGametimeBonus(bonus);
@@ -452,11 +475,14 @@ class School {
 		std::cout << "\n      Record:       " << getWinLossString() << "\n";
 		std::cout << "      Conf. record: " << getWinLossString(true) << "\n";
 		std::cout << "      Head Coach: " << coaches[(int)CoachType::HC]->getName() << " (" << coaches[(int)CoachType::HC]->getPublicOvr()
-				  << " public OVR)\n";
+			<< " public OVR)\n";
 		if (offenseRanking != -1) {
 			std::cout << "      Offense ranking: " << offenseRanking << "\n";
 			std::cout << "      Defense ranking: " << defenseRanking << "\n";
 		}
+	}
+	void printLatestRecruitingClass() {
+		printf("%-20s%-3d%-3d%-3d%-3d%-3d%-3d\n", name.c_str(), recruitingClass[5], recruitingClass[4], recruitingClass[3], recruitingClass[2], recruitingClass[1], recruitingClass[0]);
 	}
 	void printCoachingStaff() {
 		// Print details of each coach
@@ -488,6 +514,12 @@ class School {
 		schedule.clear(); // this prolly causes a memory leak
 		schedule.resize(16, nullptr);
 	}
+	void advanceRosterOneYear() {
+		for (int i = 0; i < 6; i++) recruitingClass[i] = 0;
+		roster.ageAndGraduatePlayers();
+		for (Position p : {QB, HB, WR, OL, TE, DL, LB, CB, S, K, P})
+			roster.trainPlayersAtPosition(p, getDevelopmentMultiplier(p));
+	}
 	void prepareNextSeason() {
 		ranking = -1;
 		offenseRanking = -1;
@@ -496,6 +528,9 @@ class School {
 		publicRealRating = 0;
 		privateRealRating = 0;
 		nukeSchedule();
+
+		advanceRosterOneYear();
+
 		coachLogs.advanceYear();
 	}
 };
