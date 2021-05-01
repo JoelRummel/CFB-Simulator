@@ -18,7 +18,7 @@ struct Needs {
 };
 
 class Roster {
-  private:
+private:
 	std::vector<Player> roster; // This is where all players actually live!
 	std::vector<std::vector<Player*>> depthChart;
 	int startingPrestige;
@@ -32,7 +32,7 @@ class Roster {
 		7 WR
 		30 TOTAL
 		*/
-		std::vector<std::pair<Position, int>> orders{ std::make_pair(QB, 4), std::make_pair(HB, 5), std::make_pair(OL, 11), std::make_pair(TE, 3),
+		std::vector<std::pair<Position, int>> orders{ std::make_pair(QB, 3), std::make_pair(HB, 5), std::make_pair(OL, 11), std::make_pair(TE, 3),
 													   std::make_pair(WR, 7) };
 
 		for (auto order : orders) {
@@ -56,15 +56,35 @@ class Roster {
 	}
 
 	void generateSpecialTeams() {
-		std::vector<std::pair<Position, int>> orders { std::make_pair(P, 1), std::make_pair(K, 2) };
+		std::vector<std::pair<Position, int>> orders{ std::make_pair(P, 1), std::make_pair(K, 1) };
 
 		for (auto order : orders) {
 			for (int i = 0; i < order.second; ++i) roster.push_back(playerFactory(order.first, (std::rand() % 4) + 1, startingPrestige));
 		}
 	}
 
-  public:
+public:
 	Roster() {}
+
+	Player* addPlayer(Player* player) {
+		roster.push_back(*player);
+		delete player;
+		return &roster.back();
+	}
+
+	void ageAndGraduatePlayers() {
+		for (int i = (int)roster.size() - 1; i >= 0; i--) {
+			bool graduated = roster[i].ageAndGraduate();
+			if (graduated) roster.erase(roster.begin() + i);
+		}
+	}
+
+	void trainPlayersAtPosition(Position pos, double trainingMultiplier) {
+		for (Player* player : getAllPlayersAt(pos, false)) {
+			int amount = std::ceil(4 * trainingMultiplier) + 2;
+			player->train(amount);
+		}
+	}
 
 	void generateRoster(int prestige) {
 		startingPrestige = prestige;
@@ -97,6 +117,10 @@ class Roster {
 	void organizeDepthChart() {
 		depthChart.clear();
 		for (Position p : { QB, HB, WR, TE, OL, DL, LB, CB, S, K, P }) { depthChart.push_back(getAllPlayersAt(p)); }
+	}
+
+	int getRosterSize() {
+		return roster.size();
 	}
 
 	void printRoster() {
