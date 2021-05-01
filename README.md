@@ -3,6 +3,16 @@ A simple command-line college football simulator.
 
 This is in a very early state. Runs are subject to random crashes, many features on the to-do list haven't been started yet, and the interface is very user-unfriendly.
 
+## Compiling and running
+
+To run the simulator, simply run:
+
+```make run```
+
+To recompile it after making changes to the source, use:
+
+```make compile```
+
 ## Objective statement
 The objective of this project is to create a thorough replica of the mechanics of college football that is as accurate as reasonably possible. Games like NCAA 14 are fun to play, but they're not built to simulate particularly accurate (or even likely) season outcomes, nor are they built to do it at a robust speed.
 
