@@ -62,8 +62,6 @@ private:
 		  Needs { OL, 5 }, Needs { P, 1 }, Needs { HB, 1 }, Needs { TE, 2 }, Needs { CB, 2 } }
 	};
 
-	const std::vector<std::vector<Needs>> DefensivePersonnel{ { Needs { DL, 4 }, Needs { LB, 3 }, Needs { CB, 2 }, Needs { S, 2 } } };
-
 	void printPlay(std::string msg) {
 		if (printPlayByPlay) gameState.printPlay(msg);
 	}
@@ -112,13 +110,37 @@ private:
 		return WR3;
 	}
 
+	std::vector<Needs> decideDefensivePersonnel(OffensiveFormation form) {
+		Needs linebackerNeed{ LB, 0 };
+		Needs cornerbackNeed{ CB, 0 };
+		Needs safetyNeed{ S, 0 };
+		int spotsRemaining = 7; // 4 d-linemen at all times, 11 - 4 = 7
+		for (auto offNeed : OffensivePersonnel[form]) {
+			if (offNeed.pos == WR) {
+				cornerbackNeed.num += offNeed.num;
+				spotsRemaining -= offNeed.num;
+			}
+			if (offNeed.pos == TE || offNeed.pos == HB) {
+				linebackerNeed.num += offNeed.num;
+				spotsRemaining -= offNeed.num;
+			}
+		}
+		while (spotsRemaining > 0 && safetyNeed.num < 2) {
+			safetyNeed.num++;
+			spotsRemaining--;
+		}
+		linebackerNeed.num += spotsRemaining;
+
+		return { { DL, 4 }, linebackerNeed, cornerbackNeed, safetyNeed };
+	}
+
 	/**
 	 * Mutates the game state of all 22 players on the field to assign them an action
 	 * based on the play type.
 	 */
 	Field applyFormation(OffensiveFormation form, PlayType play) {
 		std::vector<Player*> offOnField = offense->getElevenMen(OffensivePersonnel[form]);
-		std::vector<Player*> defOnField = defense->getElevenMen(DefensivePersonnel[0]); // TODO
+		std::vector<Player*> defOnField = defense->getElevenMen(decideDefensivePersonnel(form));
 
 		for (int i = 0; i < 11; ++i) {
 			Position offPos = offOnField[i]->getPosition();
