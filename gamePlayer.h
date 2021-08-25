@@ -33,7 +33,7 @@ private:
 	TeamStats* defStats;
 	Roster* offense;
 	Roster* defense;
-	bool homePossession;
+	bool homePossession = false;
 
 	bool printPlayByPlay = false;
 

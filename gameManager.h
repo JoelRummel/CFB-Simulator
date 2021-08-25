@@ -78,9 +78,9 @@ public:
         if (homePossession) homePoints += 3;
         else awayPoints += 3;
         printPlay(scoreString());
-        flipPossession();
         yardLine = 25;
         lineToGain = 15;
+        flipPossession();
     }
 
     void puntBall(int yards) {
