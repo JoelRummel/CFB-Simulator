@@ -111,73 +111,78 @@ class GamePlayExecutor {
         return tackler;
     }
 
-public:
-    /**
-     * Takes an offensive play type and formation, and simulates the play, mutating
-     * both global game state and the game state of all 22 players sent onto the field.
-     * Returns a play result to document what happened.
-     */
-    static PlayResult executePlay(PlayType play, Field field, int yardLine) {
-        Player* ballCarrier;
-        std::vector<std::string> messages;
-        for (auto offensivePlayer : field.first) {
-            if (offensivePlayer->gameState.action == RUSHING || offensivePlayer->gameState.action == PASSING ||
-                offensivePlayer->gameState.action == KICKING) {
-                ballCarrier = offensivePlayer;
-                if (ballCarrier->gameState.action == RUSHING) {
-                    if (ballCarrier->getPosition() == QB) {
-                        messages.push_back("QB " + ballCarrier->getName() + " runs with the ball himself...");
-                    } else {
-                        messages.push_back(positionToStr(ballCarrier->getPosition()) + " " + ballCarrier->getName() + " takes the handoff...");
-                    }
-                }
-                break;
-            }
+    static PlayResult doFieldGoalKick(Player* ballCarrier, int yardLine) {
+        double accFactor = ballCarrier->getRating(KICKACCURACY) / 100.0;
+        double powFactor = ballCarrier->getRating(KICKPOWER) / 100.0;
+        double odds = -0.027 * (3 - (1.5 * powFactor)) * pow(yardLine, 2);
+        odds += 80 + (20 * accFactor);
+        PlayOutcome kickResult;
+        if (std::rand() % 100 < odds) {
+            kickResult = FIELD_GOAL_SCORED;
+        } else {
+            kickResult = FIELD_GOAL_MISSED;
         }
-        if (play == KICK) {
-            double accFactor = ballCarrier->getRating(KICKACCURACY) / 100.0;
-            double powFactor = ballCarrier->getRating(KICKPOWER) / 100.0;
-            double odds = -0.027 * (3 - (1.5 * powFactor)) * pow(yardLine, 2);
-            odds += 80 + (20 * accFactor);
-            messages.push_back("K " + ballCarrier->getName() + " goes out for the field goal...");
-            PlayOutcome kickResult;
-            if (std::rand() % 100 < odds) {
-                messages.push_back("The kick is good!");
-                kickResult = FIELD_GOAL_SCORED;
-            } else {
-                messages.push_back("The kick is no good!");
-                kickResult = FIELD_GOAL_MISSED;
-            }
-            return {
-                outcome: kickResult,
-                carrier : ballCarrier,
-                yards : yardLine + 17,
-                specialTeamsPlay : true,
-                messages : messages
-            };
-        }
-        if (play == PUNT) {
-            int yds = std::round(0.4 * ballCarrier->getRating(PUNTPOWER)) + 10;
-            yds += RNG::randomNumberNormalDist(0, 3);
-            if (yds > yardLine) yds = yardLine;
-            messages.push_back("P " + ballCarrier->getName() + " punts the ball " + std::to_string(yds) + " yards" +
-                (yardLine == 0 ? " for a touchback" : ""));
-            return {
-                outcome: BALL_PUNTED,
-                carrier : ballCarrier,
-                yards : yds,
-                specialTeamsPlay : true,
-                messages : messages
-            };
-        }
+        std::string kickString = (kickResult == FIELD_GOAL_SCORED) ? "The kick is good!" : "The kick is no good!";
+        return {
+            outcome: kickResult,
+            carrier : ballCarrier,
+            yards : yardLine + 17,
+            specialTeamsPlay : true,
+            messages : { ballCarrier->getPositionedName() + " goes out for the field goal...", kickString }
+        };
+    }
 
+    static PlayResult doPunt(Player* ballCarrier, int yardLine) {
+        int yds = std::round(0.4 * ballCarrier->getRating(PUNTPOWER)) + 15;
+        yds += RNG::randomNumberNormalDist(0, 3);
+        if (yds > yardLine) yds = yardLine;
+        return {
+            outcome: BALL_PUNTED,
+            carrier : ballCarrier,
+            yards : yds,
+            specialTeamsPlay : true,
+            messages : { ballCarrier->getPositionedName() + " punts the ball " + std::to_string(yds) + " yards" +
+                (yardLine == 0 ? " for a touchback" : "") }
+        };
+    }
+
+    static PlayResult doRun(Field& field, Player* ballCarrier) {
         double compBlockerRating = getCompositeRating(
             getPlayersPerformingAction(field.first, BLOCKING),
-            play == RUN ? RUNBLOCK : PASSBLOCK
+            RUNBLOCK
         );
         double compBlitzerRating = getCompositeRating(
             getPlayersPerformingAction(field.second, BLITZING),
-            play == RUN ? RUNSTOP : PASSRUSH
+            RUNSTOP
+        );
+
+        std::vector<std::string> messages;
+        if (ballCarrier->getPosition() == QB)
+            messages.push_back(ballCarrier->getPositionedName() + " runs with the ball himself...");
+        else
+            messages.push_back(ballCarrier->getPositionedName() + " takes the handoff...");
+        std::vector<double> runStopRatings;
+        for (auto& defender : field.second) runStopRatings.push_back(defender->getRating(RUNSTOP) + 70);
+        double compositeDiff = (compBlockerRating / 9.0) - (compBlitzerRating / 11.0);
+        int runYards = NumberMaker::getRunYardsGained(compositeDiff);
+        Player* tackledBy = runUntilTackled(ballCarrier, field.second, runStopRatings, runYards, rerollRunYards, compositeDiff, messages);
+        return {
+            outcome: BALL_RUSHED,
+            carrier : ballCarrier,
+            defender : tackledBy,
+            yards : runYards,
+            messages : messages
+        };
+    }
+
+    static PlayResult doPass(Field& field, Player* ballCarrier) {
+        double compBlockerRating = getCompositeRating(
+            getPlayersPerformingAction(field.first, BLOCKING),
+            PASSBLOCK
+        );
+        double compBlitzerRating = getCompositeRating(
+            getPlayersPerformingAction(field.second, BLITZING),
+            PASSRUSH
         );
         double compReceivingRating = getCompositeRating(
             getPlayersPerformingAction(field.first, RECEIVING),
@@ -187,139 +192,153 @@ public:
             getPlayersPerformingAction(field.second, COVERING),
             PASSCOVER
         );
-        if (play == RUN) {
-            std::vector<double> runStopRatings;
-            for (auto& defender : field.second) runStopRatings.push_back(defender->getRating(RUNSTOP) + 70);
-            double compositeDiff = (compBlockerRating / 9.0) - (compBlitzerRating / 11.0);
-            int runYards = NumberMaker::getRunYardsGained(compositeDiff);
-            Player* tackledBy = runUntilTackled(ballCarrier, field.second, runStopRatings, runYards, rerollRunYards, compositeDiff, messages);
-            return {
-                outcome: BALL_RUSHED,
-                carrier : ballCarrier,
-                defender : tackledBy,
-                yards : runYards,
-                messages : messages
-            };
-        } else {
-            // Pass play
-            messages.push_back(ballCarrier->getPositionedName() + " drops back to pass...");
-            double olineStrength = RNG::randomNumberUniformDist(-10, 10) +
-                (((compBlockerRating / 5.0) - (compBlitzerRating / 4.0)) * 0.75) + 45;
-            double receivingAdvantage = ((compReceivingRating / 4.0) - (compCoverageRating / 7.0)) * 0.75;
-            std::vector<Player*> receivers = getPlayersPerformingAction(field.first, RECEIVING);
-            std::vector<double> openness;
-            for (Player* receiver : receivers) {
-                openness.push_back(receivingAdvantage +
-                    RNG::randomNumberNormalDist(0, 4) + (receiver->getRating(GETTINGOPEN) / 8.0));
+
+        std::vector<std::string> messages;
+        messages.push_back(ballCarrier->getPositionedName() + " drops back to pass...");
+        double olineStrength = RNG::randomNumberUniformDist(-10, 10) +
+            (((compBlockerRating / 5.0) - (compBlitzerRating / 4.0)) * 0.75) + 45;
+        double receivingAdvantage = ((compReceivingRating / 4.0) - (compCoverageRating / 7.0)) * 0.75;
+        std::vector<Player*> receivers = getPlayersPerformingAction(field.first, RECEIVING);
+        std::vector<double> openness;
+        for (Player* receiver : receivers) {
+            openness.push_back(receivingAdvantage +
+                RNG::randomNumberNormalDist(0, 4) + (receiver->getRating(GETTINGOPEN) / 8.0));
+        }
+        while (true) {
+            olineStrength--;
+            if (olineStrength <= 0) {
+                // Attempt sack
+                messages.push_back(ballCarrier->getPositionedName() + " was sacked by someone");
+                return {
+                    outcome: PASSER_SACKED,
+                    carrier : ballCarrier,
+                    defender : nullptr,
+                    yards : -2,
+                    messages : messages
+                };
             }
-            while (true) {
-                olineStrength--;
-                if (olineStrength <= 0) {
-                    // Attempt sack
-                    messages.push_back(ballCarrier->getPositionedName() + " was sacked by someone");
-                    return {
-                        outcome: PASSER_SACKED,
-                        carrier : ballCarrier,
-                        defender : nullptr,
-                        yards : -2,
-                        messages : messages
-                    };
-                }
-                for (int i = 0; i < (int)openness.size(); i++) {
-                    Player* receiver = receivers[i];
-                    openness[i] ++;
-                    // Does the QB even see if the receiver is open tho?
-                    if (openness[i] >= 50 && RNG::randomNumberUniformDist(30, 200) < ballCarrier->getRating(PASSVISION)) {
-                        // Attempt pass
-                        std::vector<Player*> coverers = getPlayersPerformingAction(field.second, COVERING);
-                        std::vector<double> coverageRatings;
-                        for (auto& coverer : coverers) coverageRatings.push_back(coverer->getRating(PASSCOVER) + 40);
+            for (int i = 0; i < (int)openness.size(); i++) {
+                Player* receiver = receivers[i];
+                openness[i] ++;
+                // Does the QB even see if the receiver is open tho?
+                if (openness[i] >= 50 && RNG::randomNumberUniformDist(30, 200) < ballCarrier->getRating(PASSVISION)) {
+                    // Attempt pass
+                    std::vector<Player*> coverers = getPlayersPerformingAction(field.second, COVERING);
+                    std::vector<double> coverageRatings;
+                    for (auto& coverer : coverers) coverageRatings.push_back(coverer->getRating(PASSCOVER) + 40);
 
-                        // First check throw accuracy
-                        int passYards = NumberMaker::getPassYardsGained();
-                        double depthPenalty = 1.0;
-                        if (passYards > 10) depthPenalty = 0.9;
-                        if (passYards > 25) depthPenalty = 0.75;
-                        double accuracy = depthPenalty * ((1 + (ballCarrier->getRating(PASSACCURACY) / 100.0)) / 2.0);
-                        if (RNG::randomNumberUniformDist() > accuracy) {
-                            // Off-target pass. Check for interception
-                            double covererIndex = RNG::randomWeightedIndex(coverageRatings);
-                            double intOdds = coverers[covererIndex]->getRating(CATCH);
-                            if (RNG::randomNumberUniformDist(0, 400) < intOdds) {
-                                messages.push_back("Intercepted by " + coverers[covererIndex]->getPositionedName() + "!");
-                                return {
-                                    outcome: BALL_PASSED_INCOMPLETE,
-                                    defender : coverers[covererIndex],
-                                    thrower : ballCarrier,
-                                    incompleteReason : PASS_INCOMPLETE_INTERCEPTED,
-                                    messages : messages
-                                };
-                            }
-                            messages.push_back("Incomplete - intended for " + receiver->getPositionedName()
-                                + ". The throw was off-target.");
-                            return {
-                                outcome: BALL_PASSED_INCOMPLETE,
-                                thrower : ballCarrier,
-                                incompleteReason : PASS_INCOMPLETE_MISSED,
-                                messages : messages
-                            };
-                        }
-
-                        // Now check for a pass deflection/int
+                    // First check throw accuracy
+                    int passYards = NumberMaker::getPassYardsGained();
+                    double depthPenalty = 1.0;
+                    if (passYards > 10) depthPenalty = 0.9;
+                    if (passYards > 25) depthPenalty = 0.75;
+                    double accuracy = depthPenalty * ((1 + (ballCarrier->getRating(PASSACCURACY) / 100.0)) / 2.0);
+                    if (RNG::randomNumberUniformDist() > accuracy) {
+                        // Off-target pass. Check for interception
                         double covererIndex = RNG::randomWeightedIndex(coverageRatings);
-                        Player* coverer = coverers[covererIndex];
-                        double intOdds = coverer->getRating(CATCH) / 8.0;
-                        double deflectOdds = intOdds + coverer->getRating(PASSCOVER);
-                        double x = RNG::randomNumberUniformDist(0, 350);
-                        if (x < intOdds) {
-                            // Interception
-                            messages.push_back("Intercepted by " + coverer->getPositionedName() + "!");
+                        double intOdds = coverers[covererIndex]->getRating(CATCH);
+                        if (RNG::randomNumberUniformDist(0, 400) < intOdds) {
+                            messages.push_back("Intercepted by " + coverers[covererIndex]->getPositionedName() + "!");
                             return {
                                 outcome: BALL_PASSED_INCOMPLETE,
-                                defender : coverer,
+                                defender : coverers[covererIndex],
                                 thrower : ballCarrier,
                                 incompleteReason : PASS_INCOMPLETE_INTERCEPTED,
                                 messages : messages
                             };
-                        } else if (x < deflectOdds) {
-                            // Pass deflection
-                            messages.push_back("Incomplete - intended for " + receiver->getPositionedName()
-                                + ". " + coverer->getPositionedName() + " deflected the ball.");
+                        }
+                        messages.push_back("Incomplete - intended for " + receiver->getPositionedName()
+                            + ". The throw was off-target.");
+                        return {
+                            outcome: BALL_PASSED_INCOMPLETE,
+                            thrower : ballCarrier,
+                            incompleteReason : PASS_INCOMPLETE_MISSED,
+                            messages : messages
+                        };
+                    }
+
+                    // Now check for a pass deflection/int
+                    double covererIndex = RNG::randomWeightedIndex(coverageRatings);
+                    Player* coverer = coverers[covererIndex];
+                    double intOdds = coverer->getRating(CATCH) / 8.0;
+                    double deflectOdds = intOdds + coverer->getRating(PASSCOVER);
+                    double x = RNG::randomNumberUniformDist(0, 350);
+                    if (x < intOdds) {
+                        // Interception
+                        messages.push_back("Intercepted by " + coverer->getPositionedName() + "!");
+                        return {
+                            outcome: BALL_PASSED_INCOMPLETE,
+                            defender : coverer,
+                            thrower : ballCarrier,
+                            incompleteReason : PASS_INCOMPLETE_INTERCEPTED,
+                            messages : messages
+                        };
+                    } else if (x < deflectOdds) {
+                        // Pass deflection
+                        messages.push_back("Incomplete - intended for " + receiver->getPositionedName()
+                            + ". " + coverer->getPositionedName() + " deflected the ball.");
+                        return {
+                            outcome: BALL_PASSED_INCOMPLETE,
+                            defender : coverer,
+                            thrower : ballCarrier,
+                            incompleteReason : PASS_INCOMPLETE_DEFLECTED,
+                            messages : messages
+                        };
+                    } else {
+                        // Pass is on-target and undefended. Now just check if receiver can catch
+                        double catchOdds = receiver->getRating(CATCH);
+                        if (RNG::randomNumberUniformDist(-100, 101) > catchOdds) {
+                            messages.push_back("Incomplete - intended for " + receiver->getPositionedName() +
+                                ". The receiver dropped the ball.");
                             return {
                                 outcome: BALL_PASSED_INCOMPLETE,
-                                defender : coverer,
-                                thrower : ballCarrier,
-                                incompleteReason : PASS_INCOMPLETE_DEFLECTED,
-                                messages : messages
-                            };
-                        } else {
-                            // Pass is on-target and undefended. Now just check if receiver can catch
-                            double catchOdds = receiver->getRating(CATCH);
-                            if (RNG::randomNumberUniformDist(-100, 101) > catchOdds) {
-                                messages.push_back("Incomplete - intended for " + receiver->getPositionedName() +
-                                    ". The receiver dropped the ball.");
-                                return {
-                                    outcome: BALL_PASSED_INCOMPLETE,
-                                    thrower : ballCarrier,
-                                    incompleteReason : PASS_INCOMPLETE_DROPPED,
-                                    messages : messages
-                                };
-                            }
-
-                            // Pass is caught - enter open-field tackle mode, starting with initial coverer
-                            messages.push_back("Completed pass to " + receiver->getPositionedName() + "!");
-                            Player* tackler = runUntilTackled(receiver, coverers, coverageRatings, passYards, rerollPassYards, 0, messages);
-                            return {
-                                outcome: BALL_PASSED_COMPLETE,
                                 carrier : receiver,
-                                yards : passYards,
                                 thrower : ballCarrier,
+                                incompleteReason : PASS_INCOMPLETE_DROPPED,
                                 messages : messages
                             };
                         }
+
+                        // Pass is caught - enter open-field tackle mode, starting with initial coverer
+                        messages.push_back("Completed pass to " + receiver->getPositionedName() + "!");
+                        Player* tackler = runUntilTackled(receiver, coverers, coverageRatings, passYards, rerollPassYards, 0, messages);
+                        return {
+                            outcome: BALL_PASSED_COMPLETE,
+                            carrier : receiver,
+                            yards : passYards,
+                            thrower : ballCarrier,
+                            messages : messages
+                        };
                     }
                 }
             }
+        }
+    }
+
+public:
+    /**
+     * Takes an offensive play type and 22-player set, and simulates the play.
+     * Returns a PlayResult object to describe what happened.
+     */
+    static PlayResult executePlay(PlayType play, Field field, int yardLine) {
+        Player* ballCarrier;
+        for (auto offensivePlayer : field.first) {
+            if (offensivePlayer->gameState.action == RUSHING || offensivePlayer->gameState.action == PASSING ||
+                offensivePlayer->gameState.action == KICKING) {
+                ballCarrier = offensivePlayer;
+                break;
+            }
+        }
+        if (play == KICK) {
+            return doFieldGoalKick(ballCarrier, yardLine);
+        }
+        if (play == PUNT) {
+            return doPunt(ballCarrier, yardLine);
+        }
+        if (play == RUN) {
+            return doRun(field, ballCarrier);
+        } else {
+            return doPass(field, ballCarrier);
         }
     }
 };
