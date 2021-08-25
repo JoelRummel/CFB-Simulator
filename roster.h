@@ -8,8 +8,18 @@
 #include <string>
 #include <vector>
 
-struct SortByRating {
+struct SortByOVR {
 	bool operator()(const Player* p1, const Player* p2) { return (p1->getOVR() > p2->getOVR()); }
+};
+
+struct SortByRating {
+	Rating rating;
+
+	SortByRating(Rating r) : rating(r) {}
+
+	bool operator()(const Player* p1, const Player* p2) {
+		return (p1->getRating(rating) > p2->getRating(rating));
+	}
 };
 
 struct Needs {
@@ -25,15 +35,15 @@ private:
 
 	void generateOffRoster() {
 		/*
-		4 QB
+		3 QB
 		5 RB
 		11 OL
 		3 TE
-		7 WR
+		8 WR
 		30 TOTAL
 		*/
 		std::vector<std::pair<Position, int>> orders{ std::make_pair(QB, 3), std::make_pair(HB, 5), std::make_pair(OL, 11), std::make_pair(TE, 3),
-													   std::make_pair(WR, 7) };
+													   std::make_pair(WR, 8) };
 
 		for (auto order : orders) {
 			for (int i = 0; i < order.second; ++i) roster.push_back(playerFactory(order.first, (std::rand() % 4) + 1, startingPrestige));
@@ -42,13 +52,13 @@ private:
 
 	void generateDefRoster() {
 		/*
-		10 DL
+		9 DL
 		8 LB
-		7 CB
+		8 CB
 		5 S
 		30 TOTAL
 		*/
-		std::vector<std::pair<Position, int>> orders{ std::make_pair(DL, 10), std::make_pair(LB, 8), std::make_pair(CB, 7), std::make_pair(S, 5) };
+		std::vector<std::pair<Position, int>> orders{ std::make_pair(DL, 9), std::make_pair(LB, 8), std::make_pair(CB, 8), std::make_pair(S, 5) };
 
 		for (auto order : orders) {
 			for (int i = 0; i < order.second; ++i) roster.push_back(playerFactory(order.first, (std::rand() % 4) + 1, startingPrestige));
@@ -99,7 +109,7 @@ public:
 			if (roster[i].getPosition() == p) vec.push_back(&(roster[i]));
 		}
 		if (sorted) {
-			SortByRating sbr;
+			SortByOVR sbr;
 			std::sort(vec.begin(), vec.end(), sbr);
 		}
 		return vec;
