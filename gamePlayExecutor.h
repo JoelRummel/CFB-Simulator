@@ -114,14 +114,7 @@ class GamePlayExecutor {
     static PlayResult doFieldGoalKick(Player* ballCarrier, int yardLine) {
         double accFactor = ballCarrier->getRating(KICKACCURACY) / 100.0;
         double powFactor = ballCarrier->getRating(KICKPOWER) / 100.0;
-        double odds = -0.027 * (3 - (1.5 * powFactor)) * pow(yardLine, 2);
-        odds += 80 + (20 * accFactor);
-        PlayOutcome kickResult;
-        if (std::rand() % 100 < odds) {
-            kickResult = FIELD_GOAL_SCORED;
-        } else {
-            kickResult = FIELD_GOAL_MISSED;
-        }
+        PlayOutcome kickResult = (NumberMaker::didFieldGoalSucceed(yardLine, accFactor, powFactor)) ? FIELD_GOAL_SCORED : FIELD_GOAL_MISSED;
         std::string kickString = (kickResult == FIELD_GOAL_SCORED) ? "The kick is good!" : "The kick is no good!";
         return {
             outcome: kickResult,

@@ -24,4 +24,10 @@ public:
             return std::round(std::pow(2, 7.71 * x) - 108.12);
         }
     }
+
+    static bool didFieldGoalSucceed(int yardLine, double accuracyFactor, double powerFactor) {
+        double odds = -0.027 * (3 - (1.5 * powerFactor)) * pow(yardLine, 2);
+        odds += 80 + (20 * accuracyFactor);
+        return (RNG::randomNumberNormalDist(0, 100) < odds);
+    }
 };
