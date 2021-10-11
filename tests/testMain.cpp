@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "testPlayer.h"
 #include "testSchool.h"
+#include "testGameManager.h"
 #include "../loadData.h"
 
 int main(int argc, char** argv) {
