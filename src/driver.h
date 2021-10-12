@@ -1,6 +1,6 @@
 #pragma once
 
-#include "league.h"
+#include "league/league.h"
 #include "loadData.h"
 
 #include <iostream>

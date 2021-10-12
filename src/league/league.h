@@ -1,11 +1,11 @@
 #pragma once
 
-#include "coaches/coachesOrg.h"
-#include "loadData.h"
-#include "recruits/recruitLounge.h"
-#include "games/gamePlayer.h"
-#include "league/schoolRanker.h"
-#include "league/scheduler.h"
+#include "../coaches/coachesOrg.h"
+#include "../loadData.h"
+#include "../recruits/recruitLounge.h"
+#include "../games/gamePlayer.h"
+#include "schoolRanker.h"
+#include "scheduler.h"
 
 struct SortByPrestige {
 	bool operator()(School* a, School* b) { return (a->getPrestige() > b->getPrestige()); }
