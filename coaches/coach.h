@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../loadData.h"
-#include "../player.h"
+#include "../players/player.h"
 #include "../util.h"
 
 enum class CoachType { QB, WR, RB, OL, DL, LB, DB, ST, OC, DC, HC, UN };

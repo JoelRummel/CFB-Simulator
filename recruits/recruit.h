@@ -1,5 +1,5 @@
 #pragma once
-#include "../player.h"
+#include "../players/player.h"
 
 #define NUM_PREFS 5
 

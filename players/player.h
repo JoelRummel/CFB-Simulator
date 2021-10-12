@@ -1,7 +1,7 @@
 #pragma once
 
-#include "loadData.h"
-#include "util.h"
+#include "../loadData.h"
+#include "../util.h"
 
 #include <cassert>
 #include <cmath>

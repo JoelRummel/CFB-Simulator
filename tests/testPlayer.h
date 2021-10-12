@@ -1,6 +1,6 @@
 #pragma once
 #include <gtest/gtest.h>
-#include "../player.h"
+#include "../players/player.h"
 
 TEST(PlayerTestSuite, CreateRatingsVector) {
     std::vector<int> rats = createRatingsVector(OL, 99, 0.0);
