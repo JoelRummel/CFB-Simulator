@@ -65,7 +65,6 @@ enum Rating {
 	CATCH,
 	RUNBLOCK,
 	PASSBLOCK,
-	RUNVISION,
 	PASSVISION,
 	PASSACCURACY,
 	PASSPOWER,
@@ -92,7 +91,6 @@ std::string ratingToStr(Rating r) {
 	case CATCH: return "CAT";
 	case RUNBLOCK: return "RUBL";
 	case PASSBLOCK: return "PABL";
-	case RUNVISION: return "RVIS";
 	case PASSVISION: return "PVIS";
 	case PASSACCURACY: return "PACC";
 	case PASSPOWER: return "PPOW";
@@ -113,21 +111,15 @@ std::string ratingToStr(Rating r) {
 }
 
 enum Action {
-	RUNBLOCKING,
-	PASSBLOCKING,
+	BLOCKING,
 	BLITZING,
 	RUSHING,
-	RUNNINGSHORT,
-	RUNNINGMIDDLE,
-	RUNNINGDEEP,
+	RECEIVING,
 	PASSING,
+	HANDINGOFF,
 	KICKING,
-	COVERING,
-	ZONECOVERING,
-	HANDINGOFF
+	COVERING
 };
-
-enum Zone { LINE, LINELEFT, LINERIGHT, SHORTLEFT, SHORTRIGHT, BACKFIELD, MIDDLE, DEEP, OUTOFPLAY };
 
 /*
 ARCHETYPES:
@@ -149,22 +141,22 @@ std::pair<std::vector<std::pair<Rating, int>>, std::vector<std::pair<Rating, int
 	switch (p) {
 	case QB:
 		return n(
-			{ f(SPEED, 80), f(PASSVISION, 99), f(PASSPOWER, 99), f(PASSACCURACY, 99), f(BREAKTACKLE, 75), f(RUNVISION, 75), f(BALLSECURITY, 70) },
-			{ f(SPEED, 95), f(PASSVISION, 99), f(PASSPOWER, 90), f(PASSACCURACY, 95), f(BREAKTACKLE, 95), f(RUNVISION, 95), f(BALLSECURITY, 85) });
+			{ f(SPEED, 80), f(PASSVISION, 99), f(PASSPOWER, 99), f(PASSACCURACY, 99), f(BREAKTACKLE, 75), f(BALLSECURITY, 70) },
+			{ f(SPEED, 95), f(PASSVISION, 99), f(PASSPOWER, 90), f(PASSACCURACY, 95), f(BREAKTACKLE, 95), f(BALLSECURITY, 85) });
 	case HB:
-		return n({ f(SPEED, 85), f(STRENGTH, 90), f(BREAKTACKLE, 99), f(BALLSECURITY, 99), f(RUNBLOCK, 85), f(PASSBLOCK, 70), f(CATCH, 80),
-				   f(RUNVISION, 90), f(GETTINGOPEN, 70) },
-			{ f(SPEED, 99), f(STRENGTH, 70), f(BREAKTACKLE, 90), f(BALLSECURITY, 95), f(RUNBLOCK, 70), f(PASSBLOCK, 85), f(CATCH, 85),
-			  f(RUNVISION, 99), f(GETTINGOPEN, 85) });
+		return n({ f(SPEED, 85), f(STRENGTH, 90), f(BREAKTACKLE, 99), f(BALLSECURITY, 99), f(RUNBLOCK, 90), f(PASSBLOCK, 70), f(CATCH, 80),
+				   f(GETTINGOPEN, 70) },
+			{ f(SPEED, 99), f(STRENGTH, 70), f(BREAKTACKLE, 90), f(BALLSECURITY, 95), f(RUNBLOCK, 60), f(PASSBLOCK, 85), f(CATCH, 85),
+			f(GETTINGOPEN, 85) });
 	case WR:
-		return n({ f(SPEED, 90), f(STRENGTH, 85), f(BREAKTACKLE, 80), f(RUNBLOCK, 80), f(CATCH, 99), f(BALLSECURITY, 99), f(RUNVISION, 80),
+		return n({ f(SPEED, 90), f(STRENGTH, 85), f(BREAKTACKLE, 80), f(RUNBLOCK, 70), f(CATCH, 99), f(BALLSECURITY, 99),
 				   f(GETTINGOPEN, 99) },
-			{ f(SPEED, 99), f(STRENGTH, 70), f(BREAKTACKLE, 95), f(RUNBLOCK, 70), f(CATCH, 95), f(BALLSECURITY, 90), f(RUNVISION, 99),
+			{ f(SPEED, 99), f(STRENGTH, 70), f(BREAKTACKLE, 95), f(RUNBLOCK, 60), f(CATCH, 95), f(BALLSECURITY, 90),
 			  f(GETTINGOPEN, 95) });
 	case TE:
-		return n({ f(SPEED, 75), f(STRENGTH, 95), f(BREAKTACKLE, 70), f(BALLSECURITY, 85), f(CATCH, 85), f(RUNVISION, 70), f(RUNBLOCK, 90),
+		return n({ f(SPEED, 75), f(STRENGTH, 95), f(BREAKTACKLE, 70), f(BALLSECURITY, 85), f(CATCH, 85), f(RUNBLOCK, 90),
 				   f(PASSBLOCK, 90), f(GETTINGOPEN, 80) },
-			{ f(SPEED, 90), f(STRENGTH, 85), f(BREAKTACKLE, 85), f(BALLSECURITY, 90), f(CATCH, 95), f(RUNVISION, 85), f(RUNBLOCK, 70),
+			{ f(SPEED, 90), f(STRENGTH, 85), f(BREAKTACKLE, 85), f(BALLSECURITY, 90), f(CATCH, 95), f(RUNBLOCK, 65),
 			  f(PASSBLOCK, 70), f(GETTINGOPEN, 90) });
 	case OL: return n({ f(STRENGTH, 99), f(RUNBLOCK, 99), f(PASSBLOCK, 95) }, { f(STRENGTH, 99), f(RUNBLOCK, 95), f(PASSBLOCK, 99) });
 
@@ -217,21 +209,7 @@ private:
 public:
 	struct GameState {
 		int fatigue = 100;
-		int energy = 100;
 		Action action;
-		Zone zone;
-		Player* target;
-		int tick = 0;
-		int clash = -1;
-		double coverRating = 0;
-
-		bool isReceiving() { return (action == RUNNINGSHORT || action == RUNNINGMIDDLE || action == RUNNINGDEEP); }
-		bool isInTargetZone() {
-			if (action == RUNNINGSHORT && (zone == SHORTLEFT || zone == SHORTRIGHT)) return true;
-			if (action == RUNNINGMIDDLE && zone == MIDDLE) return true;
-			if (action == RUNNINGDEEP && zone == DEEP) return true;
-			return false;
-		}
 	};
 
 	GameState gameState;
@@ -241,6 +219,9 @@ public:
 
 	std::string getName() const { return name; }
 	Position getPosition() const { return position; }
+	std::string getPositionedName() const {
+		return positionToStr(position) + " " + name;
+	}
 	int getYear() const { return year; }
 	std::string getYearString() const { return year == 1 ? "Freshman" : year == 2 ? "Sophomore" : year == 3 ? "Junior" : "Senior"; }
 	int getOVR() const { return ovr; }
@@ -263,26 +244,6 @@ public:
 	}
 
 	void setGametimeBonus(double b) { gametimeBonus = b; }
-	void advanceTick() {
-		assert(!(position == WR && gameState.zone == BACKFIELD));
-		gameState.tick++;
-		if (std::rand() % 250 < getRating(SPEED)) gameState.tick++;
-
-		if ((gameState.action == RUNNINGSHORT && gameState.zone == LINE && gameState.tick >= 4)) {
-			gameState.tick = 0;
-			gameState.zone = (std::rand() % 100 < 50 ? SHORTLEFT : SHORTRIGHT);
-		}
-		if ((gameState.action == RUNNINGMIDDLE || gameState.action == RUNNINGDEEP) &&
-			(gameState.zone == SHORTLEFT || gameState.zone == SHORTRIGHT || gameState.zone == LINE || gameState.zone == BACKFIELD) &&
-			gameState.tick >= 5) {
-			// break up this line because clang is a biatch
-			gameState.tick = 0;
-			gameState.zone = MIDDLE;
-		} else if (gameState.action == RUNNINGDEEP && gameState.zone == MIDDLE && gameState.tick >= 5) {
-			gameState.tick = 0;
-			gameState.zone = DEEP;
-		}
-	}
 };
 
 

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "coachesOrg.h"
-#include "gamePlayer.h"
 #include "loadData.h"
 #include "recruitLounge.h"
+#include "games/gamePlayer.h"
 
 bool areSameConference(Conference div1, Conference div2) {
 	if (div1 == div2) return true;
