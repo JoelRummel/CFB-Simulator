@@ -4,6 +4,7 @@
 #include "loadData.h"
 #include "recruitLounge.h"
 #include "games/gamePlayer.h"
+#include "league/schoolRanker.h"
 
 bool areSameConference(Conference div1, Conference div2) {
 	if (div1 == div2) return true;
@@ -12,10 +13,6 @@ bool areSameConference(Conference div1, Conference div2) {
 
 struct SortByPrestige {
 	bool operator()(School* a, School* b) { return (a->getPrestige() > b->getPrestige()); }
-};
-
-struct SortByPublicRating {
-	bool operator()(School* a, School* b) { return (a->getRankingScore() > b->getRankingScore()); }
 };
 
 struct SortByOffense {
@@ -53,6 +50,8 @@ private:
 	std::vector<std::vector<School::Matchup*>> schedule; // gets resized to 13
 
 	std::vector<School*> allSchools;
+
+	SchoolRanker schoolRanker;
 
 	CoachesOrganization coachesOrg;
 
@@ -465,7 +464,7 @@ private:
 	}
 
 	void performNewWeekTasks(int newWeek) {
-		if (newWeek <= 14 || newWeek == 16) rankTeams();
+		if (newWeek <= 14 || newWeek == 16) schoolRanker.rankTeams(newWeek);
 		if (newWeek == 13) {
 			scheduleConferenceChampionshipGames();
 			assignOffenseDefenseRankings();
@@ -486,12 +485,7 @@ private:
 		return result;
 	}
 
-	void rankTeams() {
-		for (auto& school : allSchools) { school->adjustRankingScore(week); }
-		SortByPublicRating sbr;
-		std::sort(allSchools.begin(), allSchools.end(), sbr);
-		for (int i = 0; i < (int)allSchools.size(); i++) { allSchools[i]->setRanking(i + 1); }
-	}
+
 
 	void assignOffenseDefenseRankings() {
 		std::vector<School*> sortedSchools = allSchools;
@@ -543,8 +537,8 @@ private:
 		for (auto& school : allSchools) {
 			school->getRoster()->organizeDepthChart();
 			school->applyGametimeBonuses();
-			school->resetRankingScore();
 		}
+		schoolRanker.resetPoll(allSchools);
 	}
 
 public:
@@ -639,16 +633,7 @@ public:
 	}
 
 	void printSchoolsByRanking() {
-		//			  v1   #4  Alabama        (4 - 1)  W Texas A&M (42-21)
-		std::cout << "Diff Rank School          W-L    Last Week\n";
-		std::cout << "-----------------------------------------------------------\n";
-		for (int i = 0; i < 25; ++i) {
-			std::string rcstr = allSchools[i]->getRankingChangeString();
-			std::string name = allSchools[i]->getName();
-			std::string wlstr = allSchools[i]->getWinLossString();
-			std::string lwstr = allSchools[i]->getWeekResultString(week - 1);
-			printf("%-4s #%-2d %-15s (%s)  %s\n", rcstr.c_str(), i + 1, name.c_str(), wlstr.c_str(), lwstr.c_str());
-		}
+		schoolRanker.printAPTop25(week);
 	}
 
 	void printConferenceStandings(std::pair<Conference, Conference> divisions) {
