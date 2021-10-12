@@ -2,7 +2,7 @@
 #include "testPlayer.h"
 #include "testSchool.h"
 #include "testGameManager.h"
-#include "../loadData.h"
+#include "../src/loadData.h"
 
 int main(int argc, char** argv) {
     GlobalData::loadEverything();
