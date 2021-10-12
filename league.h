@@ -15,7 +15,7 @@ struct SortByPrestige {
 };
 
 struct SortByPublicRating {
-	bool operator()(School* a, School* b) { return (a->getPublicRating() > b->getPublicRating()); }
+	bool operator()(School* a, School* b) { return (a->getRankingScore() > b->getRankingScore()); }
 };
 
 struct SortByOffense {
@@ -483,7 +483,7 @@ private:
 	}
 
 	void performNewWeekTasks(int newWeek) {
-		if (newWeek >= 3 && (newWeek <= 14 || newWeek == 16)) rankTeams();
+		if (newWeek <= 14 || newWeek == 16) rankTeams();
 		if (newWeek == 13) {
 			scheduleConferenceChampionshipGames();
 			assignOffenseDefenseRankings();
@@ -502,11 +502,7 @@ private:
 	}
 
 	void rankTeams() {
-		for (auto& school : allSchools) { school->setSimpleRating(); }
-		for (int i = 0; i < 50; ++i) {
-			for (auto& school : allSchools) { school->updatePrivateRating(); }
-			for (auto& school : allSchools) { school->publishPrivateRating(); }
-		}
+		for (auto& school : allSchools) { school->adjustRankingScore(week); }
 		SortByPublicRating sbr;
 		std::sort(allSchools.begin(), allSchools.end(), sbr);
 		for (int i = 0; i < (int)allSchools.size(); i++) { allSchools[i]->setRanking(i + 1); }
@@ -558,9 +554,11 @@ private:
 			}
 		}
 		// Tell all schools to fix up depth charts and apply their coach bonuses
+		// Also reset their rankings to preseason settings
 		for (auto& school : allSchools) {
 			school->getRoster()->organizeDepthChart();
 			school->applyGametimeBonuses();
+			school->resetRankingScore();
 		}
 	}
 
@@ -656,8 +654,15 @@ public:
 	}
 
 	void printSchoolsByRanking() {
+		//			  v1   #4  Alabama        (4 - 1)  W Texas A&M (42-21)
+		std::cout << "Diff Rank School          W-L    Last Week\n";
+		std::cout << "-----------------------------------------------------------\n";
 		for (int i = 0; i < 25; ++i) {
-			std::cout << "#" << (i + 1) << ". " << allSchools[i]->getName() << "\n"; //"  ---  " << allSchools[i]->getPublicRating() << "\n";
+			std::string rcstr = allSchools[i]->getRankingChangeString();
+			std::string name = allSchools[i]->getName();
+			std::string wlstr = allSchools[i]->getWinLossString();
+			std::string lwstr = allSchools[i]->getWeekResultString(week - 1);
+			printf("%-4s #%-2d %-15s (%s)  %s\n", rcstr.c_str(), i + 1, name.c_str(), wlstr.c_str(), lwstr.c_str());
 		}
 	}
 

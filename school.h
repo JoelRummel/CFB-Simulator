@@ -107,9 +107,11 @@ private:
 	double simpleRating = 0;
 	double publicRealRating = 0;
 	double privateRealRating = 0;
+	double rankingScore = 0;
 	int ranking = -1;
 	int offenseRanking = -1;
 	int defenseRanking = -1;
+	int lastWeekRanking = -1;
 
 	Coach* coaches[11];
 	CoachingLogs coachLogs;
@@ -272,7 +274,10 @@ public:
 	}
 
 	int getRanking() { return ranking; }
-	void setRanking(int r) { ranking = r; }
+	void setRanking(int r) {
+		lastWeekRanking = ranking;
+		ranking = r;
+	}
 	void setOffenseRanking(int r) { offenseRanking = r; }
 	void setDefenseRanking(int r) { defenseRanking = r; }
 	int getOffenseRanking() { return offenseRanking; }
@@ -304,6 +309,59 @@ public:
 		if (gamesCounted == 0) return;
 		simpleRating /= (double)gamesCounted;
 		publicRealRating = simpleRating;
+	}
+
+	void adjustRankingScore(int week) {
+		week--;
+		if (schedule[week] != nullptr && schedule[week]->gameResult.awayStats != nullptr) {
+			std::pair<TeamStats*, TeamStats*> stats = getOrderedStats(schedule[week]);
+			/* int pointMargin = stats.first->points - stats.second->points;
+			if (pointMargin > 28) pointMargin = 28;
+			if (pointMargin < -28) pointMargin = -28;
+			if (pointMargin > 0) pointMargin += 21;
+			else pointMargin -= 21;
+			bool away = schedule[week]->away == this;
+			int theirRanking = away ? schedule[week]->home->getRanking() : schedule[week]->away->getRanking();
+			int rankingMargin = getRanking() - theirRanking;
+			if (rankingMargin > 0) rankingMargin += 5;
+			else rankingMargin -= 5; */
+			int pointMargin = stats.first->points - stats.second->points;
+			if (pointMargin > 28) pointMargin = 28;
+			if (pointMargin < -28) pointMargin = -28;
+			if (pointMargin > 0) pointMargin += 14;
+			else pointMargin -= 14; // pointMargin is now between -42 and 42
+			double baseScore = pointMargin > 0 ? 10 : -10;
+
+			bool away = schedule[week]->away == this;
+			int theirRanking = away ? schedule[week]->home->getRanking() : schedule[week]->away->getRanking();
+			baseScore *= pointMargin + ((262 - (theirRanking + 131)) / 2.0);
+
+			rankingScore += baseScore * ((week + 30) / 45.0);
+		}
+	}
+	double getRankingScore() {
+		return rankingScore;
+	}
+	void resetRankingScore() {
+		rankingScore = (prestige - 10) * 35;
+		lastWeekRanking = -1;
+	}
+	std::string getRankingChangeString() {
+		if (lastWeekRanking < 1 || lastWeekRanking > 25) return "NEW";
+		if (lastWeekRanking == ranking) return "-";
+		std::string str = (lastWeekRanking > ranking) ? "+" : "-";
+		str += std::to_string(std::abs(lastWeekRanking - ranking));
+		return str;
+	}
+	std::string getWeekResultString(int week) {
+		if (schedule[week] == nullptr) return "---";
+		std::pair<TeamStats*, TeamStats*> stats = getOrderedStats(schedule[week]);
+		std::string str;
+		if (stats.first->points > stats.second->points) str = "W ";
+		else str = "L ";
+		str += pickNotMine(this, schedule[week]->away, schedule[week]->home, (School*)nullptr)->getName();
+		str += " (" + std::to_string(stats.first->points) + "-" + std::to_string(stats.second->points) + ")";
+		return str;
 	}
 
 	void updatePrivateRating() {

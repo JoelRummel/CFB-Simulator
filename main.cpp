@@ -40,7 +40,7 @@ struct Driver {
 		if (choice == 1) {
 			conferenceStandingsMenu();
 		} else if (choice == 2) {
-			if (league->getCurrentWeek() <= 3) std::cout << "League rankings will be available starting week 4\n";
+			if (league->getCurrentWeek() <= 1) std::cout << "League rankings will be available starting week 2\n";
 			else
 				league->printSchoolsByRanking();
 		} else if (choice == 3) {
