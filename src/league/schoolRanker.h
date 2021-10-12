@@ -20,13 +20,18 @@ class SchoolRanker {
             if (pointMargin < -28) pointMargin = -28;
             if (pointMargin > 0) pointMargin += 14;
             else pointMargin -= 14; // pointMargin is now between -42 and 42
-            double baseScore = pointMargin > 0 ? 10 : -10;
 
             bool away = matchup->away == school;
             int theirRanking = away ? matchup->home->getRanking() : matchup->away->getRanking();
-            baseScore *= pointMargin + ((262 - (theirRanking + 131)) / 2.0);
+            double expectedPointMargin = (0.33 * theirRanking) - (0.33 * school->getRanking()) + 0.33;
 
-            return school->getRankingScore() + (baseScore * ((week + 30) / 45.0));
+            // Constrain performance to roughly (-1, 1)
+            double performance = (pointMargin - expectedPointMargin) / 42.0;
+            // Adjust further to (0, 1)
+            performance = (performance + 1.0) * 0.5;
+
+            // Return a weighted average to prevent overreaction
+            return (school->getRankingScore() + (0.2 * performance)) / 1.2; // * ((week + 30) / 45.0);
         }
         return school->getRankingScore();
     }
@@ -35,7 +40,7 @@ public:
     void resetPoll(std::vector<School*> schools) {
         allSchools = schools;
         for (auto& school : allSchools) {
-            school->resetRankingScore();
+            school->resetRankingScore(school->getPrestige() / 10.0);
         }
     }
 

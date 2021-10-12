@@ -36,7 +36,7 @@ struct SortByConferenceRecord {
 			}
 		}
 		// shrug
-		return (a->getPublicRating() > b->getPublicRating());
+		return (a->getRankingScore() > b->getRankingScore());
 	}
 };
 
@@ -101,7 +101,7 @@ private:
 	}
 
 	void performNewWeekTasks(int newWeek) {
-		if (newWeek <= 14 || newWeek == 16) schoolRanker.rankTeams(newWeek);
+		schoolRanker.rankTeams(newWeek);
 		if (newWeek == 13) {
 			scheduler.scheduleConferenceChampionshipGames();
 			assignOffenseDefenseRankings();

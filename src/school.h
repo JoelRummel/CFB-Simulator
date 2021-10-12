@@ -104,9 +104,6 @@ private:
 	int conferenceGamesScheduled = 0;
 	int crossConfGamesScheduled = 0;
 	Conference division;
-	double simpleRating = 0;
-	double publicRealRating = 0;
-	double privateRealRating = 0;
 	double rankingScore = 0;
 	int ranking = -1;
 	int offenseRanking = -1;
@@ -276,34 +273,6 @@ public:
 	int getOffenseRanking() { return offenseRanking; }
 	int getDefenseRanking() { return defenseRanking; }
 
-	double getPublicRating() { return publicRealRating; }
-
-	void setSimpleRating() {
-		int gamesCounted = 0;
-		simpleRating = 0;
-		for (auto& matchup : schedule) {
-			if (matchup != nullptr && matchup->gameResult.homeStats != nullptr) {
-				gamesCounted++;
-				std::pair<TeamStats*, TeamStats*> stats = getOrderedStats(matchup);
-				int margin = stats.first->points - stats.second->points;
-				/*if (margin > 24) margin = 24;
-				else if (margin > 0 && margin < 7)
-					margin = 7;
-				else if (margin > -7 && margin < 0)
-					margin = -7;
-				else if (margin < -24)
-					margin = -24;*/
-				if (margin > 0) margin += 14;
-				else if (margin < 0)
-					margin -= 14;
-				simpleRating += margin;
-			}
-		}
-		if (gamesCounted == 0) return;
-		simpleRating /= (double)gamesCounted;
-		publicRealRating = simpleRating;
-	}
-
 	void setRankingScore(double newRankingScore) {
 		rankingScore = newRankingScore;
 	}
@@ -312,8 +281,8 @@ public:
 		return rankingScore;
 	}
 
-	void resetRankingScore() {
-		rankingScore = (prestige - 10) * 35;
+	void resetRankingScore(double newRankingScore) {
+		rankingScore = newRankingScore;
 		lastWeekRanking = -1;
 	}
 
@@ -335,22 +304,6 @@ public:
 		str += " (" + std::to_string(stats.first->points) + "-" + std::to_string(stats.second->points) + ")";
 		return str;
 	}
-
-	void updatePrivateRating() {
-		int gamesCounted = 0;
-		double cumulativeRating = 0;
-		for (auto& matchup : schedule) {
-			if (matchup == nullptr) continue;
-			gamesCounted++;
-			if (matchup->away == this) cumulativeRating += matchup->home->getPublicRating();
-			else
-				cumulativeRating += matchup->away->getPublicRating();
-		}
-		if (gamesCounted == 0) return;
-		privateRealRating = simpleRating + (cumulativeRating / gamesCounted);
-	}
-
-	void publishPrivateRating() { publicRealRating = privateRealRating; }
 
 	Player* signRecruit(Player* player, int stars) {
 		recruitingClass[stars]++;
@@ -561,9 +514,6 @@ public:
 		ranking = -1;
 		offenseRanking = -1;
 		defenseRanking = -1;
-		simpleRating = 0;
-		publicRealRating = 0;
-		privateRealRating = 0;
 		nukeSchedule();
 
 		advanceRosterOneYear();
