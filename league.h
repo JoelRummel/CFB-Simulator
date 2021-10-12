@@ -2,7 +2,7 @@
 
 #include "coaches/coachesOrg.h"
 #include "loadData.h"
-#include "recruitLounge.h"
+#include "recruits/recruitLounge.h"
 #include "games/gamePlayer.h"
 #include "league/schoolRanker.h"
 #include "league/scheduler.h"

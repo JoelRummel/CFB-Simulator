@@ -1,7 +1,7 @@
 #pragma once
 #include <gtest/gtest.h>
 #include "../school.h"
-#include "../coachesOrg.h"
+#include "../coaches/coachesOrg.h"
 
 class SchoolsTest : public ::testing::Test {
 protected:

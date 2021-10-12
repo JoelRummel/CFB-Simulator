@@ -1,6 +1,6 @@
 #pragma once
 #include "recruit.h"
-#include "school.h"
+#include "../school.h"
 
 struct SortByRecruitOvr {
     bool operator()(Recruit a, Recruit b) { return (a.getUnderlyingPlayer()->getOVR() > b.getUnderlyingPlayer()->getOVR()); }
