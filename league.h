@@ -444,26 +444,8 @@ private:
 	void playEntireSchedule() {
 		std::cout << "Playing entire season... ";
 		std::cout.flush();
-		for (week; week < (int)schedule.size(); week++) {
-			std::vector<School::Matchup*>& weekLineup = schedule[week];
-			for (auto& matchup : weekLineup) {
-				if (matchup->gameResult.homeStats != nullptr) continue;
-				GamePlayer game(matchup->away, matchup->home);
-				GameResult result = game.startRealTimeGameLoop(false);
-				matchup->gameResult = result;
-			}
-			std::cout << "week " << (week + 1) << " done... ";
-			std::cout.flush();
-			performNewWeekTasks(week + 1);
-		}
-		std::cout << "\nAll weeks played - season complete." << std::endl;
-
-		// Print final results
-		std::cout << "\n";
-		for (auto& school : allSchools) {
-			std::pair<int, int> record = school->getWinLossRecord();
-			std::cout << school->getName() << ": " << record.first << " - " << record.second << " .... " << school->getAverageOffense()
-				<< " yds/avg\n";
+		while (week < (int)schedule.size()) {
+			playOneWeek();
 		}
 	}
 
@@ -490,7 +472,10 @@ private:
 		}
 		if (newWeek == 14) schedulePlayoffs();
 		if (newWeek == 15) scheduleFinals();
-		if (newWeek == 16) assessAllCoaches();
+		if (newWeek == 16) {
+			assessAllCoaches();
+			std::cout << "\nAll weeks played - season complete." << std::endl;
+		}
 	}
 
 	GameResult playOneGame(int matchupIndex, bool silent) {
@@ -743,7 +728,6 @@ public:
 
 	void simSeason() {
 		playEntireSchedule();
-		rankTeams();
 	}
 
 	void simOneWeek() { playOneWeek(); }

@@ -293,7 +293,7 @@ public:
 		if (homePossession) std::swap(offStats, defStats);
 		offStats->points = gameState.getAwayScore();
 		defStats->points = gameState.getHomeScore();
-		bool homeWins = (gameState.getAwayScore() > gameState.getHomeScore());
+		bool homeWins = (gameState.getAwayScore() < gameState.getHomeScore());
 		if (playByPlay)
 			std::cout << "GAME OVER! Final score is " << away->getName() << ": " << gameState.getAwayScore() << ", " << home->getName() << ": " <<
 			gameState.getHomeScore() << "\n";

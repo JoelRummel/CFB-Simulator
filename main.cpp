@@ -161,7 +161,6 @@ struct Driver {
 			return;
 		}
 
-		std::cout << "\nOptions: \n";
 		int choice =
 			getMenuChoice({ "Play one game", "Advance one or more weeks", "Advance through the end of the season", "Advance multiple seasons" });
 		if (choice == 1) {
