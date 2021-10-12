@@ -1,8 +1,8 @@
 #pragma once
 
-#include "news.h"
+#include "../news.h"
+#include "../school.h"
 #include "numberMaker.h"
-#include "school.h"
 #include "gameManager.h"
 #include "gamePlayExecutor.h"
 

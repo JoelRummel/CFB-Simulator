@@ -1,6 +1,6 @@
 #pragma once
 #include <gtest/gtest.h>
-#include "../gameManager.h"
+#include "../games/gameManager.h"
 
 class GameManagerTest : public ::testing::Test {
 protected:

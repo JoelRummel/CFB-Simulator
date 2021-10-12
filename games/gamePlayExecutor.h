@@ -1,6 +1,6 @@
 #pragma once
 
-#include "school.h"
+#include "../school.h"
 #include "numberMaker.h"
 
 using Field = std::pair<std::vector<Player*>, std::vector<Player*>>;

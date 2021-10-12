@@ -1,6 +1,6 @@
 #pragma once
 
-#include "school.h"
+#include "../school.h"
 
 
 class GameManager {
