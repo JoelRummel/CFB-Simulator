@@ -1,6 +1,6 @@
 #pragma once
 
-#include "coachesOrg.h"
+#include "coaches/coachesOrg.h"
 #include "loadData.h"
 #include "recruitLounge.h"
 #include "games/gamePlayer.h"
@@ -122,8 +122,6 @@ private:
 		return result;
 	}
 
-
-
 	void assignOffenseDefenseRankings() {
 		std::vector<School*> sortedSchools = allSchools;
 		SortByOffense sbo;
@@ -179,6 +177,7 @@ private:
 	}
 
 public:
+	// TODO move this into school class
 	void printSchoolResults(std::string schoolName) {
 		School* school = findSchoolByName(schoolName);
 		if (school == nullptr) return;

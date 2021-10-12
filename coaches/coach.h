@@ -1,8 +1,8 @@
 #pragma once
 
-#include "loadData.h"
-#include "player.h"
-#include "util.h"
+#include "../loadData.h"
+#include "../player.h"
+#include "../util.h"
 
 enum class CoachType { QB, WR, RB, OL, DL, LB, DB, ST, OC, DC, HC, UN };
 
@@ -109,7 +109,7 @@ class Coach {
 		priorityPrestige /= sum;
 	}
 
-  public:
+public:
 	Contract currentContract;
 	// Constructs the coach randomly, bumping up the public OVR randomly if the simulator is getting initialized
 	Coach(bool initial = false) {
@@ -254,7 +254,7 @@ class Coach {
 		else
 			yearStart = history.back().yearEnd + 1;
 		yearEnd = yearStart + yearsInCurrentJob;
-		CoachingHistory h { currentJob, yearStart, yearEnd, fired };
+		CoachingHistory h{ currentJob, yearStart, yearEnd, fired };
 		history.push_back(h);
 		yearsInCurrentJob = 0;
 		currentJob.school = nullptr;
@@ -279,7 +279,7 @@ class Coach {
 
 std::ostream& operator<<(std::ostream& in, Coach* c) {
 	printf("%-27s%-20s%d/%d public OVR ( %d DVLP | %d RCRT | %d GAME ) Year %d of %d", c->getTypeString().c_str(), c->getName().c_str(),
-		   c->getPublicOvr(), c->getActualOvr(), c->getOvrDevelopment(), c->getOvrRecruiting(), c->getOvrGametime(),
-		   c->currentContract.yearsTotal - c->currentContract.yearsRemaining + 1, c->currentContract.yearsTotal);
+		c->getPublicOvr(), c->getActualOvr(), c->getOvrDevelopment(), c->getOvrRecruiting(), c->getOvrGametime(),
+		c->currentContract.yearsTotal - c->currentContract.yearsRemaining + 1, c->currentContract.yearsTotal);
 	return in;
 }

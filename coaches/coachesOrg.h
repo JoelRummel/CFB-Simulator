@@ -1,7 +1,7 @@
 #pragma once
 
 #include "coach.h"
-#include "school.h"
+#include "../school.h"
 
 struct SortByPublicOvr {
 	bool operator()(Coach* a, Coach* b) { return (a->getPublicOvr() > b->getPublicOvr()); }
@@ -10,7 +10,7 @@ struct SortByPublicOvr {
 class CoachesOrganization {
 	std::vector<Coach*> coaches; // the realm of all coaches
 
-  public:
+public:
 	Coach* generateCoach(bool isInitial) {
 		Coach* c = new Coach(isInitial);
 		coaches.push_back(c);
@@ -37,7 +37,7 @@ class CoachesOrganization {
 			else
 				budget /= 7;
 		}
-		Vacancy v { school, school->getName(), type, budget, school->getPrestige() };
+		Vacancy v{ school, school->getName(), type, budget, school->getPrestige() };
 		return v;
 	}
 
@@ -106,7 +106,7 @@ class CoachesOrganization {
 				std::cout << "\n\n========== HISTORY:\n";
 				for (CoachingHistory history : coach->getHistory()) {
 					std::cout << history.yearStart << " - " << history.yearEnd << ": " << coachTypeToString(history.job.type) << " at "
-							  << history.job.schoolName;
+						<< history.job.schoolName;
 					if (history.fired) std::cout << " (fired)";
 					std::cout << "\n";
 				}

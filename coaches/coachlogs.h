@@ -29,7 +29,7 @@ class CoachingLogs {
 	std::vector<std::vector<HiringHistory>> incomingHistory;
 	std::vector<std::vector<HiringHistory>> outgoingHistory;
 
-  public:
+public:
 	CoachingLogs() {
 		incomingHistory.emplace_back();
 		outgoingHistory.emplace_back();
@@ -42,22 +42,22 @@ class CoachingLogs {
 	}
 
 	void recordHire(Coach* coach, CoachType role, int contractLength) {
-		HiringHistory h { year, coach, role, HiringAction::HIRED, contractLength };
+		HiringHistory h{ year, coach, role, HiringAction::HIRED, contractLength };
 		incomingHistory.back().push_back(h);
 	}
 
 	void recordExtension(Coach* coach, CoachType role, int contractLength) {
-		HiringHistory h { year, coach, role, HiringAction::EXTENDED, contractLength };
+		HiringHistory h{ year, coach, role, HiringAction::EXTENDED, contractLength };
 		incomingHistory.back().push_back(h);
 	}
 
 	void recordFire(Coach* coach, CoachType role) {
-		HiringHistory h { year, coach, role, HiringAction::FIRED, -1 };
+		HiringHistory h{ year, coach, role, HiringAction::FIRED, -1 };
 		outgoingHistory.back().push_back(h);
 	}
 
 	void recordLoss(Coach* coach, CoachType role) {
-		HiringHistory h { year, coach, role, HiringAction::DEPARTED, -1 };
+		HiringHistory h{ year, coach, role, HiringAction::DEPARTED, -1 };
 		outgoingHistory.back().push_back(h);
 	}
 

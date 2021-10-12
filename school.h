@@ -1,7 +1,7 @@
 #pragma once
 
-#include "coach.h"
-#include "coachlogs.h"
+#include "coaches/coach.h"
+#include "coaches/coachlogs.h"
 #include "roster.h"
 
 #include <iostream>
