@@ -314,9 +314,8 @@ public:
     }
 
     void scheduleConferenceChampionshipGames() {
-        // B1G
         for (std::vector<Conference> set : { std::vector<Conference> { BIGTENEAST, BIGTENWEST }, std::vector<Conference> { SECEAST, SECWEST },
-                                             std::vector<Conference> { ACCATLANTIC, ACCCOASTAL } }) {
+                                             std::vector<Conference> { ACCATLANTIC, ACCCOASTAL }, std::vector<Conference> { PAC12NORTH, PAC12SOUTH } }) {
             std::vector<School*> representatives;
             for (Conference conf : set) {
                 int mostWins = 0;
@@ -371,7 +370,8 @@ public:
                     break;
                 }
             }
-            if (!playedATeam) fourTeams.push_back(allSchools[i]);
+            // Temporarily killing this check - remove " || true " to prevent rematches
+            if (!playedATeam || true) fourTeams.push_back(allSchools[i]);
             i++;
         }
         assignMatchup(14, fourTeams[3], fourTeams[0]);
