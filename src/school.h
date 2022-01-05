@@ -140,6 +140,7 @@ public:
 		name{ na }, mascot{ ma }, state{ st }, city{ ci }, prestige{ pr }, stadiumCapacity{ ss }, budget{ bu }, nflRating{ nfl },
 		academicRating{ ac } {
 		roster.generateRoster(pr);
+		roster.organizeDepthChart();
 		schedule.resize(16, nullptr);
 		for (int i = 0; i < 11; i++) coaches[i] = nullptr;
 		for (int i = 0; i < 6; i++) recruitingClass[i] = 0;
