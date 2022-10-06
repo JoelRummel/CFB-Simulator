@@ -205,6 +205,8 @@ private:
 	int ovr;
 	double archetypePointer;
 	double gametimeBonus;
+	int potentialOvr;
+	int lastTrainingResult = 0;
 
 public:
 	struct GameState {
@@ -214,8 +216,8 @@ public:
 
 	GameState gameState;
 
-	Player(std::string n, Position p, int y, int OVR, const std::vector<int>& rats, double arch) :
-		name{ n }, position{ p }, year{ y }, ovr{ OVR }, ratings{ rats }, archetypePointer{ arch } {};
+	Player(std::string n, Position p, int y, int OVR, int pot, const std::vector<int>& rats, double arch) :
+		name{ n }, position{ p }, year{ y }, ovr{ OVR }, potentialOvr{ pot }, ratings{ rats }, archetypePointer{ arch } {};
 
 	std::string getName() const { return name; }
 	Position getPosition() const { return position; }
@@ -225,6 +227,7 @@ public:
 	int getYear() const { return year; }
 	std::string getYearString() const { return year == 1 ? "Freshman" : year == 2 ? "Sophomore" : year == 3 ? "Junior" : "Senior"; }
 	int getOVR() const { return ovr; }
+	int getLastTrainingResult() const { return lastTrainingResult; }
 	City* getHometown() const { return hometown; }
 	int getRating(Rating r, bool stripBonus = false) const {
 		// Gametime "bonus" is a bit of a misnomer. Lack of a bonus is penalizing and a full bonus simply does nothing.
@@ -237,9 +240,20 @@ public:
 		year++;
 		return (year > 4);
 	}
-	void train(int amount) {
+	void train(double trainingMultiplier) {
+		double penalty = 3.0 - (trainingMultiplier * 4.0);
+		double amount = (potentialOvr - ovr) / (5 - year);
+		amount = std::round(amount - penalty);
+		if (ovr + amount > 99) amount = 99 - ovr;
+
+		lastTrainingResult = amount;
 		ovr += amount;
-		if (ovr > 99) ovr = 99;
+
+		ratings = createRatingsVector(position, ovr, archetypePointer);
+	}
+	// This is mostly for testing/debugging. Shouldn't be any use case in real settings
+	void setOvr(int o) {
+		ovr = o;
 		ratings = createRatingsVector(position, ovr, archetypePointer);
 	}
 
@@ -247,7 +261,7 @@ public:
 };
 
 
-Player playerFactory(Position p, int y, int prestige, int o = -1) {
+Player playerFactory(Position p, int y, int prestige, int o = -1, int pot = 99) {
 	std::string name = GlobalData::getRandomName();
 
 	int ovr = o;
@@ -260,7 +274,7 @@ Player playerFactory(Position p, int y, int prestige, int o = -1) {
 	double archetypePointer = RNG::randomNumberUniformDist();
 	std::vector<int> rats = createRatingsVector(p, ovr, archetypePointer);
 
-	return Player(name, p, y, ovr, rats, archetypePointer);
+	return Player(name, p, y, ovr, pot, rats, archetypePointer);
 }
 
 struct PlayerStats {

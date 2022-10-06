@@ -188,25 +188,32 @@ class GamePlayExecutor {
 
         std::vector<std::string> messages;
         messages.push_back(ballCarrier->getPositionedName() + " drops back to pass...");
-        double olineStrength = RNG::randomNumberUniformDist(-10, 10) +
-            (((compBlockerRating / 5.0) - (compBlitzerRating / 4.0)) * 0.75) + 45;
-        double receivingAdvantage = ((compReceivingRating / 4.0) - (compCoverageRating / 7.0)) * 0.75;
+        double olineStrength = RNG::randomNumberUniformDist(-15, 15) +
+            (((compBlockerRating / 5.0) - (compBlitzerRating / 4.0)) * 0.1) + 45;
+        double receivingAdvantage = ((compReceivingRating / 4.0) - (compCoverageRating / 7.0)) * 0.175;
         std::vector<Player*> receivers = getPlayersPerformingAction(field.first, RECEIVING);
         std::vector<double> openness;
         for (Player* receiver : receivers) {
             openness.push_back(receivingAdvantage +
-                RNG::randomNumberNormalDist(0, 4) + (receiver->getRating(GETTINGOPEN) / 8.0));
+                RNG::randomNumberNormalDist(15, 5) + (receiver->getRating(GETTINGOPEN) / 14.0));
         }
         while (true) {
             olineStrength--;
             if (olineStrength <= 0) {
                 // Attempt sack
-                messages.push_back(ballCarrier->getPositionedName() + " was sacked by someone");
+                std::vector<Player*> blitzers = getPlayersPerformingAction(field.second, BLITZING);
+                std::vector<double> rushRatings = {};
+                for (auto blitzer : blitzers) {
+                    rushRatings.push_back(blitzer->getRating(PASSRUSH));
+                }
+                Player* sacker = blitzers[RNG::randomWeightedIndex(rushRatings)];
+                messages.push_back(ballCarrier->getPositionedName() + " was sacked by " + sacker->getPositionedName());
+
                 return {
                     outcome: PASSER_SACKED,
                     carrier : ballCarrier,
-                    defender : nullptr,
-                    yards : -2,
+                    defender : sacker,
+                    yards : std::min(RNG::randomNumberNormalDist(-5, 2), -1),
                     messages : messages
                 };
             }
@@ -214,7 +221,7 @@ class GamePlayExecutor {
                 Player* receiver = receivers[i];
                 openness[i] ++;
                 // Does the QB even see if the receiver is open tho?
-                if (openness[i] >= 50 && RNG::randomNumberUniformDist(30, 200) < ballCarrier->getRating(PASSVISION)) {
+                if (openness[i] >= 50 && RNG::randomNumberUniformDist(20, 200) < ballCarrier->getRating(PASSVISION)) {
                     // Attempt pass
                     std::vector<Player*> coverers = getPlayersPerformingAction(field.second, COVERING);
                     std::vector<double> coverageRatings;
@@ -225,7 +232,8 @@ class GamePlayExecutor {
                     double depthPenalty = 1.0;
                     if (passYards > 10) depthPenalty = 0.9;
                     if (passYards > 25) depthPenalty = 0.75;
-                    double accuracy = depthPenalty * ((1 + (ballCarrier->getRating(PASSACCURACY) / 100.0)) / 2.0);
+                    double accuracy = ballCarrier->getRating(PASSACCURACY);
+                    accuracy = depthPenalty * ((((99 - accuracy) * 0.65) + accuracy) / 100.0);
                     if (RNG::randomNumberUniformDist() > accuracy) {
                         // Off-target pass. Check for interception
                         double covererIndex = RNG::randomWeightedIndex(coverageRatings);
@@ -280,7 +288,8 @@ class GamePlayExecutor {
                     } else {
                         // Pass is on-target and undefended. Now just check if receiver can catch
                         double catchOdds = receiver->getRating(CATCH);
-                        if (RNG::randomNumberUniformDist(-100, 101) > catchOdds) {
+                        catchOdds = ((99 - catchOdds) / 2) + catchOdds;
+                        if (RNG::randomNumberUniformDist(-150, 101) > catchOdds) {
                             messages.push_back("Incomplete - intended for " + receiver->getPositionedName() +
                                 ". The receiver dropped the ball.");
                             return {

@@ -319,6 +319,7 @@ public:
 		return multiplier / 177.0;
 	}
 
+	// I think this is a number from 0 to 1? idk I don't remember writing this lol
 	double getDevelopmentMultiplier(Position pos) {
 		double multiplier = coaches[(int)CoachType::HC]->getOvrDevelopment() - 40;
 		multiplier += coaches[(int)getPositionalCoachType(pos)]->getOvrDevelopment() - 40;

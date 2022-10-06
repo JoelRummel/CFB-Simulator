@@ -91,8 +91,7 @@ public:
 
 	void trainPlayersAtPosition(Position pos, double trainingMultiplier) {
 		for (Player* player : getAllPlayersAt(pos, false)) {
-			int amount = std::ceil(4 * trainingMultiplier) + 2;
-			player->train(amount);
+			player->train(trainingMultiplier);
 		}
 	}
 
@@ -136,13 +135,14 @@ public:
 	void printRoster() {
 		std::cout << "    Name                 Pos Year       OVR \n";
 		std::cout << "-------------------------------------------\n";
-		//            46. Jalen Edwards        QB  Sophomore  97
+		//            46. Jalen Edwards        QB  Sophomore  97 (+2)
 		int num = 1;
 		for (auto& player : roster) {
 			std::string name = player.getName();
 			std::string posStr = positionToStr(player.getPosition());
 			std::string yearStr = player.getYearString();
-			std::printf("%2d. %-21s%-3s%-11s%-3d\n", num, name.c_str(), posStr.c_str(), yearStr.c_str(), player.getOVR());
+			std::string sign = player.getLastTrainingResult() < 0 ? "" : "+";
+			std::printf("%2d. %-21s%-3s%-11s%-3d(%s%d)\n", num, name.c_str(), posStr.c_str(), yearStr.c_str(), player.getOVR(), sign.c_str(), player.getLastTrainingResult());
 			++num;
 		}
 	}

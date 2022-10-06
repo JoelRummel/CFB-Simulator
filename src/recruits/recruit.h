@@ -38,7 +38,14 @@ public:
     Recruit() {}
 
     Recruit(Position pos, int ovr) {
-        player = new Player(playerFactory(pos, 1, 0, ovr));
+        // Potential range: -10 - 30
+        double potential = 0;
+        double x = RNG::randomNumberUniformDist();
+        if (x < 0.3) potential = 17 * std::log(5 * x + 0.5) + 3;
+        else if (x < 0.9) potential = 14 * x + 10;
+        else potential = 30 * std::pow(x, 3) + 1;
+
+        player = new Player(playerFactory(pos, 1, 0, ovr, std::floor(potential) + ovr));
 
         // Determine preferences
         const std::vector<std::vector<double>> weights = { {0.8, 0.2, 0, 0, 0}, {0.7, 0.1, 0.1, 0.1, 0}, {0.6, 0.3, 0.1, 0, 0}, {0.5, 0.25, 0.25, 0, 0}, {0.4, 0.2, 0.2, 0.2, 0}, {0.3, 0.2, 0.2, 0.2, 0.1} };
@@ -54,11 +61,11 @@ public:
     int getStars() {
         if (player == nullptr) throw "Error: Recruit not initialized";
         int ovr = player->getOVR();
-        if (ovr >= 73) return 5;
-        if (ovr >= 66) return 4;
-        if (ovr >= 59) return 3;
-        if (ovr >= 52) return 2;
-        if (ovr >= 45) return 1;
+        if (ovr >= 57) return 5;
+        if (ovr >= 47) return 4;
+        if (ovr >= 40) return 3;
+        if (ovr >= 33) return 2;
+        if (ovr >= 27) return 1;
         return 0;
     }
 
@@ -133,14 +140,13 @@ public:
 
 
 /**
- * Recruit OVR range: 40-78
- * Maximum annual training increment: 7 (brings 78 to 99 after 3 years of training)
- * 5 star: 73-78 (6 pts)
- * 4 star: 66-72 (7 pts)
- * 3 star: 59-65 (7 pts)
- * 2 star: 52-58 (7 pts)
- * 1 star: 45-51 (7 pts)
- * 0 star: 40-44 (5 pts)
+ * Recruit OVR range: 20-75
+ * 5 star: 57-75 (14 pts)
+ * 4 star: 47-56 (10 pts)
+ * 3 star: 40-46 (7 pts)
+ * 2 star: 33-39 (7 pts)
+ * 1 star: 27-32 (6 pts)
+ * 0 star: 20-26 (6 pts)
  */
 Recruit recruitFactory(double seedOverride = -1) {
     int positionSelection = std::rand() % TOTAL_POSITION_DISTRIBUTION;
@@ -157,11 +163,11 @@ Recruit recruitFactory(double seedOverride = -1) {
     if (seedOverride > -1) x = seedOverride;
 
     double ovr;
-    if (x < 0.05) ovr = 40 + (100 * x);
-    else if (x < 0.6929) ovr = 44 + (22 * x);
-    else if (x < 0.8821) ovr = 57 + (19 * std::pow(x, 6));
-    else if (x < 0.9875) ovr = 57 + std::pow(17, std::pow(x, 2));
-    else ovr = 53 + std::pow(30, std::pow(x, 10));
+    if (x < 0.05) ovr = 20 + (140 * x);
+    else if (x < 0.6929) ovr = 26 + (20 * x);
+    else if (x < 0.8821) ovr = 38 + (19 * std::pow(x, 6));
+    else if (x < 0.9875) ovr = 41 + std::pow(21, std::pow(x, 5));
+    else ovr = 55 + std::pow(21, std::pow(x, 80));
 
     Recruit r(p, std::floor(ovr));
     return r;
