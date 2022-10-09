@@ -66,21 +66,25 @@ struct Driver {
 			if (schoolName == "") return;
 			league->printSchoolDetails(schoolName);
 			while ("donald trump" == "fascist" || true) {
-				std::cout << "\nOptions: \n  1) View " + schoolName + "'s roster\n  2) View " + schoolName + "'s schedule/results\n  3) View " +
-					schoolName + "'s season stats\n  4) View " + schoolName + "'s coaching staff\n  5) View " + schoolName +
-					"'s coaching history\n  6) Go back\n";
+				std::cout << "\nOptions: \n  1) View " + schoolName + "'s roster\n  2) View " + schoolName + "'s depth chart\n  3) View " + schoolName + "'s schedule/results\n  4) View " +
+					schoolName + "'s season stats\n  5) View " + schoolName + "'s coaching staff\n  6) View " + schoolName +
+					"'s coaching history\n  7) Go back\n";
 				std::cout << "Enter selection: ";
 				int choice = getInt();
 				if (choice == 1) {
 					league->printSchoolRoster(schoolName);
-					std::cout << "Enter a position group to see their rating breakdowns.\nValid position groups are QB, HB, WR, TE, OL, DL, LB, CB, "
-						"S, K, P: ";
-					std::string pos;
-					std::getline(std::cin, pos);
-					league->printPositionGroup(schoolName, strToPosition(pos));
-				} else if (choice == 2)
+				} else if (choice == 2) {
+					while (true) {
+						std::cout << "Enter a position group to view, or leave blank to go back.\nValid position groups are QB, HB, WR, TE, OL, DL, LB, CB, "
+							"S, K, P: ";
+						std::string pos;
+						std::getline(std::cin, pos);
+						if (pos == "") break;
+						league->printPositionGroup(schoolName, strToPosition(pos));
+					}
+				} else if (choice == 3)
 					league->printSchoolResults(schoolName);
-				else if (choice == 3) {
+				else if (choice == 4) {
 					if (league->getCurrentWeek() == 1) {
 						std::cout << "No games have been played yet this season.\n";
 						continue;
@@ -108,7 +112,7 @@ struct Driver {
 						++player;
 					}
 					if (choice < 0) delete stats;
-				} else if (choice == 4) {
+				} else if (choice == 5) {
 					league->printSchoolCoachingStaff(schoolName);
 					std::string pos;
 					while (true) {
@@ -119,7 +123,7 @@ struct Driver {
 						if (pos == "") break;
 						league->printSchoolCoachingByPosition(schoolName, strToPosition(pos));
 					}
-				} else if (choice == 5) {
+				} else if (choice == 6) {
 					league->printSchoolCoachingHistory(schoolName);
 				} else
 					break;

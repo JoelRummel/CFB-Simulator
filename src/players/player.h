@@ -135,48 +135,72 @@ LB: power --- coverage
 CB/S: coverage --- ballhawk
 */
 
+const double INJURY_RISK_LOW = 0.001; // 0.1%
+const double INJURY_RISK_MEDIUM = 0.0025; // 0.25%
+const double INJURY_RISK_HIGH = 0.003; // 0.3%
+
 std::pair<std::vector<std::pair<Rating, int>>, std::vector<std::pair<Rating, int>>> getRatingFactors(Position p) {
 	using f = std::pair<Rating, int>;
 	using n = std::pair<std::vector<f>, std::vector<f>>;
 	switch (p) {
 	case QB:
 		return n(
-			{ f(SPEED, 80), f(PASSVISION, 99), f(PASSPOWER, 99), f(PASSACCURACY, 99), f(BREAKTACKLE, 75), f(BALLSECURITY, 70) },
-			{ f(SPEED, 95), f(PASSVISION, 99), f(PASSPOWER, 90), f(PASSACCURACY, 95), f(BREAKTACKLE, 95), f(BALLSECURITY, 85) });
+			{ f(SPEED, 70), f(PASSVISION, 99), f(PASSPOWER, 99), f(PASSACCURACY, 99), f(BREAKTACKLE, 75), f(BALLSECURITY, 70),
+			  f(KICKPOWER, 40), f(KICKACCURACY, 50), f(PUNTPOWER, 40), f(PUNTACCURACY, 50) },
+
+			{ f(SPEED, 95), f(PASSVISION, 99), f(PASSPOWER, 90), f(PASSACCURACY, 90), f(BREAKTACKLE, 95), f(BALLSECURITY, 85),
+			  f(KICKPOWER, 60), f(KICKACCURACY, 40), f(PUNTPOWER, 60), f(PUNTACCURACY, 40) });
 	case HB:
 		return n({ f(SPEED, 85), f(STRENGTH, 90), f(BREAKTACKLE, 99), f(BALLSECURITY, 99), f(RUNBLOCK, 90), f(PASSBLOCK, 70), f(CATCH, 80),
-				   f(GETTINGOPEN, 70) },
+				   f(GETTINGOPEN, 70), f(PASSVISION, 40), f(PASSPOWER, 60), f(PASSACCURACY, 40), f(TACKLE, 60) },
+
 			{ f(SPEED, 99), f(STRENGTH, 70), f(BREAKTACKLE, 90), f(BALLSECURITY, 95), f(RUNBLOCK, 60), f(PASSBLOCK, 85), f(CATCH, 85),
-			f(GETTINGOPEN, 85) });
+			f(GETTINGOPEN, 85), f(PASSVISION, 40), f(PASSPOWER, 40), f(PASSACCURACY, 60), f(TACKLE, 60) });
 	case WR:
-		return n({ f(SPEED, 90), f(STRENGTH, 85), f(BREAKTACKLE, 80), f(RUNBLOCK, 70), f(CATCH, 99), f(BALLSECURITY, 99),
-				   f(GETTINGOPEN, 99) },
-			{ f(SPEED, 99), f(STRENGTH, 70), f(BREAKTACKLE, 95), f(RUNBLOCK, 60), f(CATCH, 95), f(BALLSECURITY, 90),
-			  f(GETTINGOPEN, 95) });
+		return n(
+			{ f(SPEED, 90), f(STRENGTH, 85), f(BREAKTACKLE, 70), f(RUNBLOCK, 70), f(CATCH, 99), f(BALLSECURITY, 99),
+			  f(GETTINGOPEN, 99), f(PASSVISION, 40), f(PASSPOWER, 60), f(PASSACCURACY, 40), f(PASSCOVER, 50), f(TACKLE, 70) },
+
+			{ f(SPEED, 99), f(STRENGTH, 70), f(BREAKTACKLE, 85), f(RUNBLOCK, 60), f(CATCH, 95), f(BALLSECURITY, 90),
+			  f(GETTINGOPEN, 95), f(PASSVISION, 40), f(PASSPOWER, 40), f(PASSACCURACY, 60), f(PASSCOVER, 70), f(TACKLE, 50) });
 	case TE:
 		return n({ f(SPEED, 75), f(STRENGTH, 95), f(BREAKTACKLE, 70), f(BALLSECURITY, 85), f(CATCH, 85), f(RUNBLOCK, 90),
 				   f(PASSBLOCK, 90), f(GETTINGOPEN, 80) },
-			{ f(SPEED, 90), f(STRENGTH, 85), f(BREAKTACKLE, 85), f(BALLSECURITY, 90), f(CATCH, 95), f(RUNBLOCK, 65),
+
+			{ f(SPEED, 90), f(STRENGTH, 85), f(BREAKTACKLE, 80), f(BALLSECURITY, 90), f(CATCH, 95), f(RUNBLOCK, 65),
 			  f(PASSBLOCK, 70), f(GETTINGOPEN, 90) });
-	case OL: return n({ f(STRENGTH, 99), f(RUNBLOCK, 99), f(PASSBLOCK, 95) }, { f(STRENGTH, 99), f(RUNBLOCK, 95), f(PASSBLOCK, 99) });
+
+	case OL:
+		return n({ f(STRENGTH, 99), f(RUNBLOCK, 99), f(PASSBLOCK, 90), f(TACKLE, 60) },
+
+			{ f(STRENGTH, 99), f(RUNBLOCK, 90), f(PASSBLOCK, 99), f(TACKLE, 60) });
 
 	case DL:
 		return n({ f(STRENGTH, 99), f(SPEED, 70), f(RUNSTOP, 99), f(PASSRUSH, 90), f(TACKLE, 99), f(STRIPBALL, 75), f(PASSCOVER, 60) },
+
 			{ f(STRENGTH, 90), f(SPEED, 85), f(RUNSTOP, 90), f(PASSRUSH, 99), f(TACKLE, 95), f(STRIPBALL, 80), f(PASSCOVER, 70) });
 	case LB:
-		return n({ f(STRENGTH, 95), f(SPEED, 85), f(RUNSTOP, 95), f(PASSRUSH, 80), f(PASSCOVER, 80), f(TACKLE, 95), f(STRIPBALL, 90), f(CATCH, 65) },
-			{ f(STRENGTH, 90), f(SPEED, 95), f(RUNSTOP, 80), f(PASSRUSH, 85), f(PASSCOVER, 95), f(TACKLE, 90), f(STRIPBALL, 80), f(CATCH, 80) });
+		return n({ f(STRENGTH, 95), f(SPEED, 80), f(RUNSTOP, 95), f(PASSRUSH, 80), f(PASSCOVER, 80), f(TACKLE, 95), f(STRIPBALL, 90), f(CATCH, 65) },
+
+			{ f(STRENGTH, 85), f(SPEED, 90), f(RUNSTOP, 80), f(PASSRUSH, 85), f(PASSCOVER, 95), f(TACKLE, 90), f(STRIPBALL, 80), f(CATCH, 75) });
 	case CB:
-		return n({ f(STRENGTH, 85), f(SPEED, 95), f(PASSCOVER, 95), f(TACKLE, 95), f(STRIPBALL, 90), f(PASSRUSH, 80), f(RUNSTOP, 85), f(CATCH, 80) },
-			{ f(STRENGTH, 80), f(SPEED, 99), f(PASSCOVER, 99), f(TACKLE, 85), f(STRIPBALL, 80), f(PASSRUSH, 70), f(RUNSTOP, 65), f(CATCH, 95) });
+		return n(
+			{ f(STRENGTH, 85), f(SPEED, 95), f(PASSCOVER, 95), f(TACKLE, 95), f(STRIPBALL, 90), f(PASSRUSH, 80), f(RUNSTOP, 85),
+			  f(CATCH, 80), f(BREAKTACKLE, 60), f(GETTINGOPEN, 60), f(BALLSECURITY, 60) },
+
+			{ f(STRENGTH, 80), f(SPEED, 99), f(PASSCOVER, 99), f(TACKLE, 85), f(STRIPBALL, 80), f(PASSRUSH, 70), f(RUNSTOP, 65),
+			  f(CATCH, 95), f(BREAKTACKLE, 50), f(GETTINGOPEN, 65), f(BALLSECURITY, 60) });
 	case S:
 		return n({ f(STRENGTH, 90), f(SPEED, 90), f(PASSCOVER, 90), f(TACKLE, 99), f(STRIPBALL, 95), f(PASSRUSH, 80), f(RUNSTOP, 85), f(CATCH, 80) },
+
 			{ f(STRENGTH, 85), f(SPEED, 95), f(PASSCOVER, 99), f(TACKLE, 90), f(STRIPBALL, 80), f(PASSRUSH, 70), f(RUNSTOP, 65), f(CATCH, 90) });
 	case K:
 		return n({ f(KICKPOWER, 99), f(KICKACCURACY, 90), f(PUNTPOWER, 80), f(PUNTACCURACY, 70) },
+
 			{ f(KICKPOWER, 90), f(KICKACCURACY, 99), f(PUNTPOWER, 70), f(PUNTACCURACY, 80) });
 	case P:
 		return n({ f(KICKPOWER, 80), f(KICKACCURACY, 70), f(PUNTPOWER, 99), f(PUNTACCURACY, 90) },
+
 			{ f(KICKPOWER, 70), f(KICKACCURACY, 80), f(PUNTPOWER, 90), f(PUNTACCURACY, 99) });
 	default: return n({}, {});
 	};
@@ -184,7 +208,7 @@ std::pair<std::vector<std::pair<Rating, int>>, std::vector<std::pair<Rating, int
 
 std::vector<int> createRatingsVector(Position p, int ovr, double archetypePointer) {
 	using Archetype = std::vector<std::pair<Rating, int>>;
-	std::vector<int> rats(21, 30);
+	std::vector<int> rats(21, 1); // Every rating defaults to a 1
 	std::pair<Archetype, Archetype> archetypes = getRatingFactors(p);
 	Archetype a = archetypes.first;
 	for (int i = 0; i < (int)a.size(); i++) {
@@ -193,6 +217,19 @@ std::vector<int> createRatingsVector(Position p, int ovr, double archetypePointe
 		rats[(int)a[i].first] = std::round(a[i].second * (ovr / 99.0));
 	}
 	return rats;
+}
+
+int estimateOutOfPositionOvr(std::vector<int> ratings, Position p) {
+	// Use center archetype pointer to get "average" player ratings
+	std::vector<int> idealRatings = createRatingsVector(p, 99, 0.5);
+	double ratingDiffTotal = 0;
+	int totalValidRatings = 0;
+	for (int i = 0; i < (int)idealRatings.size(); i++) {
+		if (idealRatings[i] < 70) continue;
+		ratingDiffTotal += std::min(99.0, ((double)ratings[i] / idealRatings[i]) * 100.0);
+		totalValidRatings += 1;
+	}
+	return std::floor(ratingDiffTotal / totalValidRatings);
 }
 
 class Player {
@@ -207,6 +244,7 @@ private:
 	double gametimeBonus;
 	int potentialOvr;
 	int lastTrainingResult = 0;
+	int injuredWeeks = 0;
 
 public:
 	struct GameState {
@@ -226,9 +264,22 @@ public:
 	}
 	int getYear() const { return year; }
 	std::string getYearString() const { return year == 1 ? "Freshman" : year == 2 ? "Sophomore" : year == 3 ? "Junior" : "Senior"; }
+	void printInfoLine() const {
+		std::string posStr = positionToStr(position);
+		std::string yearStr = getYearString();
+		std::string sign = lastTrainingResult < 0 ? "" : "+";
+		std::string trainingStr = "(" + sign + std::to_string(lastTrainingResult) + ")";
+		if (year == 1) trainingStr = "";
+		std::string injuryStr = "OUT " + (injuredWeeks == -1 ? "ssn" : (std::to_string(injuredWeeks) + "wks"));
+		if (!isInjured()) injuryStr = "";
+		std::printf("%-21s%-3s%-11s%-3d%-6s%s\n", name.c_str(), posStr.c_str(), yearStr.c_str(), ovr, trainingStr.c_str(), injuryStr.c_str());
+	}
 	int getOVR() const { return ovr; }
 	int getLastTrainingResult() const { return lastTrainingResult; }
+	int getWeeksInjured() const { return injuredWeeks; }
+	bool isInjured() const { return injuredWeeks != 0; }
 	City* getHometown() const { return hometown; }
+	std::vector<int> getRatingsVector() const { return ratings; }
 	int getRating(Rating r, bool stripBonus = false) const {
 		// Gametime "bonus" is a bit of a misnomer. Lack of a bonus is penalizing and a full bonus simply does nothing.
 		int penalty = 15;
@@ -237,6 +288,7 @@ public:
 		return ratings[r] - penalty;
 	}
 	bool ageAndGraduate() {
+		injuredWeeks = 0;
 		year++;
 		return (year > 4);
 	}
@@ -258,6 +310,26 @@ public:
 	}
 
 	void setGametimeBonus(double b) { gametimeBonus = b; }
+	bool runInjuryRisk(double injuryRisk) {
+		const double x = RNG::randomNumberUniformDist();
+		if (x < injuryRisk) {
+			// Unlucky!
+			const double y = RNG::randomNumberUniformDist();
+			if (y < 0.3) injuredWeeks = 1;
+			else if (y < 0.6) injuredWeeks = 2;
+			else if (y < 0.8) injuredWeeks = 3;
+			else if (y < 0.85) injuredWeeks = 4;
+			else if (y < 0.9) injuredWeeks = 5;
+			else if (y < 0.95) injuredWeeks = 6;
+			else injuredWeeks = -1; // Out for season
+			if (injuredWeeks != -1) injuredWeeks++; // Prevents this week from counting as a week
+			return true;
+		}
+		return false;
+	}
+	void advanceOneWeek() {
+		if (injuredWeeks > 0) injuredWeeks -= 1;
+	}
 };
 
 

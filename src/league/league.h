@@ -101,6 +101,9 @@ private:
 	}
 
 	void performNewWeekTasks(int newWeek) {
+		for (auto school : allSchools) {
+			school->getRoster()->advanceOneWeek();
+		}
 		schoolRanker.rankTeams(newWeek);
 		if (newWeek == 13) {
 			scheduler.scheduleConferenceChampionshipGames();

@@ -6,6 +6,7 @@
 #include <cassert>
 #include <iostream>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 struct SortByOVR {
@@ -22,10 +23,25 @@ struct SortByRating {
 	}
 };
 
+struct SortByOutOfPositionOvr {
+	Position position;
+
+	SortByOutOfPositionOvr(Position p) : position(p) {}
+
+	bool operator()(const Player* p1, const Player* p2) {
+		int ovr1 = estimateOutOfPositionOvr(p1->getRatingsVector(), position);
+		int ovr2 = estimateOutOfPositionOvr(p2->getRatingsVector(), position);
+		return (ovr1 > ovr2);
+	}
+};
+
 struct Needs {
 	Position pos;
 	int num;
 };
+
+// 					  { QB,HB,WR,TE,OL,DL,LB,CB,S,K,P }
+int startingCount[] = { 1, 1, 3, 1, 5, 4, 3, 2, 2,1,1 };
 
 class Roster {
 private:
@@ -82,6 +98,12 @@ public:
 		return &roster.back();
 	}
 
+	void advanceOneWeek() {
+		for (auto& player : roster) {
+			player.advanceOneWeek();
+		}
+	}
+
 	void ageAndGraduatePlayers() {
 		for (int i = (int)roster.size() - 1; i >= 0; i--) {
 			bool graduated = roster[i].ageAndGraduate();
@@ -102,9 +124,10 @@ public:
 		generateSpecialTeams();
 	}
 
-	std::vector<Player*> getAllPlayersAt(Position p, bool sorted = true) {
+	std::vector<Player*> getAllPlayersAt(Position p, bool sorted = true, bool excludeInjured = false) {
 		std::vector<Player*> vec;
 		for (int i = 0; i < (int)roster.size(); ++i) {
+			if (roster[i].isInjured() && excludeInjured) continue;
 			if (roster[i].getPosition() == p) vec.push_back(&(roster[i]));
 		}
 		if (sorted) {
@@ -116,8 +139,15 @@ public:
 
 	std::vector<Player*> getElevenMen(const std::vector<Needs>& orders) {
 		std::vector<Player*> eleven;
+		std::unordered_set<Player*> elevenSet;
 		for (Needs order : orders) {
-			for (int i = 0; i < order.num; ++i) eleven.push_back(depthChart[order.pos][i]);
+			int playersFound = 0;
+			for (int i = 0; playersFound < order.num; ++i) { // TODO: find a way to not blow up if everyone's hurt!
+				Player* player = depthChart[order.pos][i];
+				if (player->isInjured()) continue;
+				eleven.push_back(depthChart[order.pos][i]);
+				playersFound++;
+			}
 		}
 		assert(eleven.size() == 11);
 		return eleven;
@@ -125,7 +155,17 @@ public:
 
 	void organizeDepthChart() {
 		depthChart.clear();
-		for (Position p : { QB, HB, WR, TE, OL, DL, LB, CB, S, K, P }) { depthChart.push_back(getAllPlayersAt(p)); }
+		for (Position p : { QB, HB, WR, TE, OL, DL, LB, CB, S, K, P }) {
+			std::vector<Player*> players = getAllPlayersAt(p);
+			std::vector<Player*> remainingPlayers;
+			for (auto& player : roster) {
+				if (player.getPosition() != p) remainingPlayers.push_back(&player);
+			}
+			SortByOutOfPositionOvr sboopo(p);
+			std::sort(remainingPlayers.begin(), remainingPlayers.end(), sboopo);
+			for (auto player : remainingPlayers) players.push_back(player);
+			depthChart.push_back(players);
+		}
 	}
 
 	int getRosterSize() {
@@ -133,16 +173,13 @@ public:
 	}
 
 	void printRoster() {
-		std::cout << "    Name                 Pos Year       OVR \n";
-		std::cout << "-------------------------------------------\n";
-		//            46. Jalen Edwards        QB  Sophomore  97 (+2)
+		std::cout << "    Name                 Pos Year       OVR     Status  \n";
+		std::cout << "--------------------------------------------------------\n";
+		//            46. Jalen Edwards        QB  Sophomore  97 (+2) OUT 2wks
 		int num = 1;
 		for (auto& player : roster) {
-			std::string name = player.getName();
-			std::string posStr = positionToStr(player.getPosition());
-			std::string yearStr = player.getYearString();
-			std::string sign = player.getLastTrainingResult() < 0 ? "" : "+";
-			std::printf("%2d. %-21s%-3s%-11s%-3d(%s%d)\n", num, name.c_str(), posStr.c_str(), yearStr.c_str(), player.getOVR(), sign.c_str(), player.getLastTrainingResult());
+			std::printf("%2d. ", num);
+			player.printInfoLine();
 			++num;
 		}
 	}
@@ -150,16 +187,20 @@ public:
 	void printPositionGroup(Position pos) {
 		// We need to decide relevant statistics
 		std::vector<std::pair<Rating, int>> ratings = getRatingFactors(pos).first;
-		printf("Name                 Year       OVR  ");
+		printf("Name                 Pos Year       OVR  ");
 		for (int i = 0; i < ratings.size(); i++) { printf("%-5s", ratingToStr(ratings[i].first).c_str()); }
-		printf("\n------------------------------------");
+		printf("\n----------------------------------------");
 		for (int i = 0; i < ratings.size(); i++) printf("-----");
 		printf("\n");
-		for (auto& player : roster) {
-			if (player.getPosition() != pos) continue;
-			printf("%-21s%-11s%-5d", player.getName().c_str(), player.getYearString().c_str(), player.getOVR());
-			for (auto& rating : ratings) { printf("%-5d", player.getRating(rating.first, true)); }
+		int count = 0;
+		for (auto& player : depthChart[pos]) {
+			int ovr = player->getPosition() == pos ? player->getOVR() : estimateOutOfPositionOvr(player->getRatingsVector(), pos);
+			printf("%-21s%-4s%-11s%-5d", player->getName().c_str(), positionToStr(player->getPosition()).c_str(), player->getYearString().c_str(), ovr);
+			for (auto& rating : ratings) { printf("%-5d", player->getRating(rating.first, true)); }
 			printf("\n");
+			count += 1;
+			if (count >= 20) break;
+			if (count == startingCount[pos]) printf("--------------------------------------------------------------------------------------\n");
 		}
 	}
 };

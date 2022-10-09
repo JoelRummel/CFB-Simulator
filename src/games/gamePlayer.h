@@ -218,6 +218,42 @@ private:
 		}
 	}
 
+	void runInjuryRisks(Field& field, PlayResult result) {
+		bool touchdown = (result.yards >= gameState.getYardLine());
+		const std::vector<std::vector<Player*>> sides = { field.first, field.second };
+		School* currentSchool = gameState.homeHasPossession() ? home : away;
+		for (auto& side : sides) {
+			for (auto player : side) {
+				const Action action = player->gameState.action;
+				if (action == RUSHING) player->runInjuryRisk(INJURY_RISK_HIGH);
+				if (action == BLOCKING) player->runInjuryRisk(INJURY_RISK_MEDIUM);
+				if (action == HANDINGOFF) player->runInjuryRisk(INJURY_RISK_LOW);
+				if (action == KICKING) player->runInjuryRisk(INJURY_RISK_MEDIUM);
+
+				if (action == PASSING) {
+					if (result.carrier == player && !touchdown) player->runInjuryRisk(INJURY_RISK_HIGH);
+					else player->runInjuryRisk(INJURY_RISK_LOW);
+				}
+				if (action == RECEIVING) {
+					if (result.carrier == player && !touchdown) player->runInjuryRisk(INJURY_RISK_HIGH);
+					else player->runInjuryRisk(INJURY_RISK_LOW);
+				}
+
+				if (player == result.defender && !touchdown) player->runInjuryRisk(INJURY_RISK_HIGH);
+				else {
+					if (action == BLITZING) player->runInjuryRisk(INJURY_RISK_MEDIUM);
+					if (action == COVERING) player->runInjuryRisk(INJURY_RISK_LOW);
+				}
+
+				if (player->isInjured()) {
+					printPlay(currentSchool->getName() + " " + player->getPositionedName() + " was injured on the play");
+				}
+			}
+			if (currentSchool == home) currentSchool = away;
+			else currentSchool = home;
+		}
+	}
+
 	void recordPlayResult(PlayResult result) {
 		for (auto& str : result.messages) printPlay(str);
 		if (result.yards > gameState.getYardLine()) result.yards = gameState.getYardLine();
@@ -258,6 +294,7 @@ private:
 		Field field = applyFormation(form, play);
 		PlayResult result = GamePlayExecutor::executePlay(play, field, gameState.getYardLine());
 		recordPlayResult(result);
+		runInjuryRisks(field, result);
 		updateGameState(result);
 		gameState.printStatus();
 	}
