@@ -11,33 +11,46 @@
 #include <cmath> 
 
 class RNG {
-  public:
+public:
 	static std::random_device rd;
 	static std::mt19937 gen;
 
+	// For automated testing only!!
+	static double resultOverride;
+	static bool overrideSet;
+	static void setRngOverride(double o) {
+		resultOverride = o;
+		overrideSet = true;
+	}
+
 	static int randomWeightedIndex(const std::vector<double>& in) {
+		if (overrideSet) return std::round(resultOverride);
 		std::discrete_distribution<> d(in.begin(), in.end());
 		return d(gen);
 	}
 
 	static int randomNumberNormalDist(double mean, double stdev) {
-		std::normal_distribution<> d { mean, stdev };
+		if (overrideSet) return std::round(resultOverride);
+		std::normal_distribution<> d{ mean, stdev };
 		return d(gen);
 	}
 
 	static int randomNumberUniformDist(int lower, int upper) {
+		if (overrideSet) return std::round(resultOverride);
 		if (lower > upper) assert(false);
 		std::uniform_int_distribution<> distrib(lower, upper);
 		return distrib(gen);
 	}
 
 	static double randomNumberUniformDist(double lower = 0.0, double upper = 1.0) {
+		if (overrideSet) return resultOverride;
 		std::uniform_real_distribution<> d(lower, upper);
 		return d(gen);
 	}
 
 	// p is from 0 to 1. Higher means tighter distribution.
 	static int randomNumberGeometricDist(int p) {
+		if (overrideSet) return std::round(resultOverride);
 		std::geometric_distribution<> d(p);
 		return d(gen);
 	}
@@ -55,6 +68,8 @@ class RNG {
 
 std::random_device RNG::rd;
 std::mt19937 RNG::gen(RNG::rd());
+double RNG::resultOverride(0.0);
+bool RNG::overrideSet(false);
 
 // Stolen from SO
 template<typename Iter, typename RandomGenerator>
