@@ -2,6 +2,7 @@
 #include "testPlayer.h"
 #include "testSchool.h"
 #include "testGameManager.h"
+#include "recruits/testRecruits.h"
 #include "../src/loadData.h"
 
 int main(int argc, char** argv) {
