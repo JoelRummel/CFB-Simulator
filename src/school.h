@@ -109,6 +109,10 @@ private:
 	int offenseRanking = -1;
 	int defenseRanking = -1;
 	int lastWeekRanking = -1;
+	int offenseTotalOvr = 0;
+	int defenseTotalOvr = 0;
+	int offenseActualOvr = 0;
+	int defenseActualOvr = 0;
 
 	Coach* coaches[11];
 	CoachingLogs coachLogs;
@@ -273,6 +277,16 @@ public:
 	void setDefenseRanking(int r) { defenseRanking = r; }
 	int getOffenseRanking() { return offenseRanking; }
 	int getDefenseRanking() { return defenseRanking; }
+	std::pair<int, int> setOverallOvrs() {
+		std::pair<int, int> ovrs = roster.calcTotalOvrs();
+		offenseTotalOvr = ovrs.first;
+		defenseTotalOvr = ovrs.second;
+		return ovrs;
+	}
+	void setAdjustedActualOvrs(std::pair<int, int> maxOvrs) {
+		offenseActualOvr = std::round(((double)offenseTotalOvr / maxOvrs.first) * 99.0);
+		defenseActualOvr = std::round(((double)defenseTotalOvr / maxOvrs.second) * 99.0);
+	}
 
 	void setRankingScore(double newRankingScore) {
 		rankingScore = newRankingScore;
@@ -472,6 +486,8 @@ public:
 			std::cout << "      Offense ranking: " << offenseRanking << "\n";
 			std::cout << "      Defense ranking: " << defenseRanking << "\n";
 		}
+		std::cout << "      Offense OVR: " << offenseActualOvr << "\n";
+		std::cout << "      Defense OVR: " << defenseActualOvr << "\n";
 	}
 	void printLatestRecruitingClass() {
 		printf("%-20s%-3d%-3d%-3d%-3d%-3d%-3d\n", name.c_str(), recruitingClass[5], recruitingClass[4], recruitingClass[3], recruitingClass[2], recruitingClass[1], recruitingClass[0]);

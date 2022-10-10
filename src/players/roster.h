@@ -168,6 +168,24 @@ public:
 		}
 	}
 
+	std::pair<int, int> calcTotalOvrs() {
+		std::pair<int, int> totals = { 0, 0 };
+		for (Position p : { QB, HB, WR, TE, OL, DL, LB, CB, S }) {
+			std::vector<Player*> players = getAllPlayersAt(p);
+			int starters = startingCount[p];
+			int positionTotal = 0;
+			for (int i = 0; i < starters; i++) {
+				positionTotal += players[i]->getOVR() * 2;
+			}
+			for (int i = starters; i < starters * 2; i++) {
+				positionTotal += players[i]->getOVR();
+			}
+			if (p == DL || p == LB || p == CB || p == S) totals.second += positionTotal;
+			else totals.first += positionTotal;
+		}
+		return totals;
+	}
+
 	int getRosterSize() {
 		return roster.size();
 	}

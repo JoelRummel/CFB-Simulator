@@ -135,6 +135,18 @@ private:
 		for (int i = 0; i < (int)sortedSchools.size(); i++) { sortedSchools[i]->setDefenseRanking(i + 1); }
 	}
 
+	void assignOffenseDefenseOvrs() {
+		std::pair<int, int> maxOvrs = { 0,0 };
+		for (auto school : allSchools) {
+			std::pair<int, int> ovrs = school->setOverallOvrs();
+			if (ovrs.first > maxOvrs.first) maxOvrs.first = ovrs.first;
+			if (ovrs.second > maxOvrs.second) maxOvrs.second = ovrs.second;
+		}
+		for (auto school : allSchools) {
+			school->setAdjustedActualOvrs(maxOvrs);
+		}
+	}
+
 	void assessAllCoaches() {
 		for (School* school : allSchools) school->assessCoaches();
 	}
@@ -177,6 +189,7 @@ private:
 			school->applyGametimeBonuses();
 		}
 		schoolRanker.resetPoll(allSchools);
+		assignOffenseDefenseOvrs();
 	}
 
 public:
