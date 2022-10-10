@@ -51,15 +51,15 @@ private:
 
 	void generateOffRoster() {
 		/*
-		3 QB
+		4 QB
 		5 RB
 		11 OL
-		3 TE
-		8 WR
-		30 TOTAL
+		4 TE
+		9 WR
+		33 TOTAL
 		*/
-		std::vector<std::pair<Position, int>> orders{ std::make_pair(QB, 3), std::make_pair(HB, 5), std::make_pair(OL, 11), std::make_pair(TE, 3),
-													   std::make_pair(WR, 8) };
+		std::vector<std::pair<Position, int>> orders{ std::make_pair(QB, 4), std::make_pair(HB, 5), std::make_pair(OL, 11), std::make_pair(TE, 4),
+													   std::make_pair(WR, 9) };
 
 		for (auto order : orders) {
 			for (int i = 0; i < order.second; ++i) roster.push_back(playerFactory(order.first, (std::rand() % 4) + 1, startingPrestige));
@@ -68,13 +68,13 @@ private:
 
 	void generateDefRoster() {
 		/*
-		9 DL
-		8 LB
+		10 DL
+		9 LB
 		8 CB
-		5 S
-		30 TOTAL
+		6 S
+		33 TOTAL
 		*/
-		std::vector<std::pair<Position, int>> orders{ std::make_pair(DL, 9), std::make_pair(LB, 8), std::make_pair(CB, 8), std::make_pair(S, 5) };
+		std::vector<std::pair<Position, int>> orders{ std::make_pair(DL, 10), std::make_pair(LB, 9), std::make_pair(CB, 8), std::make_pair(S, 6) };
 
 		for (auto order : orders) {
 			for (int i = 0; i < order.second; ++i) roster.push_back(playerFactory(order.first, (std::rand() % 4) + 1, startingPrestige));
@@ -82,7 +82,7 @@ private:
 	}
 
 	void generateSpecialTeams() {
-		std::vector<std::pair<Position, int>> orders{ std::make_pair(P, 1), std::make_pair(K, 1) };
+		std::vector<std::pair<Position, int>> orders{ std::make_pair(P, 2), std::make_pair(K, 2) };
 
 		for (auto order : orders) {
 			for (int i = 0; i < order.second; ++i) roster.push_back(playerFactory(order.first, (std::rand() % 4) + 1, startingPrestige));

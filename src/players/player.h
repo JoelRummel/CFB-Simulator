@@ -25,7 +25,8 @@ std::string positionToStr(Position p) {
 	case K: return "K";
 	case P: return "P";
 	}
-	return "";
+	std::cerr << "ERROR: invalid position: " << p << std::endl;
+	assert(false);
 }
 
 Position strToPosition(std::string s) {

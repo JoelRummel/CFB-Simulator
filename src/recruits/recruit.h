@@ -149,11 +149,11 @@ public:
  * 0 star: 20-26 (6 pts)
  */
 Recruit recruitFactory(double seedOverride = -1) {
-    int positionSelection = std::rand() % TOTAL_POSITION_DISTRIBUTION;
+    int positionSelection = RNG::randomNumberUniformDist(1, TOTAL_POSITION_DISTRIBUTION);
     Position p;
     for (auto dist : POSITION_DISTRIBUTION) {
         positionSelection -= dist.second;
-        if (positionSelection < 0) {
+        if (positionSelection <= 0) {
             p = dist.first;
             break;
         }

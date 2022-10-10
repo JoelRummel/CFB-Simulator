@@ -21,8 +21,8 @@ public:
         for (int i = 0; i < 2800; i++) {
             recruits.push_back(recruitFactory());
         }
-        for (int i = 0; i < 2000; i++) {
-            // recruits.push_back(recruitFactory(RNG::randomNumberUniformDist(0.0, 0.03)));
+        for (int i = 0; i < 500; i++) {
+            recruits.push_back(recruitFactory(RNG::randomNumberUniformDist(0.0, 0.05)));
         }
         SortByRecruitOvr sbro;
         std::sort(recruits.begin(), recruits.end(), sbro);
